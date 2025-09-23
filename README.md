@@ -1,5 +1,7 @@
 # Notes on the Module "Tools"
 
+## What Does It Do?
+
 This module is a collection of various ready-to-use tools reading and manipulating 
 GnuCash 
 XML files. They are, of course, based on the module "Base", "API" and "Extensions", 
@@ -9,6 +11,16 @@ You will notice that the tools partially pull on the examples in the "Examples"
 module, and thus we have a *logical* dependency here. Currently, there are many 
 similarities between the two modules, but expect those two modules to deviate 
 from one another in the course of the future releases to come.
+
+## What is This Repo's Relationship with the Other Repos?
+
+* This is a module-level repository which is part of a multi-module project, i.e. it has a parent and several siblings. 
+
+  [Parent](https://github.com/jross765/JGnuCashLibNTools.git)
+
+* Under normal circumstances, you cannot compile it on its own (at least not without further preparation), but instead, you should clone it together with the other repos and use the parent repo's build-script.
+
+* This repository contains no history before V. 1.7 (cf. notes in parent repo).
 
 ## Major Changes 
 ### V. 1.6 &rarr; 1.7
