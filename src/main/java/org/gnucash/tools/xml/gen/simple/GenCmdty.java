@@ -25,7 +25,7 @@ public class GenCmdty extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-private static final Logger LOGGER = LoggerFactory.getLogger(GenCmdty.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GenCmdty.class);
   
   // -----------------------------------------------------------------
 
@@ -105,7 +105,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenCmdty.class);
       .desc("Symbol (ticker)")
       .longOpt("symbol")
       .build();
-    	          
+
           
     options = new Options();
     options.addOption(optFileIn);
@@ -128,10 +128,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenCmdty.class);
     
     GCshCmdtyID_SecIdType qualifID = new GCshCmdtyID_SecIdType(GCshCmdtyCurrNameSpace.SecIdType.ISIN, isin);
     GnuCashWritableCommodity cmdty = gcshFile.createWritableCommodity(qualifID, isin, name);
-    // cmdty.setQualifID(qualifID);
-    // cmdty.setXCode(isin);
-    // cmdty.setName(name);
-    
+
     if ( symbol != null )
     	cmdty.setSymbol(symbol);
     
