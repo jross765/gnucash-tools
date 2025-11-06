@@ -102,38 +102,38 @@ public class GetTrxSpltInfo extends CommandLineTool
     
     try
     {
-      System.out.println("ID:          " + splt.getID());
+      System.out.println("ID:            " + splt.getID());
     }
     catch ( Exception exc )
     {
-      System.out.println("ID:          " + "ERROR");
+      System.out.println("ID:            " + "ERROR");
     }
     
     try
     {
-      System.out.println("toString:    " + splt.toString());
+      System.out.println("toString:      " + splt.toString());
     }
     catch ( Exception exc )
     {
-      System.out.println("toString:    " + "ERROR");
+      System.out.println("toString:      " + "ERROR");
     }
     
     try
     {
-      System.out.println("Account ID:  " + splt.getAccountID());
+      System.out.println("Account ID:    " + splt.getAccountID());
     }
     catch ( Exception exc )
     {
-      System.out.println("Account ID:  " + "ERROR");
+      System.out.println("Account ID:    " + "ERROR");
     }
     
     try
     {
-      System.out.println("Lot:         " + splt.getLotID());
+      System.out.println("Lot:           " + splt.getLotID());
     }
     catch ( Exception exc )
     {
-      System.out.println("Lot:         " + "ERROR");
+      System.out.println("Lot:           " + "ERROR");
     }
         
     try
@@ -147,38 +147,47 @@ public class GetTrxSpltInfo extends CommandLineTool
 
     try
     {
-      System.out.println("Action (str): " + splt.getActionStr());
+      System.out.println("Action (str):  " + splt.getActionStr());
     }
     catch (Exception exc)
     {
-      System.out.println("Action (str): " + "ERROR");
+      System.out.println("Action (str):  " + "ERROR");
     }
 
     try
     {
-      System.out.println("Value:       " + splt.getValueFormatted());
+      System.out.println("Recon state:   " + splt.getReconState());
+    }
+    catch (Exception exc)
+    {
+      System.out.println("Recon state:   " + "ERROR");
+    }
+
+    try
+    {
+      System.out.println("Value:         " + splt.getValueFormatted());
     }
     catch ( Exception exc )
     {
-      System.out.println("Value:       " + "ERROR");
+      System.out.println("Value:         " + "ERROR");
     }
         
     try
     {
-      System.out.println("Quantity:    " + splt.getQuantityFormatted());
+      System.out.println("Quantity:      " + splt.getQuantityFormatted());
     }
     catch ( Exception exc )
     {
-      System.out.println("Quantity:    " + "ERROR");
+      System.out.println("Quantity:      " + "ERROR");
     }
         
     try
     {
-      System.out.println("Description: '" + splt.getDescription() + "'");
+      System.out.println("Description:   '" + splt.getDescription() + "'");
     }
     catch ( Exception exc )
     {
-      System.out.println("Description: " + "ERROR");
+      System.out.println("Description:   " + "ERROR");
     }
   }
 

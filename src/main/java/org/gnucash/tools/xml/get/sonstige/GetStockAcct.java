@@ -488,7 +488,7 @@ public class GetStockAcct extends CommandLineTool
   protected void printUsage()
   {
     HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp( "GetSubAcct", options );
+    formatter.printHelp( "GetStockAcct", options );
     
     System.out.println("");
     System.out.println("Valid values for <account-mode>:");
