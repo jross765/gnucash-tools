@@ -53,6 +53,8 @@ public class GetTrxSpltList extends CommandLineTool
   private static double     quantityFrom    = Const.UNSET_VALUE; 
   private static double     quantityTo      = Const.UNSET_VALUE; 
   
+  private static String     descrSplt       = null; 
+  
   private static boolean    showFlt         = false; 
   
   // ------------------------------
@@ -150,6 +152,15 @@ public class GetTrxSpltList extends CommandLineTool
     	    	          
     // ---
     
+    Option optDescrSplt = Option.builder("dsplt")
+      .hasArg()
+      .argName("str")
+      .desc("Description (split level)")
+      .longOpt("description-split")
+      .build();
+    
+    // ---
+    
     Option optShowFilter = Option.builder("sflt")
       .desc("Show filter (for debugging purposes)")
       .longOpt("show-filter")
@@ -160,9 +171,6 @@ public class GetTrxSpltList extends CommandLineTool
       .longOpt("show-splits")
       .build();
     	    
-    // ::TODO
-    // - memo (split, part of)
-    // - description (trx, part of)
     	    	          
     options = new Options();
     options.addOption(optFile);
@@ -173,6 +181,7 @@ public class GetTrxSpltList extends CommandLineTool
     options.addOption(optValueTo);
     options.addOption(optNofSharesFrom);
     options.addOption(optNofSharesTo);
+    options.addOption(optDescrSplt);
     options.addOption(optShowFilter);
     options.addOption(optShowSplits);
   }
@@ -232,6 +241,9 @@ public class GetTrxSpltList extends CommandLineTool
     	spltFlt.quantityTo   = new FixedPointNumber(quantityTo);
     spltFlt.quantityAbs = true;
     
+    if ( descrSplt != null )
+    	spltFlt.descrPart = descrSplt;
+
     // ---
 
 	return spltFlt;
@@ -426,6 +438,30 @@ public class GetTrxSpltList extends CommandLineTool
     		System.err.println("To quantity:        " + "(unset)");
     	else
     		System.err.println("To quantity:        " + quantityTo);
+    }
+    
+    // ---
+    
+    // <description-split>
+    if ( cmdLine.hasOption( "description-split" ) )
+    {
+        try
+        {
+        	descrSplt = cmdLine.getOptionValue("description-split");
+        }
+        catch ( Exception exc )
+        {
+        	System.err.println("Could not parse <description-split>");
+        	throw new InvalidCommandLineArgsException();
+        }
+    }
+    
+    if ( ! scriptMode )
+    {
+    	if ( descrSplt == null )
+    		System.err.println("Descr. (split level): " + "(unset)");
+    	else
+    	 	System.err.println("Descr. (split level): " + descrSplt);
     }
     
     // ---
