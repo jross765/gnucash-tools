@@ -10,6 +10,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.gnucash.api.Const;
+import org.gnucash.api.read.GnuCashCommodity;
 import org.gnucash.api.write.GnuCashWritableCommodity;
 import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
 import org.gnucash.base.basetypes.complex.GCshCmdtyCurrNameSpace;
@@ -24,7 +26,6 @@ import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 public class GenCmdty extends CommandLineTool
 {
   // Logger
-  @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(GenCmdty.class);
   
   // -----------------------------------------------------------------
@@ -36,8 +37,10 @@ public class GenCmdty extends CommandLineTool
   private static String gcshOutFileName = null;
 
   private static String  name     = null;
-  private static String  symbol   = null;
   private static String  isin     = null;
+  
+  private static String  symbol   = null;
+  private static int     fraction = 0;
 
   // -----------------------------------------------------------------
 
@@ -106,6 +109,13 @@ public class GenCmdty extends CommandLineTool
       .longOpt("symbol")
       .build();
 
+    Option optFraction = Option.builder("fr")
+      .hasArg()
+      .argName("num")
+      .desc("Fraction (default " + Const.CMDTY_FRACTION_DEFAULT + ")")
+      .longOpt("fraction")
+      .build();
+
           
     options = new Options();
     options.addOption(optFileIn);
@@ -113,6 +123,7 @@ public class GenCmdty extends CommandLineTool
     options.addOption(optISIN);
     options.addOption(optName);
     options.addOption(optSymbol);
+    options.addOption(optFraction);
   }
 
   @Override
@@ -126,12 +137,39 @@ public class GenCmdty extends CommandLineTool
   {
     GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName));
     
+    // 1) Check whether there already is a commodity with that ISIN
+    // 1.1) Variant 1: Qualif. ID (non-technical, as opposed to all other IDs in GnuCash)
     GCshCmdtyID_SecIdType qualifID = new GCshCmdtyID_SecIdType(GCshCmdtyCurrNameSpace.SecIdType.ISIN, isin);
+    GnuCashCommodity checkCmdty = gcshFile.getCommodityByQualifID( qualifID );
+    if ( checkCmdty != null )
+    {
+    	LOGGER.error("kernel: Encountered a commodity with ID '" + qualifID + "' in GnuCash file");
+    	LOGGER.error("kernel: Aborting");
+    	System.err.println("Error: There already is a commodity with ID '" + qualifID + "' in GnuCash file");
+    	System.err.println("Aborting");
+    	System.exit( 1 );
+    }
+    // 1.2) Variant 2: X-Code
+    checkCmdty = gcshFile.getCommodityByXCode( isin );
+    if ( checkCmdty != null )
+    {
+    	LOGGER.error("kernel: Encountered a commodity with X-code '" + isin + "' in GnuCash file");
+    	LOGGER.error("kernel: Aborting");
+    	System.err.println("Error: There already is a commodity with X-code '" + isin + "' in GnuCash file");
+    	System.err.println("Aborting");
+    	System.exit( 1 );
+    }
+    
+    // 2) Generate commodity
     GnuCashWritableCommodity cmdty = gcshFile.createWritableCommodity(qualifID, isin, name);
 
     if ( symbol != null )
     	cmdty.setSymbol(symbol);
     
+    if ( fraction != 0 )
+    	cmdty.setFraction(fraction);
+    
+    // 3) Write to file
     System.out.println("Commodity to write: " + cmdty.toString());
     gcshFile.writeFile(new File(gcshOutFileName));
     System.out.println("OK");
@@ -166,7 +204,7 @@ public class GenCmdty extends CommandLineTool
       System.err.println("Could not parse <gnucash-in-file>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("GnuCash file (in): '" + gcshInFileName + "'");
+    System.err.println("GnuCash file (in):  '" + gcshInFileName + "'");
     
     // <gnucash-out-file>
     try
@@ -180,6 +218,8 @@ public class GenCmdty extends CommandLineTool
     }
     System.err.println("GnuCash file (out): '" + gcshOutFileName + "'");
     
+    // --
+    
     // <isin>
     try
     {
@@ -190,7 +230,7 @@ public class GenCmdty extends CommandLineTool
       System.err.println("Could not parse <isin>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("ISIN: '" + isin + "'");
+    System.err.println("ISIN:               '" + isin + "'");
     
     // <name>
     try
@@ -202,7 +242,9 @@ public class GenCmdty extends CommandLineTool
       System.err.println("Could not parse <name>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("Name: '" + name + "'");
+    System.err.println("Name:               '" + name + "'");
+    
+    // --
     
     // <symbol>
     if ( cmdLine.hasOption("symbol") )
@@ -217,12 +259,29 @@ public class GenCmdty extends CommandLineTool
           throw new InvalidCommandLineArgsException();
         }
     }
-    else
-    {
-    	symbol = null;
-    }
-    System.err.println("Symbol: '" + symbol + "'");
 
+    System.err.println("Symbol:             '" + symbol + "'");
+
+    // <fraction>
+    if ( cmdLine.hasOption("fraction") )
+    {
+        try
+        {
+        	fraction = Integer.parseInt( cmdLine.getOptionValue("fraction") );
+        }
+        catch ( Exception exc )
+        {
+          System.err.println("Could not parse <fraction>");
+          throw new InvalidCommandLineArgsException();
+        }
+    }
+    // Implicit!
+//    else
+//    {
+//    	fraction = Const.CMDTY_FRACTION_DEFAULT;
+//    }
+
+    System.err.println("Fraction:           " + fraction);
   }
   
   @Override
