@@ -23,6 +23,15 @@ from one another in the course of the future releases to come.
 * This repository contains no history before V. 1.7 (cf. notes in parent repo).
 
 ## Major Changes 
+### V. 1.7 &rarr; 1.8
+* New tools: 
+  * GetTrxList
+  * GetTrxSpltList
+
+* Existing tools: 
+  * GenCmdty: More optional fields; check whether commodity with given ISIN already exists.
+  * Others: Small improvements
+
 ### V. 1.6 &rarr; 1.7
 * New tools: 
   * Dump
