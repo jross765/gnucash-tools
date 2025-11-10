@@ -145,11 +145,29 @@ public class GetTrxInfo extends CommandLineTool
     
     try
     {
-      System.out.println("Cmdty/Curr:      '" + trx.getCmdtyCurrID() + "'");
+      System.out.println("Cmdty/Curr:      " + trx.getCmdtyCurrID());
     }
     catch ( Exception exc )
     {
       System.out.println("Cmdty/Curr:      " + "ERROR");
+    }
+        
+    try
+    {
+      System.out.println("Date posted:     " + trx.getDatePosted());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Date posted:     " + "ERROR");
+    }
+    
+    try
+    {
+      System.out.println("Date entered:    " + trx.getDateEntered());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Date entered:    " + "ERROR");
     }
         
     try
