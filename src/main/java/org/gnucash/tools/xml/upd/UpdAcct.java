@@ -78,7 +78,7 @@ public class UpdAcct extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -86,7 +86,7 @@ public class UpdAcct extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
       
     Option optID = Option.builder("id")
       .required()
@@ -94,35 +94,35 @@ public class UpdAcct extends CommandLineTool
       .argName("UUID")
       .desc("Account ID")
       .longOpt("account-id")
-      .build();
+      .get();
             
     Option optName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Account name")
       .longOpt("name")
-      .build();
+      .get();
     
     Option optDescr = Option.builder("desc")
       .hasArg()
       .argName("descr")
       .desc("Account description")
       .longOpt("description")
-      .build();
+      .get();
       
     Option optType = Option.builder("t")
       .hasArg()
       .argName("type")
       .desc("Account type")
       .longOpt("type")
-      .build();
+      .get();
         
     Option optCmdtyCurr = Option.builder("cmdty")
       .hasArg()
       .argName("cmdty/curr-id")
       .desc("Commodity/currency ID")
       .longOpt("commodity-currency-id")
-      .build();
+      .get();
       
     // The convenient ones
     // ::EMPTY

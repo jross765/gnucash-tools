@@ -85,7 +85,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenJob.class);
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -93,7 +93,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenJob.class);
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
       
     Option optType = Option.builder("t")
       .required()
@@ -101,7 +101,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenJob.class);
       .argName("type")
       .desc("Job type")
       .longOpt("type")
-      .build();
+      .get();
       
     Option optOwnerID = Option.builder("own")
       .required()
@@ -109,7 +109,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenJob.class);
       .argName("owner")
       .desc("Owner ID")
       .longOpt("owner-id")
-      .build();
+      .get();
         
     Option optNumber = Option.builder("no")
       .required()
@@ -117,7 +117,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenJob.class);
       .argName("number")
       .desc("Job number")
       .longOpt("number")
-      .build();
+      .get();
       
     Option optName = Option.builder("nm")
       .required()
@@ -125,7 +125,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenJob.class);
       .argName("name")
       .desc("Job name")
       .longOpt("name")
-      .build();
+      .get();
       
     // The convenient ones
           

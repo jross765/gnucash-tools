@@ -73,7 +73,7 @@ private static String               isin         = null;
       .argName("file")
       .desc("GnuCash file")
       .longOpt("gnucash-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -81,14 +81,14 @@ private static String               isin         = null;
       .argName("Mode")
       .desc("Mode")
       .longOpt("mode")
-      .build();
+      .get();
     	    	      
     Option optName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Vendor name (part of)")
       .longOpt("name")
-      .build();
+      .get();
     	      
     // The convenient ones
     // ::EMPTY

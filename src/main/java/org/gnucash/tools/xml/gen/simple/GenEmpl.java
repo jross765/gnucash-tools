@@ -69,7 +69,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenEmpl.class);
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -77,7 +77,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenEmpl.class);
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
       
     Option optUName = Option.builder("u")
       .required()
@@ -85,7 +85,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenEmpl.class);
       .argName("username")
       .desc("Employee user name")
       .longOpt("user-name")
-      .build();
+      .get();
       
     Option optName = Option.builder("n")
       .required()
@@ -93,7 +93,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenEmpl.class);
       .argName("name")
       .desc("Employee name")
       .longOpt("name")
-      .build();
+      .get();
     
     // The convenient ones
           

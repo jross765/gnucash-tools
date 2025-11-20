@@ -75,7 +75,7 @@ public class GenCmdty extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -83,7 +83,7 @@ public class GenCmdty extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
       
     Option optISIN = Option.builder("is")
       .required()
@@ -91,7 +91,7 @@ public class GenCmdty extends CommandLineTool
       .argName("isin")
       .desc("ISIN")
       .longOpt("isin")
-      .build();
+      .get();
           
     Option optName = Option.builder("n")
       .required()
@@ -99,7 +99,7 @@ public class GenCmdty extends CommandLineTool
       .argName("name")
       .desc("Name")
       .longOpt("name")
-      .build();
+      .get();
     
     // The convenient ones
     Option optSymbol = Option.builder("sy")
@@ -107,14 +107,14 @@ public class GenCmdty extends CommandLineTool
       .argName("symb")
       .desc("Symbol (ticker)")
       .longOpt("symbol")
-      .build();
+      .get();
 
     Option optFraction = Option.builder("fr")
       .hasArg()
       .argName("num")
       .desc("Fraction (default " + Const.CMDTY_FRACTION_DEFAULT + ")")
       .longOpt("fraction")
-      .build();
+      .get();
 
           
     options = new Options();

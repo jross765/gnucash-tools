@@ -86,7 +86,7 @@ public class GetCustInfo extends CommandLineTool
       .argName("file")
       .desc("GnuCash file")
       .longOpt("gnucash-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -94,32 +94,32 @@ public class GetCustInfo extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
         
     Option optCustID = Option.builder("cust")
       .hasArg()
       .argName("UUID")
       .desc("Customer-ID")
       .longOpt("customer-id")
-      .build();
+      .get();
     
     Option optCustName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Customer name")
       .longOpt("name")
-      .build();
+      .get();
       
     // The convenient ones
     Option optShowJob = Option.builder("sjob")
       .desc("Show jobs")
       .longOpt("show-jobs")
-      .build();
+      .get();
             
     Option optShowInvc = Option.builder("sinvc")
       .desc("Show invoices")
       .longOpt("show-invoices")
-      .build();
+      .get();
           
     options = new Options();
     options.addOption(optFile);

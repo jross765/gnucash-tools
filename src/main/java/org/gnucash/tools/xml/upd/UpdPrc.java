@@ -77,7 +77,7 @@ public class UpdPrc extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -85,7 +85,7 @@ public class UpdPrc extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
       
     Option optID = Option.builder("id")
       .required()
@@ -93,35 +93,35 @@ public class UpdPrc extends CommandLineTool
       .argName("UUID")
       .desc("Price ID")
       .longOpt("price-id")
-      .build();
+      .get();
             
     Option optType = Option.builder("t")
       .hasArg()
       .argName("type")
       .desc("Price type")
       .longOpt("type")
-      .build();
+      .get();
     	    
     Option optSource = Option.builder("s")
       .hasArg()
       .argName("source")
       .desc("Price source")
       .longOpt("source")
-      .build();
+      .get();
     	    	    
     Option optValue = Option.builder("v")
       .hasArg()
       .argName("value")
       .desc("Price value")
       .longOpt("val")
-      .build();
+      .get();
     
     Option optDescr = Option.builder("desc")
       .hasArg()
       .argName("descr")
       .desc("Price description")
       .longOpt("description")
-      .build();
+      .get();
       
     // The convenient ones
     // ::EMPTY

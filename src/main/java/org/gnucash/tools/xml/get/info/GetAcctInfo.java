@@ -80,7 +80,7 @@ public class GetAcctInfo extends CommandLineTool
       .argName("file")
       .desc("GnuCash file")
       .longOpt("gnucash-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -88,42 +88,42 @@ public class GetAcctInfo extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
       
     Option optAcctID = Option.builder("acct")
       .hasArg()
       .argName("UUID")
       .desc("Account-ID")
       .longOpt("account-id")
-      .build();
+      .get();
     
     Option optAcctName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Account name (or part of)")
       .longOpt("name")
-      .build();
+      .get();
       
     // The convenient ones
     Option optShowPrnt = Option.builder("sprnt")
       .desc("Show parents")
       .longOpt("show-parents")
-      .build();
+      .get();
         
     Option optShowChld = Option.builder("schld")
       .desc("Show children")
       .longOpt("show-children")
-      .build();
+      .get();
           
     Option optShowTrx = Option.builder("strx")
       .desc("Show transactions")
       .longOpt("show-transactions")
-      .build();
+      .get();
           
     Option optShowRcn = Option.builder("srcn")
       .desc("Show reconciliation info")
       .longOpt("show-recon-info")
-      .build();
+      .get();
     	          
     options = new Options();
     options.addOption(optFile);
@@ -229,6 +229,15 @@ public class GetAcctInfo extends CommandLineTool
     
     try
     {
+      System.out.println("Parent ID:       " + acct.getParentAccountID());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Parent ID:       " + "ERROR");
+    }
+    
+    try
+    {
       System.out.println("Description:     '" + acct.getDescription() + "'");
     }
     catch ( Exception exc )
@@ -248,7 +257,7 @@ public class GetAcctInfo extends CommandLineTool
     System.out.println("");
     try
     {
-      System.out.println("Balance:         " + acct.getBalanceFormatted());
+      System.out.println("Balance:         " + acct.getBalance());
     }
     catch ( Exception exc )
     {
@@ -257,11 +266,48 @@ public class GetAcctInfo extends CommandLineTool
 
     try
     {
-      System.out.println("Balance recurs.: " + acct.getBalanceRecursiveFormatted());
+      System.out.println("Balance (exact): " + acct.getBalanceRat());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Balance (exact): " + "ERROR");
+    }
+
+    try
+    {
+      System.out.println("Balance (fmt):   " + acct.getBalanceFormatted());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Balance (fmt):   " + "ERROR");
+    }
+
+    System.out.println("");
+    try
+    {
+      System.out.println("Balance recurs.:         " + acct.getBalanceRecursive());
     }
     catch ( Exception exc )
     {
       System.out.println("Balance recurs.: " + "ERROR");
+    }
+
+    try
+    {
+      System.out.println("Balance recurs. (exact): " + acct.getBalanceRecursiveRat());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Balance recurs. (exact): " + "ERROR");
+    }
+
+    try
+    {
+      System.out.println("Balance recurs. (fmt):   " + acct.getBalanceRecursiveFormatted());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Balance recurs. (fmt):   " + "ERROR");
     }
 
     // ---

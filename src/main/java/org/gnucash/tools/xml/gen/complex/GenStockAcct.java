@@ -99,7 +99,7 @@ public class GenStockAcct extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
         
     Option optFileOut = Option.builder("of")
       .required()
@@ -107,7 +107,7 @@ public class GenStockAcct extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
     
     Option optAcctMode = Option.builder("am")
       .required()
@@ -115,21 +115,21 @@ public class GenStockAcct extends CommandLineTool
       .argName("mode")
       .desc("Selection mode for account")
       .longOpt("account-mode")
-      .build();
+      .get();
     	      
     Option optAcctID = Option.builder("acct")
       .hasArg()
       .argName("acctid")
       .desc("Account-ID")
       .longOpt("account-id")
-      .build();
+      .get();
     	    
     Option optAcctName = Option.builder("an")
       .hasArg()
       .argName("name")
       .desc("Account name (or part of)")
       .longOpt("account-name")
-      .build();
+      .get();
     	      
     Option optCmdtyMode = Option.builder("cm")
       .required()
@@ -137,35 +137,35 @@ public class GenStockAcct extends CommandLineTool
       .argName("mode")
       .desc("Selection mode for commodity")
       .longOpt("commodity-mode")
-      .build();
+      .get();
     	    	        
     Option optCmdtyID = Option.builder("cmdty")
       .hasArg()
       .argName("ID")
       .desc("Commodity ID")
       .longOpt("commodity-id")
-      .build();
+      .get();
     	            
     Option optCmdtyISIN = Option.builder("is")
       .hasArg()
       .argName("isin")
       .desc("ISIN")
       .longOpt("isin")
-      .build();
+      .get();
     	          
     Option optCmdtyName = Option.builder("sn")
       .hasArg()
       .argName("name")
       .desc("Commodity name (or part of)")
       .longOpt("commodity-name")
-      .build();
+      .get();
     
     // ---
     	    
     Option optSilent = Option.builder("sl")
       .desc("Silent mode")
       .longOpt("silent")
-      .build();
+      .get();
 
     options = new Options();
     options.addOption(optFileIn);

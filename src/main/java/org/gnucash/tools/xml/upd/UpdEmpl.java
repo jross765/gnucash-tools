@@ -74,7 +74,7 @@ public class UpdEmpl extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -82,7 +82,7 @@ public class UpdEmpl extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
       
     Option optID = Option.builder("id")
       .required()
@@ -90,21 +90,21 @@ public class UpdEmpl extends CommandLineTool
       .argName("UUID")
       .desc("Employee ID")
       .longOpt("employee-id")
-      .build();
+      .get();
             
     Option optNumber = Option.builder("num")
       .hasArg()
       .argName("number")
       .desc("Employee number")
       .longOpt("number")
-      .build();
+      .get();
     	    
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
       .desc("Employee user name")
       .longOpt("name")
-      .build();
+      .get();
     
     // The convenient ones
     // ::EMPTY

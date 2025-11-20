@@ -75,7 +75,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenAcct.class);
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -83,7 +83,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenAcct.class);
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
       
     Option optName = Option.builder("n")
       .required()
@@ -91,7 +91,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenAcct.class);
       .argName("name")
       .desc("Account name")
       .longOpt("name")
-      .build();
+      .get();
     
     Option optType = Option.builder("t")
       .required()
@@ -99,7 +99,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenAcct.class);
       .argName("type")
       .desc("Account type")
       .longOpt("type")
-      .build();
+      .get();
     	    
     Option optCmdtyCurr = Option.builder("sc")
       .required()
@@ -107,7 +107,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenAcct.class);
       .argName("cmdty/curr")
       .desc("Account currency: a (qualified) commodity or a currency ID")
       .longOpt("commodity-currency")
-      .build();
+      .get();
     	    
     Option optParent = Option.builder("p")
       .required()
@@ -115,7 +115,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenAcct.class);
       .argName("acctid")
       .desc("Parent account ID")
       .longOpt("parent")
-      .build();
+      .get();
     	    
     // The convenient ones
           

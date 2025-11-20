@@ -71,7 +71,7 @@ public class GetInvcList extends CommandLineTool
       .argName("file")
       .desc("GnuCash file")
       .longOpt("gnucash-file")
-      .build();
+      .get();
       
     Option optType = Option.builder("t")
       .required()
@@ -79,7 +79,7 @@ public class GetInvcList extends CommandLineTool
       .argName("type")
       .desc("(Generic) invoice type")
       .longOpt("type")
-      .build();
+      .get();
       
     // The convenient ones
     // ::EMPTY

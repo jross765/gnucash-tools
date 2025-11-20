@@ -81,7 +81,7 @@ public class GetStockAcct extends CommandLineTool
       .argName("file")
       .desc("GnuCash file")
       .longOpt("gnucash-file")
-      .build();
+      .get();
       
     Option optAcctMode = Option.builder("am")
       .required()
@@ -89,7 +89,7 @@ public class GetStockAcct extends CommandLineTool
       .argName("mode")
       .desc("Selection mode for account")
       .longOpt("account-mode")
-      .build();
+      .get();
       
     Option optCmdtyMode = Option.builder("cm")
       .required()
@@ -97,48 +97,48 @@ public class GetStockAcct extends CommandLineTool
       .argName("mode")
       .desc("Selection mode for commodity")
       .longOpt("commodity-mode")
-      .build();
+      .get();
         
     Option optAcctID = Option.builder("acct")
       .hasArg()
       .argName("acctid")
       .desc("Account-ID")
       .longOpt("account-id")
-      .build();
+      .get();
     
     Option optAcctName = Option.builder("an")
       .hasArg()
       .argName("name")
       .desc("Account name (or part of)")
       .longOpt("account-name")
-      .build();
+      .get();
       
     Option optCmdtyID = Option.builder("cmdty")
       .hasArg()
       .argName("ID")
       .desc("Commodity ID")
       .longOpt("commodity-id")
-      .build();
+      .get();
             
     Option optCmdtyISIN = Option.builder("is")
       .hasArg()
       .argName("isin")
       .desc("ISIN")
       .longOpt("isin")
-      .build();
+      .get();
           
     Option optCmdtyName = Option.builder("sn")
       .hasArg()
       .argName("name")
       .desc("Commodity name (or part of)")
       .longOpt("commodity-name")
-      .build();
+      .get();
             
     // The convenient ones
     Option optScript = Option.builder("sl")
       .desc("Script Mode")
       .longOpt("script")
-      .build();            
+      .get();            
           
     options = new Options();
     options.addOption(optFile);

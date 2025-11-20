@@ -86,7 +86,7 @@ public class GetVendInfo extends CommandLineTool
       .argName("file")
       .desc("GnuCash file")
       .longOpt("gnucash-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -94,32 +94,32 @@ public class GetVendInfo extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
         
     Option optVendID = Option.builder("vend")
       .hasArg()
       .argName("UUID")
       .desc("Vendor-ID")
       .longOpt("vendor-id")
-      .build();
+      .get();
     
     Option optVendName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Vendor name")
       .longOpt("name")
-      .build();
+      .get();
       
     // The convenient ones
     Option optShowJob = Option.builder("sjob")
       .desc("Show jobs")
       .longOpt("show-jobs")
-      .build();
+      .get();
               
     Option optShowBll = Option.builder("sbll")
       .desc("Show bills")
       .longOpt("show-bills")
-      .build();
+      .get();
           
     options = new Options();
     options.addOption(optFile);

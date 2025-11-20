@@ -133,7 +133,7 @@ public class GenDepotTrx extends CommandLineTool
       .argName("mode")
       .desc("Booking mode")
       .longOpt("book-mode")
-      .build();
+      .get();
     	        
     Option optFileIn = Option.builder("if")
       .required()
@@ -141,7 +141,7 @@ public class GenDepotTrx extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
         
     Option optFileOut = Option.builder("of")
       .required()
@@ -149,14 +149,14 @@ public class GenDepotTrx extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
     
     Option optListFile = Option.builder("blf")
       .hasArg()
       .argName("file")
       .desc("List file for bookings")
       .longOpt("booking-list-file")
-      .build();
+      .get();
     	    	        
     // ----------------------------
     // BEGIN Core parameters
@@ -166,21 +166,21 @@ public class GenDepotTrx extends CommandLineTool
       .argName("type")
       .desc("Transaction type")
       .longOpt("type")
-      .build();
+      .get();
     	      
     Option optStockAcct = Option.builder("stacct")
       .hasArg()
       .argName("acctid")
       .desc("Account-ID of stock account")
       .longOpt("stock-account-id")
-      .build();
+      .get();
       
     Option optIncomeAcct = Option.builder("inacct")
       .hasArg()
       .argName("acctid")
       .desc("Account-ID for (divid./distrib.) income")
       .longOpt("income-account-id")
-      .build();
+      .get();
     	      
     Option optExpensesAcctAmtList = Option.builder("eaa")
       .hasArg()
@@ -188,14 +188,14 @@ public class GenDepotTrx extends CommandLineTool
       .desc("Account-ID/amount pairs for expenses (taxes and fees), " + 
             "list separated by '|', pairs separated by ';'")
       .longOpt("expense-account-amounts")
-      .build();
+      .get();
       
     Option optOffsetAcct = Option.builder("osacct")
       .hasArg()
       .argName("acctid")
       .desc("Account-ID of offsetting account")
       .longOpt("offset-account-id")
-      .build();
+      .get();
     	      
     // ---
     
@@ -204,28 +204,28 @@ public class GenDepotTrx extends CommandLineTool
       .argName("number")
       .desc("Number of stocks to buy/sell")
       .longOpt("nof-stocks")
-      .build();
+      .get();
     	                
     Option optStockPrice = Option.builder("p")
       .hasArg()
       .argName("amount")
       .desc("Stock price")
       .longOpt("stock-price")
-      .build();
+      .get();
               
     Option optDivDistr = Option.builder("divdistgr")
       .hasArg()
       .argName("amount")
       .desc("Gross divid./distrib.")
       .longOpt("divid-distrib-gross")
-      .build();
+      .get();
 
     Option optSpltFact = Option.builder("fct")
       .hasArg()
       .argName("amount")
       .desc("Stock split factor")
       .longOpt("stock-split-factor")
-      .build();
+      .get();
 
     // ---
     
@@ -234,7 +234,7 @@ public class GenDepotTrx extends CommandLineTool
       .argName("datetime")
       .desc("Date posted")
       .longOpt("date-posted")
-      .build();
+      .get();
             
     // The convenient ones
     Option optDateFormat = Option.builder("df")
@@ -242,14 +242,14 @@ public class GenDepotTrx extends CommandLineTool
       .argName("date-format")
       .desc("Date format")
       .longOpt("date-format")
-      .build();
+      .get();
 
     Option optDescr = Option.builder("dscr")
       .hasArg()
       .argName("descr")
       .desc("Description")
       .longOpt("description")
-      .build();
+      .get();
               
     // END Core parameters
     // ----------------------------
@@ -257,19 +257,19 @@ public class GenDepotTrx extends CommandLineTool
     Option optSilent = Option.builder("sl")
       .desc("Silent mode")
       .longOpt("silent")
-      .build();
+      .get();
 
     Option optBatch = Option.builder("ba")
    	  .desc("Batch mode")
    	  .longOpt("batch")
-   	  .build();
+   	  .get();
 
     Option optOutFile = Option.builder("bof")
       .hasArg()
       .argName("name")
       .desc("Out-file name (for batch mode)")
       .longOpt("batch-out-file")
-      .build();
+      .get();
     
     // ---
     	    

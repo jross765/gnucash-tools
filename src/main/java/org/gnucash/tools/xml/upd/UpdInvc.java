@@ -88,7 +88,7 @@ public class UpdInvc extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -96,7 +96,7 @@ public class UpdInvc extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
       
     Option optID = Option.builder("id")
       .required()
@@ -104,49 +104,49 @@ public class UpdInvc extends CommandLineTool
       .argName("UUID")
       .desc("Invoice ID")
       .longOpt("invoice-id")
-      .build();
+      .get();
             
     Option optIncExpAcctID = Option.builder("ieacct")
       .hasArg()
       .argName("UUID")
       .desc("Income/expense account ID")
       .longOpt("income-expense-account-id")
-      .build();
+      .get();
             
     Option optRecvblPayblAcctID = Option.builder("rpacct")
       .hasArg()
       .argName("UUID")
       .desc("Receivable/payable account ID")
       .longOpt("receivable-payable-account-id")
-      .build();
+      .get();
             
     Option optNumber = Option.builder("no")
       .hasArg()
       .argName("number")
       .desc("Invoice number")
       .longOpt("number")
-      .build();
+      .get();
     
     Option optDescr = Option.builder("desc")
       .hasArg()
       .argName("descr")
       .desc("Invoice description")
       .longOpt("description")
-      .build();
+      .get();
     
     Option optOwnerID = Option.builder("own")
       .hasArg()
       .argName("UUID")
       .desc("Ownwer-ID")
       .longOpt("owner-id")
-      .build();
+      .get();
     	    
     Option optOpenDate = Option.builder("odat")
       .hasArg()
       .argName("date")
       .desc("Date opened")
       .longOpt("opened-date")
-      .build();
+      .get();
 
     // The convenient ones
     // ::EMPTY

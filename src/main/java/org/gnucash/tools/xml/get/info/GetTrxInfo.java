@@ -72,7 +72,7 @@ public class GetTrxInfo extends CommandLineTool
       .argName("file")
       .desc("GnuCash file")
       .longOpt("gnucash-file")
-      .build();
+      .get();
       
     Option optTrxID = Option.builder("trx")
       .required()
@@ -80,13 +80,13 @@ public class GetTrxInfo extends CommandLineTool
       .argName("UUID")
       .desc("Transaction-ID")
       .longOpt("transaction-id")
-      .build();
+      .get();
     
     // The convenient ones
     Option optShowSplt = Option.builder("ssplt")
       .desc("Show splits")
       .longOpt("show-splits")
-      .build();
+      .get();
           
     options = new Options();
     options.addOption(optFile);
@@ -134,15 +134,35 @@ public class GetTrxInfo extends CommandLineTool
       System.out.println("toString:        " + "ERROR");
     }
     
+    System.out.println("");
     try
     {
-      System.out.println("Balance:         " + trx.getBalanceFormatted());
+      System.out.println("Balance:         " + trx.getBalance());
     }
     catch ( Exception exc )
     {
       System.out.println("Balance:         " + "ERROR");
     }
     
+    try
+    {
+      System.out.println("Balance (exact): " + trx.getBalanceRat());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Balance (exact): " + "ERROR");
+    }
+    
+    try
+    {
+      System.out.println("Balance (fmt):   " + trx.getBalanceFormatted());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Balance (fmt):   " + "ERROR");
+    }
+    
+    System.out.println("");
     try
     {
       System.out.println("Cmdty/Curr:      " + trx.getCmdtyCurrID());

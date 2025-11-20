@@ -86,7 +86,7 @@ public class UpdCmdty extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -94,7 +94,7 @@ public class UpdCmdty extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -102,7 +102,7 @@ public class UpdCmdty extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
         
     Option optSubMode = Option.builder("sm")
       .hasArg()
@@ -110,7 +110,7 @@ public class UpdCmdty extends CommandLineTool
       .desc("Selection sub-mode " +
     		"(for <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " only)")
       .longOpt("sub-mode")
-      .build();
+      .get();
     	        
     Option optExchange = Option.builder("exch")
       .hasArg()
@@ -119,7 +119,7 @@ public class UpdCmdty extends CommandLineTool
    		    "(for <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " and " +
             "<sub-mode> = " + CmdLineHelper.CmdtySelectSubMode.EXCHANGE_TICKER + " only)")
       .longOpt("exchange")
-      .build();
+      .get();
     
     Option optTicker = Option.builder("tkr")
       .hasArg()
@@ -128,7 +128,7 @@ public class UpdCmdty extends CommandLineTool
    		    "(for <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " and " +
             "<sub-mode> = " + CmdLineHelper.CmdtySelectSubMode.EXCHANGE_TICKER + " only)")
       .longOpt("ticker")
-      .build();
+      .get();
     
     Option optMIC = Option.builder("mic")
       .hasArg()
@@ -137,7 +137,7 @@ public class UpdCmdty extends CommandLineTool
    		    "(for <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " and " +
             "<sub-mode> = " + CmdLineHelper.CmdtySelectSubMode.MIC + " only)")
       .longOpt("mic")
-      .build();
+      .get();
     	      
     Option optMICID = Option.builder("mid")
       .hasArg()
@@ -146,7 +146,7 @@ public class UpdCmdty extends CommandLineTool
    		    "(for <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " and " +
             "<sub-mode> = " + CmdLineHelper.CmdtySelectSubMode.MIC + " only)")
       .longOpt("mic-id")
-      .build();
+      .get();
     	    
     Option optSecIDType = Option.builder("sit")
       .hasArg()
@@ -155,7 +155,7 @@ public class UpdCmdty extends CommandLineTool
    		    "(for <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " and " +
             "<sub-mode> = " + CmdLineHelper.CmdtySelectSubMode.SEC_ID_TYPE + " only)")
       .longOpt("secid-type")
-      .build();
+      .get();
     	    	      
     Option optISIN = Option.builder("is")
       .hasArg()
@@ -165,28 +165,28 @@ public class UpdCmdty extends CommandLineTool
   		   	"( <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " and " +
             "<sub-mode> = " + CmdLineHelper.CmdtySelectSubMode.SEC_ID_TYPE + " ) only)")
       .longOpt("isin")
-      .build();
+      .get();
             
     Option optName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Security name")
       .longOpt("name")
-      .build();
+      .get();
     
 //    Option optDescr = Option.builder("desc")
 //      .hasArg()
 //      .argName("descr")
 //      .desc("Account description")
 //      .longOpt("description")
-//      .build();
+//      .get();
       
     Option optType = Option.builder("t")
       .hasArg()
       .argName("type")
       .desc("Account type")
       .longOpt("type")
-      .build();
+      .get();
         
     // The convenient ones
     // ::EMPTY

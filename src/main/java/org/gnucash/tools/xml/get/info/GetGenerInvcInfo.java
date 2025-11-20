@@ -87,7 +87,7 @@ public class GetGenerInvcInfo extends CommandLineTool
       .argName("file")
       .desc("GnuCash file")
       .longOpt("gnucash-file")
-      .build();
+      .get();
       
     Option optInvcID = Option.builder("invc")
       .required()
@@ -95,18 +95,18 @@ public class GetGenerInvcInfo extends CommandLineTool
       .argName("UUID")
       .desc("Invoice-ID")
       .longOpt("invoice-id")
-      .build();
+      .get();
     
     // The convenient ones
     Option optShowEntr = Option.builder("sentr")
       .desc("Show entries")
       .longOpt("show-entries")
-      .build();        
+      .get();        
             
     Option optShowTrx = Option.builder("strx")
       .desc("Show transactions")
       .longOpt("show-transactions")
-      .build();        
+      .get();        
             
     options = new Options();
     options.addOption(optFile);

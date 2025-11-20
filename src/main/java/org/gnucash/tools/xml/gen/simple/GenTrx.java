@@ -81,7 +81,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
         
     Option optFileOut = Option.builder("of")
       .required()
@@ -89,7 +89,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
         
     Option optFromAcctID = Option.builder("facct")
       .required()
@@ -97,7 +97,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
       .argName("UUID")
       .desc("Account-ID to be booked from")
       .longOpt("from-account-id")
-      .build();
+      .get();
       
     Option optToAcctID = Option.builder("tacct")
       .required()
@@ -105,7 +105,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
       .argName("UUID")
       .desc("Account-ID to be booked to")
       .longOpt("to-account-id")
-      .build();
+      .get();
       
     Option optAmount = Option.builder("amt")
       .required()
@@ -113,7 +113,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
       .argName("amount")
       .desc("Amount")
       .longOpt("amount")
-      .build();
+      .get();
               
     Option optQuantity = Option.builder("qty")
       .required()
@@ -121,7 +121,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
       .argName("quantity")
       .desc("Quantity")
       .longOpt("quantity")
-      .build();
+      .get();
                 
     Option optDatePosted = Option.builder("dtp")
       .required()
@@ -129,7 +129,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
       .argName("datetime")
       .desc("Date posted")
       .longOpt("date-posted")
-      .build();
+      .get();
             
     // The convenient ones
     Option optDescr = Option.builder("dscr")
@@ -137,7 +137,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
       .argName("descr")
       .desc("Description")
       .longOpt("description")
-      .build();
+      .get();
               
         
     options = new Options();

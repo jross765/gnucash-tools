@@ -78,7 +78,7 @@ public class GetEmplInfo extends CommandLineTool
       .argName("file")
       .desc("GnuCash file")
       .longOpt("gnucash-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -86,27 +86,27 @@ public class GetEmplInfo extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
         
     Option optEmplID = Option.builder("empl")
       .hasArg()
       .argName("UUID")
       .desc("Employee-ID")
       .longOpt("employee-id")
-      .build();
+      .get();
     
     Option optEmplName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Employee name")
       .longOpt("name")
-      .build();
+      .get();
       
     // The convenient ones
     Option optShowVch = Option.builder("svch")
       .desc("Show vouchers")
       .longOpt("show-vouchers")
-      .build();
+      .get();
           
     options = new Options();
     options.addOption(optFile);

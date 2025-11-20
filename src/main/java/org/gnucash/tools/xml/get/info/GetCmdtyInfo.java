@@ -87,7 +87,7 @@ public class GetCmdtyInfo extends CommandLineTool
       .argName("file")
       .desc("GnuCash file")
       .longOpt("gnucash-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -95,7 +95,7 @@ public class GetCmdtyInfo extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
         
     Option optSubMode = Option.builder("sm")
       .hasArg()
@@ -103,7 +103,7 @@ public class GetCmdtyInfo extends CommandLineTool
       .desc("Selection sub-mode " +
     		"(for <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " only)")
       .longOpt("sub-mode")
-      .build();
+      .get();
     	        
     Option optExchange = Option.builder("exch")
       .hasArg()
@@ -112,7 +112,7 @@ public class GetCmdtyInfo extends CommandLineTool
    		    "(for <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " and " +
             "<sub-mode> = " + CmdLineHelper.CmdtySelectSubMode.EXCHANGE_TICKER + " only)")
       .longOpt("exchange")
-      .build();
+      .get();
       
     Option optTicker = Option.builder("tkr")
       .hasArg()
@@ -121,7 +121,7 @@ public class GetCmdtyInfo extends CommandLineTool
    		    "(for <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " and " +
             "<sub-mode> = " + CmdLineHelper.CmdtySelectSubMode.EXCHANGE_TICKER + " only)")
       .longOpt("ticker")
-      .build();
+      .get();
     
     Option optMIC = Option.builder("mic")
       .hasArg()
@@ -130,7 +130,7 @@ public class GetCmdtyInfo extends CommandLineTool
    		    "(for <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " and " +
             "<sub-mode> = " + CmdLineHelper.CmdtySelectSubMode.MIC + " only)")
       .longOpt("mic")
-      .build();
+      .get();
     	      
     Option optMICID = Option.builder("mid")
       .hasArg()
@@ -139,7 +139,7 @@ public class GetCmdtyInfo extends CommandLineTool
    		    "(for <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " and " +
             "<sub-mode> = " + CmdLineHelper.CmdtySelectSubMode.MIC + " only)")
       .longOpt("mic-id")
-      .build();
+      .get();
     	    
     Option optSecIDType = Option.builder("sit")
       .hasArg()
@@ -148,7 +148,7 @@ public class GetCmdtyInfo extends CommandLineTool
    		    "(for <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " and " +
             "<sub-mode> = " + CmdLineHelper.CmdtySelectSubMode.SEC_ID_TYPE + " only)")
       .longOpt("secid-type")
-      .build();
+      .get();
     	    	      
     Option optISIN = Option.builder("is")
       .hasArg()
@@ -158,7 +158,7 @@ public class GetCmdtyInfo extends CommandLineTool
   		   	"( <mode> = " + CmdLineHelper.CmdtySelectMode.ID + " and " +
             "<sub-mode> = " + CmdLineHelper.CmdtySelectSubMode.SEC_ID_TYPE + " ) only)")
       .longOpt("isin")
-      .build();
+      .get();
         
     Option optName = Option.builder("n")
       .hasArg()
@@ -166,13 +166,13 @@ public class GetCmdtyInfo extends CommandLineTool
       .desc("Security name (full) " + 
   		    "(for <mode> = " + CmdLineHelper.CmdtySelectMode.NAME + " only)")
       .longOpt("name")
-      .build();
+      .get();
           
     // The convenient ones
     Option optShowQuote = Option.builder("squt")
       .desc("Show quotes")
       .longOpt("show-quotes")
-      .build();
+      .get();
             
     options = new Options();
     options.addOption(optFile);

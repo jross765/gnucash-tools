@@ -67,7 +67,7 @@ public class GetCurrTabInfo extends CommandLineTool
       .argName("file")
       .desc("GnuCash file")
       .longOpt("gnucash-file")
-      .build();
+      .get();
           
     // The convenient ones
     // ::EMPTY

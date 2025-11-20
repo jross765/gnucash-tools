@@ -81,7 +81,7 @@ public class GetGenerJobInfo extends CommandLineTool
       .argName("file")
       .desc("GnuCash file")
       .longOpt("gnucash-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -89,27 +89,27 @@ public class GetGenerJobInfo extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
         
     Option optJobID = Option.builder("job")
       .hasArg()
       .argName("UUID")
       .desc("Job-ID")
       .longOpt("job-id")
-      .build();
+      .get();
     
     Option optJobName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Job name")
       .longOpt("name")
-      .build();
+      .get();
       
     // The convenient ones
     Option optShowInvc = Option.builder("sinvc")
       .desc("Show invoices")
       .longOpt("show-invoices")
-      .build();
+      .get();
           
     options = new Options();
     options.addOption(optFile);

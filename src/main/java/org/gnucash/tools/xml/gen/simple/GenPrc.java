@@ -80,7 +80,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -88,7 +88,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
       
     Option optFromCmdtyCurr= Option.builder("f")
       .required()
@@ -96,7 +96,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
       .argName("cmdty/curr")
       .desc("From-commodity/currency")
       .longOpt("from-cmdty-curr")
-      .build();
+      .get();
           
     Option optToCurr = Option.builder("t")
       .required()
@@ -104,14 +104,14 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
       .argName("curr")
       .desc("To-currency")
       .longOpt("to-curr")
-      .build();
+      .get();
     
     Option optDateFormat = Option.builder("df")
       .hasArg()
       .argName("date-format")
       .desc("Date format")
       .longOpt("date-format")
-      .build();
+      .get();
             
     Option optDate = Option.builder("dat")
       .required()
@@ -119,7 +119,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
       .argName("date")
       .desc("Date")
       .longOpt("date")
-      .build();
+      .get();
           
     Option optValue = Option.builder("v")
       .required()
@@ -127,7 +127,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
       .argName("value")
       .desc("Value")
       .longOpt("value")
-      .build();
+      .get();
             
     // The convenient ones
     Option optSource = Option.builder("src")
@@ -135,7 +135,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
       .argName("source")
       .desc("Source")
       .longOpt("source")
-      .build();
+      .get();
           
     options = new Options();
     options.addOption(optFileIn);

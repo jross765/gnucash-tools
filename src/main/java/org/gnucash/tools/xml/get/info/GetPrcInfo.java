@@ -82,7 +82,7 @@ public class GetPrcInfo extends CommandLineTool
       .argName("file")
       .desc("GnuCash file")
       .longOpt("gnucash-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -90,14 +90,14 @@ public class GetPrcInfo extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
     	      
     Option optID = Option.builder("prc")
       .hasArg()
       .argName("UUID")
       .desc("Price ID (for mode = '" + CmdLineHelper.PrcSelectMode.ID + "' only)")
       .longOpt("price-id")
-      .build();
+      .get();
     	          
     // ::TODO:
     //  - Provide for selecting a currency as well
@@ -110,21 +110,21 @@ public class GetPrcInfo extends CommandLineTool
       .argName("cmdtyid")
       .desc("Commodity ID (qualified) (for mode = '" + CmdLineHelper.PrcSelectMode.CMDTY_DATE + "' only)")
       .longOpt("commodity-id")
-      .build();
+      .get();
     	    	          
     Option optDateFormat = Option.builder("df")
       .hasArg()
       .argName("date-format")
       .desc("Date format")
       .longOpt("date-format")
-      .build();
+      .get();
     	    	            
     Option optDate = Option.builder("dat")
       .hasArg()
       .argName("date")
       .desc("Date")
       .longOpt("date")
-      .build();
+      .get();
     	    	          
     // The convenient ones
     // ::EMPTY

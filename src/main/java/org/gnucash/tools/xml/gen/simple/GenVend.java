@@ -68,7 +68,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenVend.class);
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -76,7 +76,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenVend.class);
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
       
     Option optName = Option.builder("n")
       .required()
@@ -84,7 +84,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenVend.class);
       .argName("name")
       .desc("Vendor name")
       .longOpt("name")
-      .build();
+      .get();
     
     // The convenient ones
           
