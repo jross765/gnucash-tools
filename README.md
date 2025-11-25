@@ -54,13 +54,13 @@ from one another in the course of the future releases to come.
 Created and added a number of tools:
 
 * Package `...get`: Tools for getting information from GnuCash files:
-	* package `...gen.simple`: Tools that generate exactly one entry of a given entity, with virtually no business logic involved (i.e., the user provides all data as is). No convenience.
-	* package `...gen.complex`: Tools that generate one or more entries of one of more given entities, with business logic involved. Convenience where possible.
+	* package `...get.list`: Simple tools that print an unfiltered list of all entries of a given entity. Rather low-level.
+	* package `...get.info`: Simple tools that print the information of one entry of one entity. No bells, no whistles. A little bit of convenience, however, in how selecting the entry (not just by ID).
+	* package `...get.sonstige`: Specialized tool (currently, only one) that retrieve specific information from the GnuCash file.
 
 * Package `...gen`: Tools for generating new entries in GnuCash files:
-	* package `...gen.list`: Simple tools that print an unfiltered list of all entries of a given entity. Rather low-level.
-	* package `...gen.info`: Simple tools that print the information of one entry of one entity. No bells, no whistles. A little bit of convenience, however, in how selecting the entry (not just by ID).
-	* package `...gen.sonstige`: Specialized tool (currently, only one) that retrieve specific information from the GnuCash file.
+	* package `...gen.simple`: Tools that generate exactly one entry of a given entity, with virtually no business logic involved (i.e., the user provides all data as is). No convenience.
+	* package `...gen.complex`: Tools that generate one or more entries of one of more given entities, with business logic involved. Convenience where possible.
 
 * Package `...upd`: Tools for updating entries in GnuCash files:
 
