@@ -11,7 +11,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.log4j.Logger;
 import org.gnucash.api.read.GnuCashEmployee;
 import org.gnucash.api.read.impl.GnuCashEmployeeImpl;
 import org.gnucash.api.write.GnuCashWritableEmployee;
@@ -19,8 +18,9 @@ import org.gnucash.api.write.impl.GnuCashWritableEmployeeImpl;
 import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
 import org.gnucash.api.write.spec.GnuCashWritableEmployeeVoucher;
 import org.gnucash.base.basetypes.simple.GCshEmplID;
-import org.gnucash.base.basetypes.simple.GCshID;
 import org.gnucash.tools.CommandLineTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.beanbase.TooManyEntriesFoundException;
@@ -31,7 +31,7 @@ import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 public class TestGetEmplInfo extends CommandLineTool
 {
   // Logger
-  private static Logger logger = Logger.getLogger(TestGetEmplInfo.class);
+  private static Logger logger = LoggerFactory.getLogger(TestGetEmplInfo.class);
   
   // private static PropertiesConfiguration cfg = null;
   private static Options options;

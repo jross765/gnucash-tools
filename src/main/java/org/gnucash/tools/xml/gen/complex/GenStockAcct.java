@@ -58,7 +58,7 @@ public class GenStockAcct extends CommandLineTool
   private static GCshAcctID            acctID       = null;
   private static String                acctName     = null;
   
-  private static Helper.CmdtySecMode   cmdtyMode      = null;
+  private static Helper.CmdtySecSingleSelMode   cmdtyMode      = null;
   private static GCshCmdtyID_SecIdType cmdtyID      = null;
   private static String                isin         = null;
   private static String                cmdtyName    = null;
@@ -263,7 +263,7 @@ public class GenStockAcct extends CommandLineTool
   {
     GnuCashCommodity cmdty = null;
     
-    if ( cmdtyMode == Helper.CmdtySecMode.ID )
+    if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ID )
     {
       cmdty = gcshFile.getCommodityByQualifID(cmdtyID);
       if ( cmdty == null )
@@ -273,7 +273,7 @@ public class GenStockAcct extends CommandLineTool
         throw new NoEntryFoundException();
       }
     }
-    else if ( cmdtyMode == Helper.CmdtySecMode.ISIN )
+    else if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ISIN )
     {
       cmdty = gcshFile.getCommodityByXCode(isin);
       if ( cmdty == null )
@@ -283,7 +283,7 @@ public class GenStockAcct extends CommandLineTool
         throw new NoEntryFoundException();
       }
     }
-    else if ( cmdtyMode == Helper.CmdtySecMode.NAME )
+    else if ( cmdtyMode == Helper.CmdtySecSingleSelMode.NAME )
     {
       Collection<GnuCashCommodity> cmdtyList = gcshFile.getCommoditiesByName(cmdtyName); 
       if ( cmdtyList.size() == 0 )
@@ -399,13 +399,7 @@ public class GenStockAcct extends CommandLineTool
     // <commodity-mode>
     try
     {
-      cmdtyMode = Helper.CmdtySecMode.valueOf(cmdLine.getOptionValue("commodity-mode"));
-      if ( cmdtyMode == Helper.CmdtySecMode.TYPE )
-      {
-    	  // sic, not valid
-          System.err.println("Could not parse <commodity-mode>");
-          throw new InvalidCommandLineArgsException();
-      }
+      cmdtyMode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("commodity-mode"));
     }
     catch ( Exception exc )
     {
@@ -481,9 +475,9 @@ public class GenStockAcct extends CommandLineTool
     // <commodity-id>
     if ( cmdLine.hasOption("commodity-id") )
     {
-      if ( cmdtyMode != Helper.CmdtySecMode.ID )
+      if ( cmdtyMode != Helper.CmdtySecSingleSelMode.ID )
       {
-        System.err.println("<commodity-id> must only be set with <commodity-mode> = '" + Helper.CmdtySecMode.ID.toString() + "'");
+        System.err.println("<commodity-id> must only be set with <commodity-mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
       
@@ -499,9 +493,9 @@ public class GenStockAcct extends CommandLineTool
     }
     else
     {
-      if ( cmdtyMode == Helper.CmdtySecMode.ID )
+      if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ID )
       {
-        System.err.println("<commodity-id> must be set with <commodity-mode> = '" + Helper.CmdtySecMode.ID.toString() + "'");
+        System.err.println("<commodity-id> must be set with <commodity-mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
     }
@@ -512,9 +506,9 @@ public class GenStockAcct extends CommandLineTool
     // <isin>
     if ( cmdLine.hasOption("isin") )
     {
-      if ( cmdtyMode != Helper.CmdtySecMode.ISIN )
+      if ( cmdtyMode != Helper.CmdtySecSingleSelMode.ISIN )
       {
-        System.err.println("<isin> must only be set with <commodity-mode> = '" + Helper.CmdtySecMode.ISIN.toString() + "'");
+        System.err.println("<isin> must only be set with <commodity-mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
       
@@ -530,9 +524,9 @@ public class GenStockAcct extends CommandLineTool
     }
     else
     {
-      if ( cmdtyMode == Helper.CmdtySecMode.ISIN )
+      if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ISIN )
       {
-        System.err.println("<isin> must be set with <commodity-mode> = '" + Helper.CmdtySecMode.ISIN.toString() + "'");
+        System.err.println("<isin> must be set with <commodity-mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
     }
@@ -543,9 +537,9 @@ public class GenStockAcct extends CommandLineTool
     // <commodity-name>
     if ( cmdLine.hasOption("commodity-name") )
     {
-      if ( cmdtyMode != Helper.CmdtySecMode.NAME )
+      if ( cmdtyMode != Helper.CmdtySecSingleSelMode.NAME )
       {
-        System.err.println("<commodity-name> must only be set with <commodity-mode> = '" + Helper.CmdtySecMode.NAME.toString() + "'");
+        System.err.println("<commodity-name> must only be set with <commodity-mode> = '" + Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
       
@@ -561,9 +555,9 @@ public class GenStockAcct extends CommandLineTool
     }
     else
     {
-      if ( cmdtyMode == Helper.CmdtySecMode.NAME )
+      if ( cmdtyMode == Helper.CmdtySecSingleSelMode.NAME )
       {
-        System.err.println("<commodity-name> must be set with <commodity-mode> = '" + Helper.CmdtySecMode.NAME.toString() + "'");
+        System.err.println("<commodity-name> must be set with <commodity-mode> = '" + Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
     }
@@ -585,10 +579,9 @@ public class GenStockAcct extends CommandLineTool
 
     System.out.println("");
     System.out.println("Valid values for <commodity-mode>:");
-    for ( Helper.CmdtySecMode elt : Helper.CmdtySecMode.values() )
+    for ( Helper.CmdtySecSingleSelMode elt : Helper.CmdtySecSingleSelMode.values() )
     {
-      if ( elt != Helper.CmdtySecMode.TYPE ) // sic
-        System.out.println(" - " + elt);
+    	System.out.println(" - " + elt);
     }
   }
 }

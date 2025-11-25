@@ -10,7 +10,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.gnucash.api.read.GnuCashTransaction;
 import org.gnucash.api.read.GnuCashTransactionSplit;
 import org.gnucash.api.read.impl.GnuCashFileImpl;
 import org.gnucash.base.basetypes.simple.GCshSpltID;
@@ -120,6 +119,15 @@ public class GetTrxSpltInfo extends CommandLineTool
     
     try
     {
+      System.out.println("Transaction ID:   " + splt.getTransactionID());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Transaction ID:   " + "ERROR");
+    }
+    
+    try
+    {
       System.out.println("Lot ID:           " + splt.getLotID());
     }
     catch ( Exception exc )
@@ -154,15 +162,6 @@ public class GetTrxSpltInfo extends CommandLineTool
       System.out.println("Recon state:      " + "ERROR");
     }
 
-    try
-    {
-      System.out.println("Transaction ID:   " + splt.getTransactionID());
-    }
-    catch ( Exception exc )
-    {
-      System.out.println("Transaction ID:   " + "ERROR");
-    }
-    
     try
     {
       System.out.println("Account ID:       " + splt.getAccountID());
@@ -236,20 +235,6 @@ public class GetTrxSpltInfo extends CommandLineTool
     catch ( Exception exc )
     {
       System.out.println("Description:      " + "ERROR");
-    }
-  }
-
-  // -----------------------------------------------------------------
-
-  @SuppressWarnings("unused")
-private void showLots(GnuCashTransaction trx)
-  {
-    System.out.println("");
-    System.out.println("Splits:");
-    
-    for ( GnuCashTransactionSplit splt : trx.getSplits() )
-    {
-      System.out.println(" - " + splt.toString());
     }
   }
 

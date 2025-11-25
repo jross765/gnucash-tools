@@ -153,7 +153,7 @@ public class GetAcctInfo extends CommandLineTool
       acct = gcshFile.getAccountByID(acctID);
       if ( acct == null )
       {
-        System.err.println("Found no account with that ID");
+        System.err.println("Found no account with this ID");
         throw new NoEntryFoundException();
       }
     }

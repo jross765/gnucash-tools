@@ -10,7 +10,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.log4j.Logger;
 import org.gnucash.api.read.GnuCashGenerInvoice;
 import org.gnucash.api.read.GnuCashGenerInvoiceEntry;
 import org.gnucash.api.read.GnuCashTransaction;
@@ -31,8 +30,9 @@ import org.gnucash.api.write.impl.spec.GnuCashWritableEmployeeVoucherImpl;
 import org.gnucash.api.write.impl.spec.GnuCashWritableJobInvoiceImpl;
 import org.gnucash.api.write.impl.spec.GnuCashWritableVendorBillImpl;
 import org.gnucash.base.basetypes.simple.GCshGenerInvcID;
-import org.gnucash.base.basetypes.simple.GCshID;
 import org.gnucash.tools.CommandLineTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
@@ -40,7 +40,7 @@ import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 public class TestGetGenerInvcInfo extends CommandLineTool
 {
   // Logger
-  private static Logger logger = Logger.getLogger(TestGetGenerInvcInfo.class);
+  private static Logger logger = LoggerFactory.getLogger(TestGetGenerInvcInfo.class);
   
   // private static PropertiesConfiguration cfg = null;
   private static Options options;

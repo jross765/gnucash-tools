@@ -36,7 +36,7 @@ public class GetPrcList extends CommandLineTool
   private static Options options;
   
   private static String                gcshFileName    = null;
-  private static Helper.CmdtySecMode   cmdtyMode       = null;
+  private static Helper.CmdtySecSingleSelMode   cmdtyMode       = null;
   private static GCshCmdtyCurrID       fromCmdtyCurrID = null;
   private static String                fromCmdtyIsin   = null;
   private static String                fromCmdtyName   = null;
@@ -127,12 +127,12 @@ public class GetPrcList extends CommandLineTool
   {
     GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName));
     
-    if ( cmdtyMode == Helper.CmdtySecMode.ISIN )
+    if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ISIN )
     {
         GnuCashCommodity cmdty = gcshFile.getCommodityByXCode(fromCmdtyIsin);
     	fromCmdtyCurrID = cmdty.getQualifID();
     }
-    else if ( cmdtyMode == Helper.CmdtySecMode.NAME )
+    else if ( cmdtyMode == Helper.CmdtySecSingleSelMode.NAME )
     {
     	GnuCashCommodity cmdty = gcshFile.getCommodityByNameUniq(fromCmdtyName);
     	fromCmdtyCurrID = cmdty.getQualifID();
@@ -188,7 +188,7 @@ public class GetPrcList extends CommandLineTool
     // <mode>
     try
     {
-      cmdtyMode = Helper.CmdtySecMode.valueOf(cmdLine.getOptionValue("mode"));
+      cmdtyMode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("mode"));
     }
     catch ( Exception exc )
     {
@@ -199,9 +199,9 @@ public class GetPrcList extends CommandLineTool
     // <from-cmdty-curr>
     if ( cmdLine.hasOption("from-cmdty-curr") )
     {
-      if ( cmdtyMode != Helper.CmdtySecMode.ID )
+      if ( cmdtyMode != Helper.CmdtySecSingleSelMode.ID )
       {
-        System.err.println("<from-cmdty-curr> must only be set with <mode> = '" + Helper.CmdtySecMode.ID.toString() + "'");
+        System.err.println("<from-cmdty-curr> must only be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
       
@@ -217,9 +217,9 @@ public class GetPrcList extends CommandLineTool
     }
     else
     {
-      if ( cmdtyMode == Helper.CmdtySecMode.ID )
+      if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ID )
       {
-        System.err.println("<from-cmdty-curr> must be set with <mode> = '" + Helper.CmdtySecMode.ID.toString() + "'");
+        System.err.println("<from-cmdty-curr> must be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
     }
@@ -230,9 +230,9 @@ public class GetPrcList extends CommandLineTool
     // <isin>
     if ( cmdLine.hasOption("isin") )
     {
-      if ( cmdtyMode != Helper.CmdtySecMode.ISIN )
+      if ( cmdtyMode != Helper.CmdtySecSingleSelMode.ISIN )
       {
-        System.err.println("<isin> must only be set with <mode> = '" + Helper.CmdtySecMode.ISIN.toString() + "'");
+        System.err.println("<isin> must only be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
       
@@ -248,9 +248,9 @@ public class GetPrcList extends CommandLineTool
     }
     else
     {
-      if ( cmdtyMode == Helper.CmdtySecMode.ISIN )
+      if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ISIN )
       {
-        System.err.println("<isin> must be set with <mode> = '" + Helper.CmdtySecMode.ISIN.toString() + "'");
+        System.err.println("<isin> must be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
     }
@@ -261,9 +261,9 @@ public class GetPrcList extends CommandLineTool
     // <name>
     if ( cmdLine.hasOption("name") )
     {
-      if ( cmdtyMode != Helper.CmdtySecMode.NAME )
+      if ( cmdtyMode != Helper.CmdtySecSingleSelMode.NAME )
       {
-        System.err.println("<name> must only be set with <mode> = '" + Helper.CmdtySecMode.NAME.toString() + "'");
+        System.err.println("<name> must only be set with <mode> = '" + Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
       
@@ -279,9 +279,9 @@ public class GetPrcList extends CommandLineTool
     }
     else
     {
-      if ( cmdtyMode == Helper.CmdtySecMode.NAME )
+      if ( cmdtyMode == Helper.CmdtySecSingleSelMode.NAME )
       {
-        System.err.println("<name> must be set with <mode> = '" + Helper.CmdtySecMode.NAME.toString() + "'");
+        System.err.println("<name> must be set with <mode> = '" + Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
     }
@@ -298,7 +298,7 @@ public class GetPrcList extends CommandLineTool
     
     System.out.println("");
     System.out.println("Valid values for <mode>:");
-    for ( Helper.CmdtySecMode elt : Helper.CmdtySecMode.values() )
+    for ( Helper.CmdtySecSingleSelMode elt : Helper.CmdtySecSingleSelMode.values() )
       System.out.println(" - " + elt);
   }
 }

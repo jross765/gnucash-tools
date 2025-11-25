@@ -11,7 +11,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.log4j.Logger;
 import org.gnucash.api.read.GnuCashGenerInvoice;
 import org.gnucash.api.read.GnuCashVendor;
 import org.gnucash.api.read.aux.GCshBillTerms;
@@ -26,6 +25,8 @@ import org.gnucash.base.basetypes.simple.GCshVendID;
 import org.gnucash.base.basetypes.simple.aux.GCshBllTrmID;
 import org.gnucash.base.basetypes.simple.aux.GCshTaxTabID;
 import org.gnucash.tools.CommandLineTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.beanbase.TooManyEntriesFoundException;
@@ -36,7 +37,7 @@ import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 public class TestGetVendInfo extends CommandLineTool
 {
   // Logger
-  private static Logger logger = Logger.getLogger(TestGetVendInfo.class);
+  private static Logger logger = LoggerFactory.getLogger(TestGetVendInfo.class);
   
   // private static PropertiesConfiguration cfg = null;
   private static Options options;

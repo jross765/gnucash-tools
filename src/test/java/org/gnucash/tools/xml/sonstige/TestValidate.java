@@ -19,8 +19,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.log4j.Logger;
 import org.gnucash.tools.CommandLineTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
@@ -29,7 +30,7 @@ import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 public class TestValidate extends CommandLineTool
 {
   // Logger
-  private static Logger logger = Logger.getLogger(TestValidate.class);
+  private static Logger logger = LoggerFactory.getLogger(TestValidate.class);
   
   // private static PropertiesConfiguration cfg = null;
   private static Options options;

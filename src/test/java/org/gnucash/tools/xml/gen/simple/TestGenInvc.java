@@ -13,7 +13,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.log4j.Logger;
 import org.gnucash.api.read.GnuCashAccount;
 import org.gnucash.api.read.GnuCashCustomer;
 import org.gnucash.api.read.GnuCashEmployee;
@@ -41,6 +40,8 @@ import org.gnucash.base.basetypes.simple.GCshVendID;
 import org.gnucash.tools.CommandLineTool;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xyz.schnorxoborx.base.beanbase.AccountNotFoundException;
 import xyz.schnorxoborx.base.beanbase.WrongAccountTypeException;
@@ -52,7 +53,7 @@ import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 public class TestGenInvc extends CommandLineTool
 {
   // Logger
-  private static Logger logger = Logger.getLogger(TestGenInvc.class);
+  private static Logger logger = LoggerFactory.getLogger(TestGenInvc.class);
   
   // private static PropertiesConfiguration cfg = null;
   private static Options options;

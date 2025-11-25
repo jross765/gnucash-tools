@@ -10,7 +10,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.log4j.Logger;
 import org.gnucash.api.read.GnuCashGenerInvoice;
 import org.gnucash.api.write.GnuCashWritableCustomer;
 import org.gnucash.api.write.GnuCashWritableEmployee;
@@ -27,6 +26,8 @@ import org.gnucash.base.basetypes.simple.GCshEmplID;
 import org.gnucash.base.basetypes.simple.GCshGenerJobID;
 import org.gnucash.base.basetypes.simple.GCshVendID;
 import org.gnucash.tools.CommandLineTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
@@ -34,7 +35,7 @@ import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 public class TestGetWrtblInvoices extends CommandLineTool
 {
   // Logger
-  private static Logger logger = Logger.getLogger(TestGetWrtblInvoices.class);
+  private static Logger logger = LoggerFactory.getLogger(TestGetWrtblInvoices.class);
   
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
