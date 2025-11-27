@@ -1,6 +1,7 @@
 package org.gnucash.tools.xml.gen.simple;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -8,10 +9,10 @@ import java.time.temporal.ChronoUnit;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashAccount;
 import org.gnucash.api.read.GnuCashCustomer;
@@ -732,7 +733,15 @@ public class TestGenInvc extends CommandLineTool
   @Override
   protected void printUsage()
   {
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp( "TestGenInvc", options );
+	HelpFormatter formatter = HelpFormatter.builder().get();
+	try
+	{
+		formatter.printHelp( "TestGenInvc", "", options, "", true );
+	}
+	catch ( IOException e )
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
   }
 }

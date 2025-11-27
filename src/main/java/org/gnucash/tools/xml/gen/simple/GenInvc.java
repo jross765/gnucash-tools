@@ -1,16 +1,17 @@
 package org.gnucash.tools.xml.gen.simple;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashAccount;
 import org.gnucash.api.read.GnuCashCustomer;
@@ -680,7 +681,15 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenInvc.class);
   @Override
   protected void printUsage()
   {
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp( "GenInvc", options );
+	HelpFormatter formatter = HelpFormatter.builder().get();
+	try
+	{
+		formatter.printHelp( "GenInvc", "", options, "", true );
+	}
+	catch ( IOException e )
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
   }
 }

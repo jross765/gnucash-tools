@@ -14,10 +14,10 @@ import java.util.Collection;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashAccount;
 import org.gnucash.api.read.GnuCashTransactionSplit;
@@ -1293,8 +1293,16 @@ public class GenDepotTrx extends CommandLineTool
   @Override
   protected void printUsage()
   {
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp( "GenDepotTrx", options );
+	HelpFormatter formatter = HelpFormatter.builder().get();
+	try
+	{
+		formatter.printHelp( "GenDepotTrx", "", options, "", true );
+	}
+	catch ( IOException e )
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
     
     System.err.println("");
     System.err.println("Valid values for <mode>:");

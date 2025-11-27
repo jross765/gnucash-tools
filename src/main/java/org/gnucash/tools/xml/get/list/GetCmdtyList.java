@@ -1,15 +1,16 @@
 package org.gnucash.tools.xml.get.list;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashCommodity;
 import org.gnucash.api.read.impl.GnuCashFileImpl;
@@ -33,7 +34,7 @@ public class GetCmdtyList extends CommandLineTool
   private static Options options;
   
   private static String               gcshFileName = null;
-  private static Helper.CmdtyListMode mode         = null; 
+  private static Helper.CmdtySecListSelMode mode         = null; 
   private static String               name         = null;
   
   private static boolean scriptMode = false; // ::TODO
@@ -107,9 +108,9 @@ public class GetCmdtyList extends CommandLineTool
     GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName));
     
     Collection<GnuCashCommodity> cmdtyList = null; 
-    if ( mode == Helper.CmdtyListMode.ALL )
+    if ( mode == Helper.CmdtySecListSelMode.ALL )
         cmdtyList = gcshFile.getCommodities();
-    else if ( mode == Helper.CmdtyListMode.NAME )
+    else if ( mode == Helper.CmdtySecListSelMode.NAME )
     	cmdtyList = gcshFile.getCommoditiesByName(name, true);
 
     if ( cmdtyList.size() == 0 ) 
@@ -161,7 +162,7 @@ public class GetCmdtyList extends CommandLineTool
     // <mode>
     try
     {
-      mode = Helper.CmdtyListMode.valueOf(cmdLine.getOptionValue("mode"));
+      mode = Helper.CmdtySecListSelMode.valueOf(cmdLine.getOptionValue("mode"));
     }
     catch ( Exception exc )
     {
@@ -172,9 +173,9 @@ public class GetCmdtyList extends CommandLineTool
     // <name>
     if ( cmdLine.hasOption( "name" ) )
     {
-    	if ( mode != Helper.CmdtyListMode.NAME )
+    	if ( mode != Helper.CmdtySecListSelMode.NAME )
     	{
-            System.err.println("Error: <name> must only be set with <mode> = '" + Helper.CmdtyListMode.NAME + "'");
+            System.err.println("Error: <name> must only be set with <mode> = '" + Helper.CmdtySecListSelMode.NAME + "'");
             throw new InvalidCommandLineArgsException();
     	}
     	
@@ -190,9 +191,9 @@ public class GetCmdtyList extends CommandLineTool
     }
     else
     {
-    	if ( mode == Helper.CmdtyListMode.NAME )
+    	if ( mode == Helper.CmdtySecListSelMode.NAME )
     	{
-            System.err.println("Error: <name> must be set with <mode> = '" + Helper.CmdtyListMode.NAME + "'");
+            System.err.println("Error: <name> must be set with <mode> = '" + Helper.CmdtySecListSelMode.NAME + "'");
             throw new InvalidCommandLineArgsException();
     	}
     	
@@ -206,12 +207,20 @@ public class GetCmdtyList extends CommandLineTool
   @Override
   protected void printUsage()
   {
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp( "GetCmdtyList", options );
+	HelpFormatter formatter = HelpFormatter.builder().get();
+	try
+	{
+		formatter.printHelp( "GetCmdtyList", "", options, "", true );
+	}
+	catch ( IOException e )
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
     
     System.out.println("");
     System.out.println("Valid values for <mode>:");
-    for ( Helper.CmdtyListMode elt : Helper.CmdtyListMode.values() )
+    for ( Helper.CmdtySecListSelMode elt : Helper.CmdtySecListSelMode.values() )
       System.out.println(" - " + elt);
   }
 }

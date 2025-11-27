@@ -1,14 +1,15 @@
 package org.gnucash.tools.xml.get.info;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashGenerInvoice;
 import org.gnucash.api.read.GnuCashGenerInvoiceEntry;
@@ -519,7 +520,15 @@ public class TestGetGenerInvcInfo extends CommandLineTool
   @Override
   protected void printUsage()
   {
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp( "TestGetGenerInvcInfo", options );
+	HelpFormatter formatter = HelpFormatter.builder().get();
+	try
+	{
+		formatter.printHelp( "TestGetGenerInvcInfo", "", options, "", true );
+	}
+	catch ( IOException e )
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
   }
 }

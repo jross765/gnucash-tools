@@ -1,15 +1,16 @@
 package org.gnucash.tools.xml.get.list;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashVendor;
 import org.gnucash.api.read.impl.GnuCashFileImpl;
@@ -35,7 +36,7 @@ public class GetVendList extends CommandLineTool
   private static String               gcshFileName = null;
   private static Helper.CustEmplVendListMode mode  = null; 
   @SuppressWarnings("unused")
-private static String               isin         = null;
+  private static String               isin         = null;
   private static String               name         = null;
   
   private static boolean scriptMode = false; // ::TODO
@@ -210,8 +211,16 @@ private static String               isin         = null;
   @Override
   protected void printUsage()
   {
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp( "GetVendList", options );
+	HelpFormatter formatter = HelpFormatter.builder().get();
+	try
+	{
+		formatter.printHelp( "GetVendList", "", options, "", true );
+	}
+	catch ( IOException e )
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
     
     System.out.println("");
     System.out.println("Valid values for <mode>:");
