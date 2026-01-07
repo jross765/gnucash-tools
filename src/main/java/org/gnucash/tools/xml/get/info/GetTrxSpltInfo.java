@@ -96,7 +96,7 @@ public class GetTrxSpltInfo extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName));
+    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
     
     GnuCashTransactionSplit splt = gcshFile.getTransactionSplitByID(spltID);
     

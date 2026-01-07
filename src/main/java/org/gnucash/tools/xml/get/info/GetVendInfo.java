@@ -140,7 +140,7 @@ public class GetVendInfo extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName));
+    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
     
     GnuCashVendor vend = null;
     if ( mode == Helper.Mode.ID )

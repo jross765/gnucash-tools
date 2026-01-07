@@ -242,7 +242,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenInvc.class);
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName));
+    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
 
     instantiateAccounts(gcshFile);
     

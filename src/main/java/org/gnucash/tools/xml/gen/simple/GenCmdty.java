@@ -136,7 +136,7 @@ public class GenCmdty extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName));
+    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
     
     // 1) Check whether there already is a commodity with that ISIN
     // 1.1) Variant 1: Qualif. ID (non-technical, as opposed to all other IDs in GnuCash)

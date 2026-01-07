@@ -109,7 +109,7 @@ public class GetVendList extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName));
+    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
     
     Collection<GnuCashVendor> cmdtyList = null; 
     if ( mode == Helper.CustEmplVendListMode.ALL )

@@ -138,7 +138,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenAcct.class);
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName));
+    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
 
     if ( ! isPlausiCheckOK(gcshFile) ) {
     	System.err.println("Did not pass plausi checks");

@@ -148,7 +148,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenJob.class);
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName));
+    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
     
     GnuCashGenerJob job = null;
     if ( type == JobType.CUSTOMER )

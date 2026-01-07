@@ -190,7 +190,7 @@ public class GenStockAcct extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-	  gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName));
+	  gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
 
 	  GnuCashWritableAccount acct = getSecAccount();
 	  GnuCashCommodity cmdty = getCommodity();

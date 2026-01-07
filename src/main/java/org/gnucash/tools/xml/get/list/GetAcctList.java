@@ -116,7 +116,7 @@ public class GetAcctList extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName));
+    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
     
     Collection<GnuCashAccount> acctList = null; 
     if ( mode == Helper.AcctListMode.ALL )

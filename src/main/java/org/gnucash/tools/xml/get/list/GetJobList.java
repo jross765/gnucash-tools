@@ -117,7 +117,7 @@ public class GetJobList extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName));
+    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
     
     Collection<GnuCashGenerJob> jobList = null; 
     if ( mode == Helper.JobListMode.ALL )

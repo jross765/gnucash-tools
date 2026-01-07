@@ -104,7 +104,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenCust.class);
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName));
+    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
     
     GnuCashWritableCustomer cust = gcshFile.createWritableCustomer(name);
     cust.setNumber(GnuCashCustomerImpl.getNewNumber(cust));

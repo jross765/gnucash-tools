@@ -158,7 +158,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName));
+    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
     
     GnuCashWritablePrice prc = gcshFile.createWritablePrice(fromCmdtyCurrID, toCurrID, date);
     // prc.setFromCmdtyCurrQualifID(fromCmdtyCurrID);

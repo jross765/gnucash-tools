@@ -306,7 +306,7 @@ public class GenDepotTrx extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName));
+    gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
     
     if ( mode == BookMode.SINGLE_TRX )
     {

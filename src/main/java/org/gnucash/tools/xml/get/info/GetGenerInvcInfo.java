@@ -125,7 +125,7 @@ public class GetGenerInvcInfo extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName));
+    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
     
     GnuCashGenerInvoice invc = gcshFile.getGenerInvoiceByID(invcID);
     

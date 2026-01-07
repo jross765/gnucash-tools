@@ -161,7 +161,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName));
+    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
     
     System.err.println("Account name (from): '" + gcshFile.getAccountByID(fromAcctID).getQualifiedName() + "'");
     System.err.println("Account name (to):   '" + gcshFile.getAccountByID(toAcctID).getQualifiedName() + "'");

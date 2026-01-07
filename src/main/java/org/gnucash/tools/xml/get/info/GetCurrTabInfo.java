@@ -86,7 +86,7 @@ public class GetCurrTabInfo extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName));
+    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
 
     ComplexPriceTable tab = gcshFile.getCurrencyTable();
     System.out.println(tab.toString());

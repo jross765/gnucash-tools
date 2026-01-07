@@ -196,7 +196,7 @@ public class GetTrxSpltList extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName));
+    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
     
     // 1) Set filter
     TransactionSplitFilter spltFlt = setFilter();
