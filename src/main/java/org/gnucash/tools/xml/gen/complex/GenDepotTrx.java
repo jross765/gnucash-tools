@@ -298,7 +298,7 @@ public class GenDepotTrx extends CommandLineTool
   }
 
   @Override
-  protected void getConfigSettings(PropertiesConfiguration cs) throws Exception
+  protected void getConfigSettings(PropertiesConfiguration cfg) throws Exception
   {
     // ::EMPTY
   }
@@ -550,7 +550,7 @@ public class GenDepotTrx extends CommandLineTool
 
   private void bookListFileCore(ArrayList<ParamTuple> paramTupleList, BufferedWriter outFile)
   {
-	  GCshID newID = null;
+	  GCshTrxID newID = null;
 	  int lineNo = 1;
 	  for ( ParamTuple tuple : paramTupleList )
 	  {

@@ -106,7 +106,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenEmpl.class);
   }
 
   @Override
-  protected void getConfigSettings(PropertiesConfiguration cs) throws Exception
+  protected void getConfigSettings(PropertiesConfiguration cfg) throws Exception
   {
     // ::EMPTY
   }

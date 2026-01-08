@@ -119,7 +119,7 @@ public class UpdEmpl extends CommandLineTool
   }
 
   @Override
-  protected void getConfigSettings(PropertiesConfiguration cs) throws Exception
+  protected void getConfigSettings(PropertiesConfiguration cfg) throws Exception
   {
     // ::EMPTY
   }

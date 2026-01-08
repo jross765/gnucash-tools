@@ -138,7 +138,7 @@ public class GetAcctInfo extends CommandLineTool
   }
 
   @Override
-  protected void getConfigSettings(PropertiesConfiguration cs) throws Exception
+  protected void getConfigSettings(PropertiesConfiguration cfg) throws Exception
   {
     // ::EMPTY
   }
@@ -235,6 +235,15 @@ public class GetAcctInfo extends CommandLineTool
     catch ( Exception exc )
     {
       System.out.println("Parent ID:       " + "ERROR");
+    }
+    
+    try
+    {
+      System.out.println("Hidden:          " + acct.isHidden());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Hidden:          " + "ERROR");
     }
     
     try
