@@ -137,7 +137,7 @@ public class TestGetCustInfo extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshFileName));
+    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshFileName), true);
     
     GnuCashWritableCustomer cust = null;
     if ( mode == Helper.Mode.ID )

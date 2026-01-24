@@ -124,7 +124,7 @@ public class TestGetEmplInfo extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshFileName));
+    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshFileName), true);
     
     GnuCashWritableEmployee empl = null;
     if ( mode == Helper.Mode.ID )

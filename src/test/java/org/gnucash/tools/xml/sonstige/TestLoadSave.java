@@ -90,7 +90,7 @@ public class TestLoadSave extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName));
+    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
     gcshFile.writeFile(new File(gcshOutFileName));
     System.out.println("OK");
   }

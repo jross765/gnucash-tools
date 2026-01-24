@@ -131,7 +131,7 @@ public class TestGetWrtblInvoices extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshFileName));
+    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshFileName), true);
     
     if ( custID.isSet() ) 
     {

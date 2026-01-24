@@ -137,7 +137,7 @@ public class TestGetVendInfo extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshFileName));
+    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshFileName), true);
     
     GnuCashWritableVendor vend = null;
     if ( mode == Helper.Mode.ID )

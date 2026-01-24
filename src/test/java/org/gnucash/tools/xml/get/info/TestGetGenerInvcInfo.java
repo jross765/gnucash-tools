@@ -122,7 +122,7 @@ public class TestGetGenerInvcInfo extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshFileName));
+    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshFileName), true);
     
     GnuCashWritableGenerInvoice invc = gcshFile.getWritableGenerInvoiceByID(invcID);
     System.err.println("no. of gener. entries: " + invc.getGenerEntries().size());
