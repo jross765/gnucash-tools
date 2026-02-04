@@ -15,7 +15,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashPrice;
 import org.gnucash.api.write.GnuCashWritablePrice;
 import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
-import org.gnucash.base.basetypes.complex.GCshCmdtyCurrID;
+import org.gnucash.base.basetypes.complex.GCshCmdtyID;
 import org.gnucash.base.basetypes.complex.GCshCurrID;
 import org.gnucash.tools.CommandLineTool;
 import org.gnucash.tools.xml.helper.CmdLineHelper;
@@ -41,7 +41,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
   private static String gcshInFileName = null;
   private static String gcshOutFileName = null;
 
-  private static GCshCmdtyCurrID     fromCmdtyCurrID = null;
+  private static GCshCmdtyID         fromCmdtyCurrID = null;
   private static GCshCurrID          toCurrID = null;
   private static Helper.DateFormat   dateFormat    = null;
   private static LocalDate           date = null;
@@ -91,10 +91,10 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
       .longOpt("gnucash-out-file")
       .get();
       
-    Option optFromCmdtyCurr= Option.builder("f")
+    Option optFromSecCurr = Option.builder("f")
       .required()
       .hasArg()
-      .argName("cmdty/curr")
+      .argName("sec/curr")
       .desc("From-commodity/currency")
       .longOpt("from-cmdty-curr")
       .get();
@@ -141,7 +141,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
     options = new Options();
     options.addOption(optFileIn);
     options.addOption(optFileOut);
-    options.addOption(optFromCmdtyCurr);
+    options.addOption(optFromSecCurr);
     options.addOption(optToCurr);
     options.addOption(optDateFormat);
     options.addOption(optDate);
@@ -216,15 +216,15 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
     }
     System.err.println("GnuCash file (out): '" + gcshOutFileName + "'");
     
-    // <from-cmdty-curr>
+    // <from-sec-curr>
     try
     {
-      fromCmdtyCurrID = GCshCmdtyCurrID.parse(cmdLine.getOptionValue("from-cmdty-curr")); 
-      System.err.println("from-cmdty-curr: " + fromCmdtyCurrID);
+      fromCmdtyCurrID = GCshCmdtyID.parse(cmdLine.getOptionValue("from-sec-curr")); 
+      System.err.println("from-sec-curr: " + fromCmdtyCurrID);
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <from-cmdty-curr>");
+      System.err.println("Could not parse <from-sec-curr>");
       throw new InvalidCommandLineArgsException();
     }
     

@@ -14,7 +14,7 @@ import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashPrice;
 import org.gnucash.api.read.impl.GnuCashFileImpl;
-import org.gnucash.base.basetypes.complex.GCshCmdtyID;
+import org.gnucash.base.basetypes.complex.GCshSecID;
 import org.gnucash.base.basetypes.simple.GCshPrcID;
 import org.gnucash.tools.CommandLineTool;
 import org.gnucash.tools.xml.helper.CmdLineHelper;
@@ -43,7 +43,7 @@ public class GetPrcInfo extends CommandLineTool
   
   private static GCshPrcID         prcID         = null;
   // Provide for selecting a currency as well ==> GCshCurrID and/ord GCshCmdtyCurrID
-  private static GCshCmdtyID       cmdtyID       = null;  
+  private static GCshSecID         cmdtyID       = null;  
   private static Helper.DateFormat dateFormat    = null;
   private static LocalDate         date          = null;
   
@@ -70,7 +70,7 @@ public class GetPrcInfo extends CommandLineTool
   protected void init() throws Exception
   {
   	prcID = new GCshPrcID();
-  	cmdtyID = new GCshCmdtyID();
+  	cmdtyID = new GCshSecID();
 
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
@@ -327,7 +327,7 @@ public class GetPrcInfo extends CommandLineTool
     		
         try
         {
-          cmdtyID = GCshCmdtyID.parse( cmdLine.getOptionValue("commodity-id") ); 
+          cmdtyID = GCshSecID.parse( cmdLine.getOptionValue("commodity-id") ); 
         }
         catch ( Exception exc )
         {

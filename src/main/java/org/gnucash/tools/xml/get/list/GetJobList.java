@@ -35,7 +35,7 @@ public class GetJobList extends CommandLineTool
   private static Options options;
   
   private static String             gcshFileName = null;
-  private static Helper.JobListMode mode         = null; 
+  private static Helper.JobListMode mode         = null;
   private static GCshOwner.Type     type         = null;
   private static String             name         = null;
   

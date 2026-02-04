@@ -12,8 +12,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.gnucash.api.read.GnuCashCommodity;
-import org.gnucash.api.read.impl.GnuCashFileImpl;
+import org.gnucash.apispec.read.GnuCashCurrency;
+import org.gnucash.apispec.read.impl.GnuCashFileExtImpl;
 import org.gnucash.tools.CommandLineTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,30 +22,24 @@ import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class GetCmdtyList extends CommandLineTool
+public class GetCurrList extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(GetCmdtyList.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GetCurrList.class);
   
-  // -----------------------------------------------------------------
-
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
   private static String               gcshFileName = null;
-  private static Helper.CmdtySecListSelMode mode         = null; 
-  private static String               name         = null;
   
   private static boolean scriptMode = false; // ::TODO
-
-  // -----------------------------------------------------------------
 
   public static void main( String[] args )
   {
     try
     {
-      GetCmdtyList tool = new GetCmdtyList ();
+      GetCurrList tool = new GetCurrList ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -59,6 +53,8 @@ public class GetCmdtyList extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
+    // currID = UUID.randomUUID();
+
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -72,28 +68,11 @@ public class GetCmdtyList extends CommandLineTool
       .longOpt("gnucash-file")
       .get();
       
-    Option optMode = Option.builder("m")
-      .required()
-      .hasArg()
-      .argName("Mode")
-      .desc("Mode")
-      .longOpt("mode")
-      .get();
-    	    	      
-    Option optName = Option.builder("n")
-      .hasArg()
-      .argName("name")
-      .desc("Commodity name (part of)")
-      .longOpt("name")
-      .get();
-    	      
     // The convenient ones
     // ::EMPTY
           
     options = new Options();
     options.addOption(optFile);
-    options.addOption(optMode);
-    options.addOption(optName);
   }
 
   @Override
@@ -105,24 +84,21 @@ public class GetCmdtyList extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
+    GnuCashFileExtImpl gcshFile = new GnuCashFileExtImpl(new File(gcshFileName), true);
     
-    Collection<GnuCashCommodity> cmdtyList = null; 
-    if ( mode == Helper.CmdtySecListSelMode.ALL )
-        cmdtyList = gcshFile.getCommodities();
-    else if ( mode == Helper.CmdtySecListSelMode.NAME )
-    	cmdtyList = gcshFile.getCommoditiesByName(name, true);
-
-    if ( cmdtyList.size() == 0 ) 
+    Collection<GnuCashCurrency> currList = null; 
+    currList = gcshFile.getCurrencies();
+    
+    if ( currList.size() == 0 ) 
     {
-    	System.err.println("Found no commodity with that type.");
+    	System.err.println("Found no currency with that type.");
     	throw new NoEntryFoundException();
     }
 
-    System.err.println("Found " + cmdtyList.size() + " commodity/ies.");
-    for ( GnuCashCommodity cmdty : cmdtyList )
+	System.err.println("Found " + currList.size() + " currency(s).");
+    for ( GnuCashCurrency curr : currList )
     {
-    	System.out.println(cmdty.toString());	
+    	System.out.println(curr.toString());	
     }
   }
 
@@ -158,50 +134,6 @@ public class GetCmdtyList extends CommandLineTool
     
     if ( ! scriptMode )
       System.err.println("GnuCash file:      '" + gcshFileName + "'");
-    
-    // <mode>
-    try
-    {
-      mode = Helper.CmdtySecListSelMode.valueOf(cmdLine.getOptionValue("mode"));
-    }
-    catch ( Exception exc )
-    {
-      System.err.println("Could not parse <mode>");
-      throw new InvalidCommandLineArgsException();
-    }
-
-    // <name>
-    if ( cmdLine.hasOption( "name" ) )
-    {
-    	if ( mode != Helper.CmdtySecListSelMode.NAME )
-    	{
-            System.err.println("Error: <name> must only be set with <mode> = '" + Helper.CmdtySecListSelMode.NAME + "'");
-            throw new InvalidCommandLineArgsException();
-    	}
-    	
-        try
-        {
-        	name = cmdLine.getOptionValue("name");
-        }
-        catch ( Exception exc )
-        {
-        	System.err.println("Could not parse <name>");
-        	throw new InvalidCommandLineArgsException();
-        }
-    }
-    else
-    {
-    	if ( mode == Helper.CmdtySecListSelMode.NAME )
-    	{
-            System.err.println("Error: <name> must be set with <mode> = '" + Helper.CmdtySecListSelMode.NAME + "'");
-            throw new InvalidCommandLineArgsException();
-    	}
-    	
-    	name = null;
-    }
-    
-    if ( ! scriptMode )
-      System.err.println("Name:              " + name);
   }
   
   @Override
@@ -210,17 +142,12 @@ public class GetCmdtyList extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "GetCmdtyList", "", options, "", true );
+		formatter.printHelp( "GetCurrList", "", options, "", true );
 	}
 	catch ( IOException e )
 	{
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-    
-    System.out.println("");
-    System.out.println("Valid values for <mode>:");
-    for ( Helper.CmdtySecListSelMode elt : Helper.CmdtySecListSelMode.values() )
-      System.out.println(" - " + elt);
   }
 }

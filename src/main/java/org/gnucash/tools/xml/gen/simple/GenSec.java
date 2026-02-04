@@ -12,11 +12,11 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.Const;
-import org.gnucash.api.read.GnuCashCommodity;
-import org.gnucash.api.write.GnuCashWritableCommodity;
-import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
-import org.gnucash.base.basetypes.complex.GCshCmdtyCurrNameSpace;
-import org.gnucash.base.basetypes.complex.GCshCmdtyID_SecIdType;
+import org.gnucash.apispec.read.GnuCashSecurity;
+import org.gnucash.apispec.write.GnuCashWritableSecurity;
+import org.gnucash.apispec.write.impl.GnuCashWritableFileExtImpl;
+import org.gnucash.base.basetypes.complex.GCshCmdtyNameSpace;
+import org.gnucash.base.basetypes.complex.GCshSecID_SecIdType;
 import org.gnucash.tools.CommandLineTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +24,10 @@ import org.slf4j.LoggerFactory;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class GenCmdty extends CommandLineTool
+public class GenSec extends CommandLineTool
 {
   // Logger
-  private static final Logger LOGGER = LoggerFactory.getLogger(GenCmdty.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GenSec.class);
   
   // -----------------------------------------------------------------
 
@@ -37,11 +37,11 @@ public class GenCmdty extends CommandLineTool
   private static String gcshInFileName = null;
   private static String gcshOutFileName = null;
 
-  private static String  name     = null;
-  private static String  isin     = null;
+  private static String     isin      = null;
+  private static String     name      = null;
   
-  private static String  symbol   = null;
-  private static int     fraction = 0;
+  private static String     symbol    = null;
+  private static int        fraction  = 0;
 
   // -----------------------------------------------------------------
 
@@ -49,7 +49,7 @@ public class GenCmdty extends CommandLineTool
   {
     try
     {
-      GenCmdty tool = new GenCmdty ();
+      GenSec tool = new GenSec ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -136,42 +136,42 @@ public class GenCmdty extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
+    GnuCashWritableFileExtImpl gcshFile = new GnuCashWritableFileExtImpl(new File(gcshInFileName), true);
     
-    // 1) Check whether there already is a commodity with that ISIN
+    // 1) Check whether there already is a security with that ISIN
     // 1.1) Variant 1: Qualif. ID (non-technical, as opposed to all other IDs in GnuCash)
-    GCshCmdtyID_SecIdType qualifID = new GCshCmdtyID_SecIdType(GCshCmdtyCurrNameSpace.SecIdType.ISIN, isin);
-    GnuCashCommodity checkCmdty = gcshFile.getCommodityByQualifID( qualifID );
-    if ( checkCmdty != null )
+    GCshSecID_SecIdType qualifID = new GCshSecID_SecIdType(GCshCmdtyNameSpace.SecIdType.ISIN, isin);
+    GnuCashSecurity checkSec = gcshFile.getSecurityByID( qualifID );
+    if ( checkSec != null )
     {
-    	LOGGER.error("kernel: Encountered a commodity with ID '" + qualifID + "' in GnuCash file");
+    	LOGGER.error("kernel: Encountered a security with ID '" + qualifID + "' in GnuCash file");
     	LOGGER.error("kernel: Aborting");
-    	System.err.println("Error: There already is a commodity with ID '" + qualifID + "' in GnuCash file");
+    	System.err.println("Error: There already is a security with ID '" + qualifID + "' in GnuCash file");
     	System.err.println("Aborting");
     	System.exit( 1 );
     }
     // 1.2) Variant 2: X-Code
-    checkCmdty = gcshFile.getCommodityByXCode( isin );
-    if ( checkCmdty != null )
+    checkSec = gcshFile.getSecurityByXCode( isin );
+    if ( checkSec != null )
     {
-    	LOGGER.error("kernel: Encountered a commodity with X-code '" + isin + "' in GnuCash file");
+    	LOGGER.error("kernel: Encountered a security with X-code '" + isin + "' in GnuCash file");
     	LOGGER.error("kernel: Aborting");
-    	System.err.println("Error: There already is a commodity with X-code '" + isin + "' in GnuCash file");
+    	System.err.println("Error: There already is a security with X-code '" + isin + "' in GnuCash file");
     	System.err.println("Aborting");
     	System.exit( 1 );
     }
     
-    // 2) Generate commodity
-    GnuCashWritableCommodity cmdty = gcshFile.createWritableCommodity(qualifID, isin, name);
+    // 2) Generate security
+    GnuCashWritableSecurity sec = gcshFile.createWritableSecurity(qualifID, isin, name);
 
     if ( symbol != null )
-    	cmdty.setSymbol(symbol);
+    	sec.setSymbol(symbol);
     
     if ( fraction != 0 )
-    	cmdty.setFraction(fraction);
+    	sec.setFraction(fraction);
     
     // 3) Write to file
-    System.out.println("Commodity to write: " + cmdty.toString());
+    System.out.println("Security to write: " + sec.toString());
     gcshFile.writeFile(new File(gcshOutFileName));
     System.out.println("OK");
   }
@@ -205,6 +205,7 @@ public class GenCmdty extends CommandLineTool
       System.err.println("Could not parse <gnucash-in-file>");
       throw new InvalidCommandLineArgsException();
     }
+
     System.err.println("GnuCash file (in):  '" + gcshInFileName + "'");
     
     // <gnucash-out-file>
@@ -217,6 +218,7 @@ public class GenCmdty extends CommandLineTool
       System.err.println("Could not parse <gnucash-out-file>");
       throw new InvalidCommandLineArgsException();
     }
+
     System.err.println("GnuCash file (out): '" + gcshOutFileName + "'");
     
     // --
@@ -231,6 +233,7 @@ public class GenCmdty extends CommandLineTool
       System.err.println("Could not parse <isin>");
       throw new InvalidCommandLineArgsException();
     }
+
     System.err.println("ISIN:               '" + isin + "'");
     
     // <name>
@@ -243,6 +246,7 @@ public class GenCmdty extends CommandLineTool
       System.err.println("Could not parse <name>");
       throw new InvalidCommandLineArgsException();
     }
+
     System.err.println("Name:               '" + name + "'");
     
     // --
@@ -291,7 +295,7 @@ public class GenCmdty extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "GenCmdty", "", options, "", true );
+		formatter.printHelp( "GenSec", "", options, "", true );
 	}
 	catch ( IOException e )
 	{

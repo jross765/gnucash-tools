@@ -15,7 +15,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashCommodity;
 import org.gnucash.api.read.GnuCashPrice;
 import org.gnucash.api.read.impl.GnuCashFileImpl;
-import org.gnucash.base.basetypes.complex.GCshCmdtyCurrID;
+import org.gnucash.base.basetypes.complex.GCshCmdtyID;
 import org.gnucash.tools.CommandLineTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +37,8 @@ public class GetPrcList extends CommandLineTool
   private static Options options;
   
   private static String                gcshFileName    = null;
-  private static Helper.CmdtySecSingleSelMode   cmdtyMode       = null;
-  private static GCshCmdtyCurrID       fromCmdtyCurrID = null;
+  private static Helper.CmdtySecSingleSelMode   cmdtyMode = null;
+  private static GCshCmdtyID           fromCmdtyCurrID = null;
   private static String                fromCmdtyIsin   = null;
   private static String                fromCmdtyName   = null;
   
@@ -208,7 +208,7 @@ public class GetPrcList extends CommandLineTool
       
       try
       {
-          fromCmdtyCurrID = GCshCmdtyCurrID.parse(cmdLine.getOptionValue("from-cmdty-curr")); 
+          fromCmdtyCurrID = GCshCmdtyID.parse(cmdLine.getOptionValue("from-cmdty-curr")); 
       }
       catch (Exception exc)
       {

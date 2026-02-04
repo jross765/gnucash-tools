@@ -34,9 +34,9 @@ public class GetEmplList extends CommandLineTool
   private static Options options;
   
   private static String               gcshFileName = null;
-  private static Helper.CustEmplVendListMode mode = null; 
+  private static Helper.CustEmplVendListMode mode = null;
   @SuppressWarnings("unused")
-private static String               isin         = null;
+  private static String               isin         = null;
   private static String               name         = null;
   
   private static boolean scriptMode = false; // ::TODO

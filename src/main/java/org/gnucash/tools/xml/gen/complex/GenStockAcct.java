@@ -13,13 +13,13 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashAccount;
-import org.gnucash.api.read.GnuCashCommodity;
 import org.gnucash.api.write.GnuCashWritableAccount;
-import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
 import org.gnucash.apiext.secacct.SecuritiesAccountManager;
 import org.gnucash.apiext.secacct.WritableSecuritiesAccountManager;
-import org.gnucash.base.basetypes.complex.GCshCmdtyCurrNameSpace;
-import org.gnucash.base.basetypes.complex.GCshCmdtyID_SecIdType;
+import org.gnucash.apispec.read.GnuCashSecurity;
+import org.gnucash.apispec.write.impl.GnuCashWritableFileExtImpl;
+import org.gnucash.base.basetypes.complex.GCshCmdtyNameSpace;
+import org.gnucash.base.basetypes.complex.GCshSecID_SecIdType;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.tools.CommandLineTool;
 import org.slf4j.Logger;
@@ -51,7 +51,7 @@ public class GenStockAcct extends CommandLineTool
 
   private static String           gcshInFileName = null;
   private static String           gcshOutFileName = null;
-  private static GnuCashWritableFileImpl gcshFile = null;
+  private static GnuCashWritableFileExtImpl gcshFile = null;
 		  
   // ------------------------------
 
@@ -59,10 +59,10 @@ public class GenStockAcct extends CommandLineTool
   private static GCshAcctID            acctID       = null;
   private static String                acctName     = null;
   
-  private static Helper.CmdtySecSingleSelMode   cmdtyMode      = null;
-  private static GCshCmdtyID_SecIdType cmdtyID      = null;
+  private static Helper.CmdtySecSingleSelMode   secMode      = null;
+  private static GCshSecID_SecIdType   secID        = null;
   private static String                isin         = null;
-  private static String                cmdtyName    = null;
+  private static String                secName      = null;
 
   // ------------------------------
 
@@ -132,33 +132,33 @@ public class GenStockAcct extends CommandLineTool
       .longOpt("account-name")
       .get();
     	      
-    Option optCmdtyMode = Option.builder("cm")
+    Option optSecMode = Option.builder("sm")
       .required()
       .hasArg()
       .argName("mode")
-      .desc("Selection mode for commodity")
-      .longOpt("commodity-mode")
+      .desc("Selection mode for security")
+      .longOpt("security-mode")
       .get();
     	    	        
-    Option optCmdtyID = Option.builder("cmdty")
+    Option optSecID = Option.builder("sec")
       .hasArg()
       .argName("ID")
-      .desc("Commodity ID")
-      .longOpt("commodity-id")
+      .desc("Security ID")
+      .longOpt("security-id")
       .get();
     	            
-    Option optCmdtyISIN = Option.builder("is")
+    Option optSecISIN = Option.builder("is")
       .hasArg()
       .argName("isin")
       .desc("ISIN")
       .longOpt("isin")
       .get();
     	          
-    Option optCmdtyName = Option.builder("sn")
+    Option optSecName = Option.builder("sn")
       .hasArg()
       .argName("name")
-      .desc("Commodity name (or part of)")
-      .longOpt("commodity-name")
+      .desc("Security name (or part of)")
+      .longOpt("security-name")
       .get();
     
     // ---
@@ -174,10 +174,10 @@ public class GenStockAcct extends CommandLineTool
     options.addOption(optAcctMode );
     options.addOption(optAcctID);
     options.addOption(optAcctName);
-    options.addOption(optCmdtyMode);
-    options.addOption(optCmdtyID);
-    options.addOption(optCmdtyISIN);
-    options.addOption(optCmdtyName);
+    options.addOption(optSecMode);
+    options.addOption(optSecID);
+    options.addOption(optSecISIN);
+    options.addOption(optSecName);
     options.addOption(optSilent);
   }
 
@@ -190,19 +190,19 @@ public class GenStockAcct extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-	  gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
+	  gcshFile = new GnuCashWritableFileExtImpl(new File(gcshInFileName), true);
 
 	  GnuCashWritableAccount acct = getSecAccount();
-	  GnuCashCommodity cmdty = getCommodity();
+	  GnuCashSecurity sec = getSecurity();
 	  
 	  WritableSecuritiesAccountManager secAcctMgr = new WritableSecuritiesAccountManager(acct);
-	  if ( stockAcctAlreadyExists(secAcctMgr, cmdty) )
+	  if ( stockAcctAlreadyExists(secAcctMgr, sec) )
 	  {
 		  System.err.println("Error: Stock account already exists");
 		  throw new IllegalStateException("Stock account already exists");
 	  }
 	  
-	  GnuCashWritableAccount newStockAcct = secAcctMgr.genShareAcct( cmdty );
+	  GnuCashWritableAccount newStockAcct = secAcctMgr.genShareAcct( sec );
 	  System.out.println("Stock account generated: " + newStockAcct);
 	  
 	  // ---
@@ -260,62 +260,62 @@ public class GenStockAcct extends CommandLineTool
     return acct;
   }
   
-  private GnuCashCommodity getCommodity() throws Exception
+  private GnuCashSecurity getSecurity() throws Exception
   {
-    GnuCashCommodity cmdty = null;
+    GnuCashSecurity sec = null;
     
-    if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ID )
+    if ( secMode == Helper.CmdtySecSingleSelMode.ID )
     {
-      cmdty = gcshFile.getCommodityByQualifID(cmdtyID);
-      if ( cmdty == null )
+      sec = gcshFile.getSecurityByID(secID);
+      if ( sec == null )
       {
         if ( ! silent )
-          System.err.println("Could not find a commodity with this ID.");
+          System.err.println("Could not find a security with this ID.");
         throw new NoEntryFoundException();
       }
     }
-    else if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ISIN )
+    else if ( secMode == Helper.CmdtySecSingleSelMode.ISIN )
     {
-      cmdty = gcshFile.getCommodityByXCode(isin);
-      if ( cmdty == null )
+      sec = gcshFile.getSecurityByXCode(isin);
+      if ( sec == null )
       {
         if ( ! silent )
           System.err.println("Could not find securities with this ISIN.");
         throw new NoEntryFoundException();
       }
     }
-    else if ( cmdtyMode == Helper.CmdtySecSingleSelMode.NAME )
+    else if ( secMode == Helper.CmdtySecSingleSelMode.NAME )
     {
-      Collection<GnuCashCommodity> cmdtyList = gcshFile.getCommoditiesByName(cmdtyName); 
-      if ( cmdtyList.size() == 0 )
+      Collection<GnuCashSecurity> secList = gcshFile.getSecuritiesByName(secName); 
+      if ( secList.size() == 0 )
       {
         if ( ! silent )
           System.err.println("Could not find securities matching this name.");
         throw new NoEntryFoundException();
       }
-      else if ( cmdtyList.size() > 1 )
+      else if ( secList.size() > 1 )
       {
         if ( ! silent )
         {
-          System.err.println("Found " + cmdtyList.size() + "securities matching this name.");
+          System.err.println("Found " + secList.size() + "securities matching this name.");
           System.err.println("Please specify more precisely.");
         }
         throw new TooManyEntriesFoundException();
       }
-      cmdty = cmdtyList.iterator().next(); // first element
+      sec = secList.iterator().next(); // first element
     }
     
     if ( ! silent )
-      System.out.println("Commodity: " + cmdty.toString());
+      System.out.println("Security: " + sec.toString());
 
-    return cmdty;
+    return sec;
   }
   
-  private boolean stockAcctAlreadyExists(SecuritiesAccountManager secAcctMgr, GnuCashCommodity cmdty)
+  private boolean stockAcctAlreadyExists(SecuritiesAccountManager secAcctMgr, GnuCashSecurity sec)
   {
 	  for ( GnuCashAccount acct : secAcctMgr.getShareAccts() )
 	  {
-		  if ( acct.getCmdtyCurrID().toString().equals( cmdty.getQualifID().toString() ) ) // Important: toString()
+		  if ( acct.getCmdtyID().toString().equals( sec.getQualifID().toString() ) ) // Important: toString()
 		  {
 			  return true;
 		  }
@@ -397,19 +397,19 @@ public class GenStockAcct extends CommandLineTool
     if ( ! silent )
       System.err.println("Account mode:  " + acctMode);
 
-    // <commodity-mode>
+    // <security-mode>
     try
     {
-      cmdtyMode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("commodity-mode"));
+      secMode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("security-mode"));
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <commodity-mode>");
+      System.err.println("Could not parse <security-mode>");
       throw new InvalidCommandLineArgsException();
     }
     
     if ( ! silent )
-      System.err.println("Commodity mode: " + cmdtyMode);
+      System.err.println("Security mode: " + secMode);
 
     // <account-id>
     if ( cmdLine.hasOption("account-id") )
@@ -473,43 +473,43 @@ public class GenStockAcct extends CommandLineTool
     if ( ! silent )
       System.err.println("Account name:  '" + acctName + "'");
 
-    // <commodity-id>
-    if ( cmdLine.hasOption("commodity-id") )
+    // <security-id>
+    if ( cmdLine.hasOption("security-id") )
     {
-      if ( cmdtyMode != Helper.CmdtySecSingleSelMode.ID )
+      if ( secMode != Helper.CmdtySecSingleSelMode.ID )
       {
-        System.err.println("<commodity-id> must only be set with <commodity-mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
+        System.err.println("<security-id> must only be set with <security-mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
       
       try
       {
-        cmdtyID = new GCshCmdtyID_SecIdType( GCshCmdtyCurrNameSpace.SecIdType.ISIN, cmdLine.getOptionValue("commodity-id") );
+        secID = new GCshSecID_SecIdType( GCshCmdtyNameSpace.SecIdType.ISIN, cmdLine.getOptionValue("security-id") );
       }
       catch (Exception exc)
       {
-        System.err.println("Could not parse <commodity-id>");
+        System.err.println("Could not parse <security-id>");
         throw new InvalidCommandLineArgsException();
       }
     }
     else
     {
-      if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ID )
+      if ( secMode == Helper.CmdtySecSingleSelMode.ID )
       {
-        System.err.println("<commodity-id> must be set with <commodity-mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
+        System.err.println("<security-id> must be set with <security-mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
     }
 
     if (!silent)
-      System.err.println("Commodity ID:  '" + cmdtyID + "'");
+      System.err.println("Security ID:  '" + secID + "'");
 
     // <isin>
     if ( cmdLine.hasOption("isin") )
     {
-      if ( cmdtyMode != Helper.CmdtySecSingleSelMode.ISIN )
+      if ( secMode != Helper.CmdtySecSingleSelMode.ISIN )
       {
-        System.err.println("<isin> must only be set with <commodity-mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
+        System.err.println("<isin> must only be set with <security-mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
       
@@ -525,46 +525,46 @@ public class GenStockAcct extends CommandLineTool
     }
     else
     {
-      if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ISIN )
+      if ( secMode == Helper.CmdtySecSingleSelMode.ISIN )
       {
-        System.err.println("<isin> must be set with <commodity-mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
+        System.err.println("<isin> must be set with <security-mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
     }
 
     if (!silent)
-      System.err.println("Commodity ISIN: '" + isin + "'");
+      System.err.println("Security ISIN: '" + isin + "'");
 
-    // <commodity-name>
-    if ( cmdLine.hasOption("commodity-name") )
+    // <security-name>
+    if ( cmdLine.hasOption("security-name") )
     {
-      if ( cmdtyMode != Helper.CmdtySecSingleSelMode.NAME )
+      if ( secMode != Helper.CmdtySecSingleSelMode.NAME )
       {
-        System.err.println("<commodity-name> must only be set with <commodity-mode> = '" + Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
+        System.err.println("<security-name> must only be set with <security-mode> = '" + Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
       
       try
       {
-        cmdtyName = cmdLine.getOptionValue("commodity-name");
+        secName = cmdLine.getOptionValue("security-name");
       }
       catch (Exception exc)
       {
-        System.err.println("Could not parse <commodity-name>");
+        System.err.println("Could not parse <security-name>");
         throw new InvalidCommandLineArgsException();
       }
     }
     else
     {
-      if ( cmdtyMode == Helper.CmdtySecSingleSelMode.NAME )
+      if ( secMode == Helper.CmdtySecSingleSelMode.NAME )
       {
-        System.err.println("<commodity-name> must be set with <commodity-mode> = '" + Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
+        System.err.println("<security-name> must be set with <security-mode> = '" + Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
     }
 
     if (!silent)
-      System.err.println("Commodity name: '" + cmdtyName + "'");
+      System.err.println("Security name: '" + secName + "'");
   }
 
   @Override
@@ -587,7 +587,7 @@ public class GenStockAcct extends CommandLineTool
       System.out.println(" - " + elt);
 
     System.out.println("");
-    System.out.println("Valid values for <commodity-mode>:");
+    System.out.println("Valid values for <security-mode>:");
     for ( Helper.CmdtySecSingleSelMode elt : Helper.CmdtySecSingleSelMode.values() )
     {
     	System.out.println(" - " + elt);

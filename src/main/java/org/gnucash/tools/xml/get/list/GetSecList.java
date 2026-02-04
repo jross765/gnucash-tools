@@ -2,7 +2,7 @@ package org.gnucash.tools.xml.get.list;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -12,8 +12,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.gnucash.api.read.GnuCashVendor;
-import org.gnucash.api.read.impl.GnuCashFileImpl;
+import org.gnucash.api.read.GnuCashCommodity;
+import org.gnucash.apispec.read.GnuCashSecurity;
+import org.gnucash.apispec.read.impl.GnuCashFileExtImpl;
 import org.gnucash.tools.CommandLineTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +23,11 @@ import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class GetVendList extends CommandLineTool
+public class GetSecList extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(GetVendList.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GetSecList.class);
   
   // -----------------------------------------------------------------
 
@@ -34,9 +35,7 @@ public class GetVendList extends CommandLineTool
   private static Options options;
   
   private static String               gcshFileName = null;
-  private static Helper.CustEmplVendListMode mode  = null;
-  @SuppressWarnings("unused")
-  private static String               isin         = null;
+  private static Helper.CmdtySecListSelMode mode   = null;
   private static String               name         = null;
   
   private static boolean scriptMode = false; // ::TODO
@@ -47,7 +46,7 @@ public class GetVendList extends CommandLineTool
   {
     try
     {
-      GetVendList tool = new GetVendList ();
+      GetSecList tool = new GetSecList ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -61,8 +60,6 @@ public class GetVendList extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // cmdtyID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -83,11 +80,11 @@ public class GetVendList extends CommandLineTool
       .desc("Mode")
       .longOpt("mode")
       .get();
-    	    	      
+
     Option optName = Option.builder("n")
       .hasArg()
       .argName("name")
-      .desc("Vendor name (part of)")
+      .desc("Security name (part of)")
       .longOpt("name")
       .get();
     	      
@@ -109,24 +106,24 @@ public class GetVendList extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
+    GnuCashFileExtImpl gcshFile = new GnuCashFileExtImpl(new File(gcshFileName), true);
     
-    Collection<GnuCashVendor> cmdtyList = null; 
-    if ( mode == Helper.CustEmplVendListMode.ALL )
-        cmdtyList = gcshFile.getVendors();
-    else if ( mode == Helper.CustEmplVendListMode.NAME )
-    	cmdtyList = gcshFile.getVendorsByName(name, true);
+    List<GnuCashSecurity> secList = null; 
+    if ( mode == Helper.CmdtySecListSelMode.ALL )
+        secList = gcshFile.getSecurities();
+    else if ( mode == Helper.CmdtySecListSelMode.NAME )
+    	secList = gcshFile.getSecuritiesByName(name, true);
 
-    if ( cmdtyList.size() == 0 ) 
+    if ( secList.size() == 0 ) 
     {
-    	System.err.println("Found no vendor with that type.");
+    	System.err.println("Found no security with that type.");
     	throw new NoEntryFoundException();
     }
 
-    System.err.println("Found " + cmdtyList.size() + " vendors.");
-    for ( GnuCashVendor cmdty : cmdtyList )
+    System.err.println("Found " + secList.size() + " security/ies.");
+    for ( GnuCashSecurity sec : secList )
     {
-    	System.out.println(cmdty.toString());	
+    	System.out.println(sec.toString());	
     }
   }
 
@@ -166,7 +163,7 @@ public class GetVendList extends CommandLineTool
     // <mode>
     try
     {
-      mode = Helper.CustEmplVendListMode.valueOf(cmdLine.getOptionValue("mode"));
+      mode = Helper.CmdtySecListSelMode.valueOf(cmdLine.getOptionValue("mode"));
     }
     catch ( Exception exc )
     {
@@ -177,9 +174,9 @@ public class GetVendList extends CommandLineTool
     // <name>
     if ( cmdLine.hasOption( "name" ) )
     {
-    	if ( mode != Helper.CustEmplVendListMode.NAME )
+    	if ( mode != Helper.CmdtySecListSelMode.NAME )
     	{
-            System.err.println("Error: <name> must only be set with <mode> = '" + Helper.CustEmplVendListMode.NAME + "'");
+            System.err.println("Error: <name> must only be set with <mode> = '" + Helper.CmdtySecListSelMode.NAME + "'");
             throw new InvalidCommandLineArgsException();
     	}
     	
@@ -195,9 +192,9 @@ public class GetVendList extends CommandLineTool
     }
     else
     {
-    	if ( mode == Helper.CustEmplVendListMode.NAME )
+    	if ( mode == Helper.CmdtySecListSelMode.NAME )
     	{
-            System.err.println("Error: <name> must be set with <mode> = '" + Helper.CustEmplVendListMode.NAME + "'");
+            System.err.println("Error: <name> must be set with <mode> = '" + Helper.CmdtySecListSelMode.NAME + "'");
             throw new InvalidCommandLineArgsException();
     	}
     	
@@ -214,7 +211,7 @@ public class GetVendList extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "GetVendList", "", options, "", true );
+		formatter.printHelp( "GetSecList", "", options, "", true );
 	}
 	catch ( IOException e )
 	{
@@ -224,7 +221,7 @@ public class GetVendList extends CommandLineTool
     
     System.out.println("");
     System.out.println("Valid values for <mode>:");
-    for ( Helper.CustEmplVendListMode elt : Helper.CustEmplVendListMode.values() )
+    for ( Helper.CmdtySecListSelMode elt : Helper.CmdtySecListSelMode.values() )
       System.out.println(" - " + elt);
   }
 }

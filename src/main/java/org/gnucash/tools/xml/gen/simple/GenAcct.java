@@ -15,7 +15,7 @@ import org.gnucash.api.read.GnuCashAccount;
 import org.gnucash.api.read.GnuCashFile;
 import org.gnucash.api.write.GnuCashWritableAccount;
 import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
-import org.gnucash.base.basetypes.complex.GCshCmdtyCurrID;
+import org.gnucash.base.basetypes.complex.GCshCmdtyID;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.tools.CommandLineTool;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class GenAcct extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-private static final Logger LOGGER = LoggerFactory.getLogger(GenAcct.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GenAcct.class);
   
   // -----------------------------------------------------------------
 
@@ -40,7 +40,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenAcct.class);
   
   private static String               name        = null;
   private static GnuCashAccount.Type  type        = null;
-  private static GCshCmdtyCurrID      cmdtyCurrID = null;
+  private static GCshCmdtyID          cmdtyCurrID = null;
   private static GCshAcctID           parentID    = null;
   
   // -----------------------------------------------------------------
@@ -253,15 +253,12 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenAcct.class);
     // <commodity-currency>
     try
     {
-      cmdtyCurrID = GCshCmdtyCurrID.parse( cmdLine.getOptionValue("commodity-currency") );
-      if ( ( cmdtyCurrID.getType() == GCshCmdtyCurrID.Type.SECURITY_EXCHANGE ||
-    		 cmdtyCurrID.getType() == GCshCmdtyCurrID.Type.SECURITY_MIC ||
-    		 cmdtyCurrID.getType() == GCshCmdtyCurrID.Type.SECURITY_SECIDTYPE ||
-    		 cmdtyCurrID.getType() == GCshCmdtyCurrID.Type.SECURITY_GENERAL ) &&
+      cmdtyCurrID = GCshCmdtyID.parse( cmdLine.getOptionValue("commodity-currency") );
+      if ( ( cmdtyCurrID.getType() == GCshCmdtyID.Type.SECURITY ) &&
     	   type != GnuCashAccount.Type.STOCK ) {
           System.err.println("<commodity-currency> may be set to a security only if <type> = " + GnuCashAccount.Type.STOCK + "");
           throw new InvalidCommandLineArgsException();
-      } else if ( cmdtyCurrID.getType() == GCshCmdtyCurrID.Type.CURRENCY &&
+      } else if ( cmdtyCurrID.getType() == GCshCmdtyID.Type.CURRENCY &&
     		      type == GnuCashAccount.Type.STOCK ) {
           System.err.println("<commodity-currency> may be set to a (real) currency only if <type> != " + GnuCashAccount.Type.STOCK + "");
           throw new InvalidCommandLineArgsException();

@@ -25,7 +25,6 @@ import org.gnucash.api.write.GnuCashWritableTransaction;
 import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
 import org.gnucash.apiext.secacct.SecuritiesAccountTransactionManager;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
-import org.gnucash.base.basetypes.simple.GCshID;
 import org.gnucash.base.basetypes.simple.GCshTrxID;
 import org.gnucash.base.tuples.AcctIDAmountPair;
 import org.gnucash.tools.CommandLineTool;
@@ -59,13 +58,13 @@ public class GenDepotTrx extends CommandLineTool
   
   // ------------------------------
 
-  private static BookMode         mode = null; 
+  private static BookMode          mode = null; 
   
-  private static String           gcshInFileName = null;
-  private static String           gcshOutFileName = null;
+  private static String            gcshInFileName = null;
+  private static String            gcshOutFileName = null;
   private static GnuCashWritableFileImpl gcshFile = null;
 		  
-  private static String           bookingListFileName = null;
+  private static String            bookingListFileName = null;
   
   // ------------------------------
   // BEGIN Core parameters

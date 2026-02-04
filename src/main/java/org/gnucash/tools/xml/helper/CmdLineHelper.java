@@ -6,11 +6,11 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
-import org.gnucash.base.basetypes.complex.GCshCmdtyCurrNameSpace;
-import org.gnucash.base.basetypes.complex.GCshCmdtyID;
-import org.gnucash.base.basetypes.complex.GCshCmdtyID_Exchange;
-import org.gnucash.base.basetypes.complex.GCshCmdtyID_MIC;
-import org.gnucash.base.basetypes.complex.GCshCmdtyID_SecIdType;
+import org.gnucash.base.basetypes.complex.GCshCmdtyNameSpace;
+import org.gnucash.base.basetypes.complex.GCshSecID;
+import org.gnucash.base.basetypes.complex.GCshSecID_Exchange;
+import org.gnucash.base.basetypes.complex.GCshSecID_MIC;
+import org.gnucash.base.basetypes.complex.GCshSecID_SecIdType;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.base.tuples.AcctIDAmountPair;
 
@@ -22,14 +22,14 @@ import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
 public class CmdLineHelper
 {
-  public enum CmdtySelectMode
+  public enum SecSelectMode
   {
     ID,
     ISIN,
     NAME
   }
 	  
-  public enum CmdtySelectSubMode // for <cmdty-select-mode> = 'ID' only
+  public enum SecSelectSubMode // for <cmdty-select-mode> = 'ID' only
   {
     EXCHANGE_TICKER,
     MIC,
@@ -222,11 +222,11 @@ public class CmdLineHelper
   // -----------------------------------------------------------------
 
   // For CmdtySelectMode = ID only!
-  public static GCshCmdtyID getCmdtyID(CommandLine cmdLine,
-		  							   CmdtySelectMode mode, CmdtySelectSubMode subMode,
+  public static GCshSecID getSecID(CommandLine cmdLine,
+		  							   SecSelectMode mode, SecSelectSubMode subMode,
 		  							   boolean scriptMode) throws InvalidCommandLineArgsException
   {
-	  return getCmdtyID(cmdLine,
+	  return getSecID(cmdLine,
 			  			mode, subMode,
 			  			"exchange", "ticker",
 			  			"mic", "mic-id",
@@ -235,8 +235,8 @@ public class CmdLineHelper
   }
   
   // For CmdtySelectMode = ID only!
-  public static GCshCmdtyID getCmdtyID(CommandLine cmdLine,
-		                               CmdtySelectMode mode, CmdtySelectSubMode subMode,
+  public static GCshSecID getSecID(CommandLine cmdLine,
+		                               SecSelectMode mode, SecSelectSubMode subMode,
 		  						       String exchArgName, String tickerArgName,
 		  						       String micArgName, String micIDArgName,
 		  						       String secIDTypeArgName, String isinArgName,
@@ -247,9 +247,9 @@ public class CmdLineHelper
 		throw new IllegalArgumentException("arg <mode> is null");
 	}
 		
-	if ( mode != CmdtySelectMode.ID )
+	if ( mode != SecSelectMode.ID )
 	{
-		throw new IllegalArgumentException("arg <mode> must be " + CmdtySelectMode.ID);
+		throw new IllegalArgumentException("arg <mode> must be " + SecSelectMode.ID);
 	}
 	
 	if ( subMode == null )
@@ -257,12 +257,12 @@ public class CmdLineHelper
 		throw new IllegalArgumentException("arg <sub-mode> is null");
 	}
 	
-    GCshCmdtyCurrNameSpace.Exchange  exch      = null;
-    String                           ticker    = null;
-    GCshCmdtyCurrNameSpace.MIC       mic       = null;
-    String                           micID     = null;
-    GCshCmdtyCurrNameSpace.SecIdType secIDType = null;
-    String                           isin      = null;
+    GCshCmdtyNameSpace.Exchange  exch      = null;
+    String                       ticker    = null;
+    GCshCmdtyNameSpace.MIC       mic       = null;
+    String                       micID     = null;
+    GCshCmdtyNameSpace.SecIdType secIDType = null;
+    String                       isin      = null;
     
 	// <exchange>, <ticker>
     if ( cmdLine.hasOption(exchArgName) )
@@ -297,18 +297,18 @@ public class CmdLineHelper
 //        throw new InvalidCommandLineArgsException();
 //      }
 
-      if ( ! ( mode    == CmdtySelectMode.ID &&
-               subMode == CmdtySelectSubMode.EXCHANGE_TICKER ) )
+      if ( ! ( mode    == SecSelectMode.ID &&
+               subMode == SecSelectSubMode.EXCHANGE_TICKER ) )
       {
         System.err.println("<" + exchArgName + "> and <" + tickerArgName + "> must only be set with " +
-                           "<mode> = '" + CmdtySelectMode.ID + "' and " +
-                           "<sub-mode> = '" + CmdtySelectSubMode.EXCHANGE_TICKER + "'");
+                           "<mode> = '" + SecSelectMode.ID + "' and " +
+                           "<sub-mode> = '" + SecSelectSubMode.EXCHANGE_TICKER + "'");
         throw new InvalidCommandLineArgsException();
       }
       
       try
       {
-        exch = GCshCmdtyCurrNameSpace.Exchange.valueOf( cmdLine.getOptionValue(exchArgName) );
+        exch = GCshCmdtyNameSpace.Exchange.valueOf( cmdLine.getOptionValue(exchArgName) );
       }
       catch (Exception exc)
       {
@@ -334,12 +334,12 @@ public class CmdLineHelper
         throw new InvalidCommandLineArgsException();
       }
       
-      if ( mode    == CmdtySelectMode.ID &&
-           subMode == CmdtySelectSubMode.EXCHANGE_TICKER )
+      if ( mode    == SecSelectMode.ID &&
+           subMode == SecSelectSubMode.EXCHANGE_TICKER )
       {
     	  System.err.println("<" + exchArgName + "> and <" + tickerArgName + "> must only be set with " +
-                             "<mode> = '" + CmdtySelectMode.ID + "' and " +
-                             "<sub-mode> = '" + CmdtySelectSubMode.EXCHANGE_TICKER + "'");
+                             "<mode> = '" + SecSelectMode.ID + "' and " +
+                             "<sub-mode> = '" + SecSelectSubMode.EXCHANGE_TICKER + "'");
     	  throw new InvalidCommandLineArgsException();
       }
     }
@@ -383,18 +383,18 @@ public class CmdLineHelper
 //        throw new InvalidCommandLineArgsException();
 //      }
 
-      if ( ! ( mode    == CmdtySelectMode.ID &&
-               subMode == CmdtySelectSubMode.MIC ) )
+      if ( ! ( mode    == SecSelectMode.ID &&
+               subMode == SecSelectSubMode.MIC ) )
       {
         System.err.println("<" + micArgName + "> and <" + micIDArgName + "> must only be set with " +
-                           "<mode> = '" + CmdtySelectMode.ID + "' and " +
-                           "<sub-mode> = '" + CmdtySelectSubMode.MIC + "'");
+                           "<mode> = '" + SecSelectMode.ID + "' and " +
+                           "<sub-mode> = '" + SecSelectSubMode.MIC + "'");
         throw new InvalidCommandLineArgsException();
       }
       
       try
       {
-        mic = GCshCmdtyCurrNameSpace.MIC.valueOf( cmdLine.getOptionValue(micArgName) );
+        mic = GCshCmdtyNameSpace.MIC.valueOf( cmdLine.getOptionValue(micArgName) );
       }
       catch (Exception exc)
       {
@@ -420,12 +420,12 @@ public class CmdLineHelper
         throw new InvalidCommandLineArgsException();
       }
       
-      if ( mode    == CmdtySelectMode.ID &&
-           subMode == CmdtySelectSubMode.MIC )
+      if ( mode    == SecSelectMode.ID &&
+           subMode == SecSelectSubMode.MIC )
       {
     	  System.err.println("<" + micArgName + "> and <" + micIDArgName + "> must be set with " +
-                             "<mode> = '" + CmdtySelectMode.ID + "' and " +
-                             "<sub-mode> = '" + CmdtySelectSubMode.MIC + "'");
+                             "<mode> = '" + SecSelectMode.ID + "' and " +
+                             "<sub-mode> = '" + SecSelectSubMode.MIC + "'");
     	  throw new InvalidCommandLineArgsException();
       }
     }
@@ -463,21 +463,21 @@ public class CmdLineHelper
 //        throw new InvalidCommandLineArgsException();
 //      }
 
-      if ( ! ( mode    == CmdtySelectMode.ID &&
-               subMode == CmdtySelectSubMode.SEC_ID_TYPE ) )
+      if ( ! ( mode    == SecSelectMode.ID &&
+               subMode == SecSelectSubMode.SEC_ID_TYPE ) )
       {
         System.err.println("<" + secIDTypeArgName + "> and <" + isinArgName + "> must only be set with " +
-                           "<mode> = '" + CmdtySelectMode.ID + "' and " +
-                           "<sub-mode> = '" + CmdtySelectSubMode.SEC_ID_TYPE + "'");
+                           "<mode> = '" + SecSelectMode.ID + "' and " +
+                           "<sub-mode> = '" + SecSelectSubMode.SEC_ID_TYPE + "'");
         throw new InvalidCommandLineArgsException();
       }
       
       try
       {
-        secIDType = GCshCmdtyCurrNameSpace.SecIdType.valueOf( cmdLine.getOptionValue(secIDTypeArgName) );
-        if ( secIDType != GCshCmdtyCurrNameSpace.SecIdType.ISIN )
+        secIDType = GCshCmdtyNameSpace.SecIdType.valueOf( cmdLine.getOptionValue(secIDTypeArgName) );
+        if ( secIDType != GCshCmdtyNameSpace.SecIdType.ISIN )
         {
-            System.err.println("Only <secid-type> = " + GCshCmdtyCurrNameSpace.SecIdType.ISIN + " is supported at the moment");
+            System.err.println("Only <secid-type> = " + GCshCmdtyNameSpace.SecIdType.ISIN + " is supported at the moment");
             throw new InvalidCommandLineArgsException();
         }
       }
@@ -505,12 +505,12 @@ public class CmdLineHelper
         throw new InvalidCommandLineArgsException();
       }
 
-      if ( mode    == CmdtySelectMode.ID &&
-    	   subMode == CmdtySelectSubMode.SEC_ID_TYPE )
+      if ( mode    == SecSelectMode.ID &&
+    	   subMode == SecSelectSubMode.SEC_ID_TYPE )
       {
     	  System.err.println("<" + secIDTypeArgName + "> and <" + isinArgName + "> must be set with " +
-                             "<mode> = '" + CmdtySelectMode.ID + "' and " +
-                             "<sub-mode> = '" + CmdtySelectSubMode.SEC_ID_TYPE + "'");
+                             "<mode> = '" + SecSelectMode.ID + "' and " +
+                             "<sub-mode> = '" + SecSelectSubMode.SEC_ID_TYPE + "'");
     	  throw new InvalidCommandLineArgsException();
       }
     }
@@ -521,29 +521,29 @@ public class CmdLineHelper
       System.err.println("ISIN:         '" + isin + "'");
     }
 
-    return getCmdtyIDCore( subMode, 
+    return getSecIDCore( subMode, 
     				   	   exch, ticker, 
     				   	   mic, micID, 
     				   	   secIDType, isin);
   }
   
-  private static GCshCmdtyID getCmdtyIDCore(
-		  CmdtySelectSubMode subMode,
-	      GCshCmdtyCurrNameSpace.Exchange exch, String ticker,
-	      GCshCmdtyCurrNameSpace.MIC mic, String micID,
-	      GCshCmdtyCurrNameSpace.SecIdType secIDType, String isin)
+  private static GCshSecID getSecIDCore(
+		  SecSelectSubMode subMode,
+	      GCshCmdtyNameSpace.Exchange exch, String ticker,
+	      GCshCmdtyNameSpace.MIC mic, String micID,
+	      GCshCmdtyNameSpace.SecIdType secIDType, String isin)
   {
-		GCshCmdtyID cmdtyID = null;
+		GCshSecID secID = null;
 	    
-	    if ( subMode == CmdtySelectSubMode.EXCHANGE_TICKER ) 
+	    if ( subMode == SecSelectSubMode.EXCHANGE_TICKER ) 
 	    {
-	    	cmdtyID = new GCshCmdtyID_Exchange( exch, ticker );
+	    	secID = new GCshSecID_Exchange( exch, ticker );
 	    }
-	    else if ( subMode == CmdtySelectSubMode.MIC )
+	    else if ( subMode == SecSelectSubMode.MIC )
 	    {
-	    	cmdtyID = new GCshCmdtyID_MIC( mic, micID );
+	    	secID = new GCshSecID_MIC( mic, micID );
 	    }
-	    else if ( subMode == CmdtySelectSubMode.SEC_ID_TYPE )
+	    else if ( subMode == SecSelectSubMode.SEC_ID_TYPE )
 	    {
 	    	// ::TODO / possibly later: variants for wkn, cusip, sedol
 	    	// 
@@ -552,10 +552,10 @@ public class CmdLineHelper
 	    	// (It only is in the project's specific test file, which 
 	    	// reflects the way the author organizes his data, but by 
 	    	// no means is the only "correct", let alone conceivable way).
-	    	cmdtyID = new GCshCmdtyID_SecIdType( secIDType, isin );
+	    	secID = new GCshSecID_SecIdType( secIDType, isin );
 	    }
 	    
-	    return cmdtyID;
+	    return secID;
   }
 
 }

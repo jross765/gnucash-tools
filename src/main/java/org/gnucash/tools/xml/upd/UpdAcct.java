@@ -14,7 +14,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashAccount;
 import org.gnucash.api.write.GnuCashWritableAccount;
 import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
-import org.gnucash.base.basetypes.complex.GCshCmdtyCurrID;
+import org.gnucash.base.basetypes.complex.GCshCmdtyID;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.tools.CommandLineTool;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ public class UpdAcct extends CommandLineTool
   private static String              name = null;
   private static String              descr = null;
   private static GnuCashAccount.Type type = null;
-  private static GCshCmdtyCurrID     cmdtyCurrID = null;
+  private static GCshCmdtyID     cmdtyCurrID = null;
 
   private static GnuCashWritableAccount acct = null;
 
@@ -300,7 +300,7 @@ public class UpdAcct extends CommandLineTool
     {
       try
       {
-        cmdtyCurrID = GCshCmdtyCurrID.parse( cmdLine.getOptionValue("commodity-currency-id") );
+        cmdtyCurrID = GCshCmdtyID.parse( cmdLine.getOptionValue("commodity-currency-id") );
       }
       catch ( Exception exc )
       {
