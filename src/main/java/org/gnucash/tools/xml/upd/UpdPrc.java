@@ -27,6 +27,7 @@ import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 public class UpdPrc extends CommandLineTool
 {
   // Logger
+  @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(UpdPrc.class);
   
   // -----------------------------------------------------------------

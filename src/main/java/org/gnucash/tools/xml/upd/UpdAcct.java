@@ -27,6 +27,7 @@ import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 public class UpdAcct extends CommandLineTool
 {
   // Logger
+  @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(UpdAcct.class);
   
   // -----------------------------------------------------------------
@@ -42,7 +43,7 @@ public class UpdAcct extends CommandLineTool
   private static String              name = null;
   private static String              descr = null;
   private static GnuCashAccount.Type type = null;
-  private static GCshCmdtyID     cmdtyCurrID = null;
+  private static GCshCmdtyID         cmdtyID = null;
 
   private static GnuCashWritableAccount acct = null;
 
@@ -118,11 +119,11 @@ public class UpdAcct extends CommandLineTool
       .longOpt("type")
       .get();
         
-    Option optCmdtyCurr = Option.builder("cmdty")
+    Option optSecCurr = Option.builder("sc")
       .hasArg()
-      .argName("cmdty/curr-id")
-      .desc("Commodity/currency ID")
-      .longOpt("commodity-currency-id")
+      .argName("sec/curr-id")
+      .desc("Security/currency ID")
+      .longOpt("security-currency-id")
       .get();
       
     // The convenient ones
@@ -135,7 +136,7 @@ public class UpdAcct extends CommandLineTool
     options.addOption(optName);
     options.addOption(optDescr);
     options.addOption(optType);
-    options.addOption(optCmdtyCurr);
+    options.addOption(optSecCurr);
   }
 
   @Override
@@ -188,10 +189,10 @@ public class UpdAcct extends CommandLineTool
       acct.setType(type);
     }
 
-    if ( cmdtyCurrID != null )
+    if ( cmdtyID != null )
     {
-      System.err.println("Setting commodity/currency");
-      acct.setCmdtyCurrID(cmdtyCurrID);
+      System.err.println("Setting security/currency");
+      acct.setCmdtyCurrID(cmdtyID);
     }
   }
 
@@ -295,20 +296,20 @@ public class UpdAcct extends CommandLineTool
     }
     System.err.println("Type: '" + type + "'");
 
-    // <commodity-currency-id>
-    if ( cmdLine.hasOption("commodity-currency-id") ) 
+    // <security-currency-id>
+    if ( cmdLine.hasOption("security-currency-id") ) 
     {
       try
       {
-        cmdtyCurrID = GCshCmdtyID.parse( cmdLine.getOptionValue("commodity-currency-id") );
+        cmdtyID = GCshCmdtyID.parse( cmdLine.getOptionValue("security-currency-id") );
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <commodity-currency-id>");
+        System.err.println("Could not parse <security-currency-id>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Cmdty/Curr: '" + cmdtyCurrID + "'");
+    System.err.println("Sec/Curr: '" + cmdtyID + "'");
   }
   
   @Override

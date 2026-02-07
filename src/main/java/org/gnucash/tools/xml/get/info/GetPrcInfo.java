@@ -184,7 +184,7 @@ public class GetPrcInfo extends CommandLineTool
     
     try
     {
-      System.out.println("From cmdty/curr:   " + prc.getFromCmdtyCurrQualifID());
+      System.out.println("From cmdty/curr:   " + prc.getFromCmdtyID());
     }
     catch (Exception exc)
     {
@@ -193,7 +193,7 @@ public class GetPrcInfo extends CommandLineTool
 
     try
     {
-      System.out.println("To curr:           " + prc.getToCurrencyQualifID());
+      System.out.println("To curr:           " + prc.getToCurrID());
     }
     catch (Exception exc)
     {

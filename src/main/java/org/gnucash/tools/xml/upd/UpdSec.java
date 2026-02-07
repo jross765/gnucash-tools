@@ -315,7 +315,7 @@ public class UpdSec extends CommandLineTool
       System.err.println("Could not parse <gnucash-out-file>");
       throw new InvalidCommandLineArgsException();
     }
-    
+
     if ( ! scriptMode )
     	System.err.println("GnuCash file (out): '" + gcshOutFileName + "'");
 
@@ -459,7 +459,7 @@ public class UpdSec extends CommandLineTool
       }
     }
 
-    if (!scriptMode)
+    if ( ! scriptMode )
       System.err.println("ISIN:         '" + isin + "'");
 
     // <name>
@@ -469,7 +469,7 @@ public class UpdSec extends CommandLineTool
       {
         name = cmdLine.getOptionValue("name");
       }
-      catch (Exception exc)
+      catch ( Exception exc )
       {
         System.err.println("Could not parse <name>");
         throw new InvalidCommandLineArgsException();
