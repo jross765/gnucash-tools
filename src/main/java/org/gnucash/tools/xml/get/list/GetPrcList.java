@@ -139,7 +139,7 @@ public class GetPrcList extends CommandLineTool
     	fromCmdtyCurrID = cmdty.getQualifID();
     }
     
-    List<GnuCashPrice> prcList = gcshFile.getPricesByCmdtyCurrID( fromCmdtyCurrID );
+    List<GnuCashPrice> prcList = gcshFile.getPricesByCmdtyID( fromCmdtyCurrID );
     if ( prcList.size() == 0 ) 
     {
     	System.err.println("Found no price with for that commodity/currency ID.");

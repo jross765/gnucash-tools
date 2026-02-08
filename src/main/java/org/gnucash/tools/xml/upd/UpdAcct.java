@@ -192,7 +192,7 @@ public class UpdAcct extends CommandLineTool
     if ( cmdtyID != null )
     {
       System.err.println("Setting security/currency");
-      acct.setCmdtyCurrID(cmdtyID);
+      acct.setCmdtyID(cmdtyID);
     }
   }
 

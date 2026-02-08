@@ -163,7 +163,7 @@ public class GetPrcInfo extends CommandLineTool
     }
     else if ( mode == CmdLineHelper.PrcSelectMode.CMDTY_DATE )
     {
-        prc = gcshFile.getPriceByCmdtyIDDate(cmdtyID, date);
+        prc = gcshFile.getPriceBySecIDDate(cmdtyID, date);
         if ( prc == null )
         {
           System.err.println("Could not find a price matching this commodity-ID/date.");
