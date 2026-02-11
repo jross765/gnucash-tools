@@ -11,7 +11,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.gnucash.api.currency.ComplexPriceTable;
+import org.gnucash.api.pricedb.ComplexPriceTable;
 import org.gnucash.api.read.impl.GnuCashFileImpl;
 import org.gnucash.tools.CommandLineTool;
 import org.slf4j.Logger;
