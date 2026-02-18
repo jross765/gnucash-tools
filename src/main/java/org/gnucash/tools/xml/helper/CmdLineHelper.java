@@ -16,7 +16,6 @@ import org.gnucash.base.tuples.AcctIDAmountPair;
 
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
-import xyz.schnorxoborx.base.dateutils.DateHelpers;
 import xyz.schnorxoborx.base.dateutils.LocalDateHelpers;
 import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
@@ -69,7 +68,7 @@ public class CmdLineHelper
     }
     else
     {
-      dateFormat = Helper.DateFormat.ISO_8601;
+      dateFormat = Helper.DateFormat.ISO;
     }
     
     return dateFormat;
@@ -93,7 +92,7 @@ public class CmdLineHelper
     }
     else
     {
-      dateFormat = Helper.DateFormat.ISO_8601;
+      dateFormat = Helper.DateFormat.ISO;
     }
     
     return dateFormat;
@@ -102,16 +101,13 @@ public class CmdLineHelper
   // ------------------------------
 
   public static LocalDate getDate(CommandLine cmdLine, String argName,
-		  						  Helper.DateFormat dateFormat) throws InvalidCommandLineArgsException
+		  						  Helper.DateFormat dateFmt) throws InvalidCommandLineArgsException
   {
     LocalDate datum = LocalDate.now();
     
     try
     {
-      if ( dateFormat == Helper.DateFormat.ISO_8601 )
-        datum = LocalDateHelpers.parseLocalDate(cmdLine.getOptionValue(argName), DateHelpers.DATE_FORMAT_ISO);
-      else if ( dateFormat == Helper.DateFormat.DE )
-        datum = LocalDateHelpers.parseLocalDate(cmdLine.getOptionValue(argName));
+      datum = LocalDateHelpers.parseLocalDate(cmdLine.getOptionValue(argName), dateFmt);
     }
     catch (Exception exc)
     {
@@ -123,16 +119,13 @@ public class CmdLineHelper
   }
 
   public static LocalDate getDate(String arg, String argName,
-			  					  Helper.DateFormat dateFormat) throws InvalidCommandLineArgsException
+			  					  Helper.DateFormat dateFmt) throws InvalidCommandLineArgsException
 	{
 		LocalDate datum = LocalDate.now();
 
 		try
 		{
-			if ( dateFormat == Helper.DateFormat.ISO_8601 )
-				datum = LocalDateHelpers.parseLocalDate( arg, DateHelpers.DATE_FORMAT_ISO );
-			else if ( dateFormat == Helper.DateFormat.DE )
-				datum = LocalDateHelpers.parseLocalDate( arg );
+			datum = LocalDateHelpers.parseLocalDate( arg, dateFmt);
 		} catch ( Exception exc )
 		{
 			System.err.println( "Error: Could not parse <" + argName + ">" );

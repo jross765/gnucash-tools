@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
-import xyz.schnorxoborx.base.dateutils.DateHelpers;
 import xyz.schnorxoborx.base.dateutils.LocalDateHelpers;
 import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
@@ -69,7 +68,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
   @Override
   protected void init() throws Exception
   {
-    datePosted = LocalDateHelpers.parseLocalDate(DateHelpers.DATE_UNSET);
+    datePosted = LocalDateHelpers.DATE_UNSET;
 
     // cfg = new PropertiesConfiguration(System.getProperty("config"));
     // getConfigSettings(cfg);

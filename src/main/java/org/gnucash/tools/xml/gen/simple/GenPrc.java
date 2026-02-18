@@ -43,7 +43,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
 
   private static GCshCmdtyID         fromCmdtyCurrID = null;
   private static GCshCurrID          toCurrID = null;
-  private static Helper.DateFormat   dateFormat    = null;
+  private static Helper.DateFormat   dateFmt = null;
   private static LocalDate           date = null;
   private static FixedPointNumber    value = null;
   private static GnuCashPrice.Source source = null;
@@ -241,13 +241,13 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
     }
     
     // <date-format>
-    dateFormat = CmdLineHelper.getDateFormat(cmdLine, "date-format");
-    System.err.println("date-format: " + dateFormat);
+    dateFmt = CmdLineHelper.getDateFormat(cmdLine, "date-format");
+    System.err.println("date-format: " + dateFmt);
 
     // <date>
     try
     {
-      date = CmdLineHelper.getDate(cmdLine, "date", dateFormat); 
+      date = CmdLineHelper.getDate(cmdLine, "date", dateFmt); 
       System.err.println("date: " + date);
     }
     catch ( Exception exc )

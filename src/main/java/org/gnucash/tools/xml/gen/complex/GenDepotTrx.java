@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
-import xyz.schnorxoborx.base.dateutils.DateHelpers;
 import xyz.schnorxoborx.base.dateutils.LocalDateHelpers;
 import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
@@ -119,7 +118,7 @@ public class GenDepotTrx extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    datPst = LocalDateHelpers.parseLocalDate(DateHelpers.DATE_UNSET);
+    datPst = LocalDateHelpers.DATE_UNSET;
 
     // cfg = new PropertiesConfiguration(System.getProperty("config"));
     // getConfigSettings(cfg);
