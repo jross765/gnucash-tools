@@ -257,11 +257,11 @@ public class GetAcctInfo extends CommandLineTool
     
     try
     {
-      System.out.println("Cmdty/Curr:      '" + acct.getCmdtyID() + "'");
+      System.out.println("Sec/Curr:        '" + acct.getCmdtyID() + "'");
     }
     catch ( Exception exc )
     {
-      System.out.println("Cmdty/Curr:      " + "ERROR");
+      System.out.println("Sec/Curr:        " + "ERROR");
     }
     
     System.out.println("");

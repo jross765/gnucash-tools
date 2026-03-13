@@ -166,11 +166,11 @@ public class GetTrxInfo extends CommandLineTool
     System.out.println("");
     try
     {
-      System.out.println("Cmdty/Curr:      " + trx.getCmdtyID());
+      System.out.println("Sec/Curr:        " + trx.getCmdtyID());
     }
     catch ( Exception exc )
     {
-      System.out.println("Cmdty/Curr:      " + "ERROR");
+      System.out.println("Sec/Curr:        " + "ERROR");
     }
         
     try
