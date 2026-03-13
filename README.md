@@ -4,13 +4,20 @@
 
 This module is a collection of various ready-to-use tools reading and manipulating 
 GnuCash 
-XML files. They are, of course, based on the module "Base", "API" and "Extensions", 
-but *not* (technically) on "Examples".
+XML files. They are, of course, based on the modules
 
-You will notice that the tools partially pull on the examples in the "Examples" 
-module, and thus we have a *logical* dependency here. Currently, there are many 
-similarities between the two modules, but expect those two modules to deviate 
-from one another in the course of the future releases to come.
+* Base
+* API (Core)
+* API Specialized Entities
+* API Extensions,
+
+but *not* (technically) on "API Examples".
+
+You will notice, however, that the tools partially pull on the examples in the module 
+"API Examples", and thus we have a *logical* dependency here. In earlier versions,
+there were many similarities between the two modules, but they have deviated from 
+one another since then (and will continue to do so in the course of the future releases 
+to come).
 
 ## What is This Repo's Relationship with the Other Repos?
 
@@ -29,7 +36,7 @@ from one another in the course of the future releases to come.
   * GetTrxSpltList
 
 * Existing tools: 
-  * GenCmdty: More optional fields; check whether commodity with given ISIN already exists.
+  * GenSec: More optional fields; check whether security with given ISIN already exists.
   * Others: Small improvements
 
 ### V. 1.6 &rarr; 1.7
@@ -70,4 +77,7 @@ Created and added a number of tools:
 ./.
 
 ## Known Issues
-* The programs that generate new objects (`gen.simple.GenXYZ`) currently only work (reliably) when at least one object of the same type (a customer, say) is already in the file (cf. according note on issue in README file for package "API").
+* The programs that generate new objects (`gen.simple.GenXYZ`) currently only work (reliably) 
+  when at least one object of the same type 
+  (a customer, say) 
+  is already in the file (cf. according note on issue in README file for package "API (Core)").
