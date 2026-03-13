@@ -256,11 +256,11 @@ public class GetSecInfo extends CommandLineTool
 
     try
     {
-      System.out.println("ISIN:              '" + sec.getXCode() + "'");
+      System.out.println("XCode (ISIN):      '" + sec.getXCode() + "'");
     }
     catch (Exception exc)
     {
-      System.out.println("ISIN:              " + "ERROR");
+      System.out.println("XCode (ISIN):      " + "ERROR");
     }
 
     try
