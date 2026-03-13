@@ -184,11 +184,11 @@ public class GetPrcInfo extends CommandLineTool
     
     try
     {
-      System.out.println("From cmdty/curr:   " + prc.getFromCmdtyID());
+      System.out.println("From sec/curr:     " + prc.getFromCmdtyID());
     }
     catch (Exception exc)
     {
-      System.out.println("From cmdty/curr:   " + "ERROR");
+      System.out.println("From sec/curr:     " + "ERROR");
     }
 
     try
