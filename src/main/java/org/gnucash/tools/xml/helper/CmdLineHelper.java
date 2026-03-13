@@ -12,7 +12,7 @@ import org.gnucash.base.basetypes.complex.GCshSecID_Exchange;
 import org.gnucash.base.basetypes.complex.GCshSecID_MIC;
 import org.gnucash.base.basetypes.complex.GCshSecID_SecIdType;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
-import org.gnucash.base.tuples.AcctIDAmountPair;
+import org.gnucash.base.tuples.AcctIDAmountFPPair;
 
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
@@ -137,9 +137,9 @@ public class CmdLineHelper
 
   // -----------------------------------------------------------------
   
-  public static Collection<AcctIDAmountPair> getExpAcctAmtMulti(CommandLine cmdLine, String argName) throws InvalidCommandLineArgsException
+  public static Collection<AcctIDAmountFPPair> getExpAcctAmtMulti(CommandLine cmdLine, String argName) throws InvalidCommandLineArgsException
   {
-    List<AcctIDAmountPair> result = new ArrayList<AcctIDAmountPair>();
+    List<AcctIDAmountFPPair> result = new ArrayList<AcctIDAmountFPPair>();
 
     if ( cmdLine.hasOption(argName) )
     {
@@ -155,9 +155,9 @@ public class CmdLineHelper
     return result;
   }
 
-  public static Collection<AcctIDAmountPair> getExpAcctAmtMulti(String arg, String argName) throws InvalidCommandLineArgsException
+  public static Collection<AcctIDAmountFPPair> getExpAcctAmtMulti(String arg, String argName) throws InvalidCommandLineArgsException
   {
-    List<AcctIDAmountPair> result = new ArrayList<AcctIDAmountPair>();
+    List<AcctIDAmountFPPair> result = new ArrayList<AcctIDAmountFPPair>();
 
     if ( arg == null )
     	return result;
@@ -177,7 +177,7 @@ public class CmdLineHelper
     		// System.err.println("*** pair: '" + pairStr + "'");
     		if ( ! pairStr.trim().equals( "" ) )
     		{
-        		AcctIDAmountPair newPair = getExpAcctAmtSingle( pairStr );
+        		AcctIDAmountFPPair newPair = getExpAcctAmtSingle( pairStr );
         		result.add(newPair);
     		}
     	}
@@ -191,7 +191,7 @@ public class CmdLineHelper
     return result;
   }
 
-  private static AcctIDAmountPair getExpAcctAmtSingle(String pairStr) throws InvalidCommandLineArgsException
+  private static AcctIDAmountFPPair getExpAcctAmtSingle(String pairStr) throws InvalidCommandLineArgsException
   {
 	int pos = pairStr.indexOf(ACCT_AMT_SEP_INNER);
 	if ( pos < 0 )
@@ -207,7 +207,7 @@ public class CmdLineHelper
 	Double amtDbl = Double.valueOf(amtStr);
 	// System.err.println(" - elt2: " + acctIDStr + " / " + amtStr);
         		
-	AcctIDAmountPair newPair = new AcctIDAmountPair(acctID, new FixedPointNumber(amtDbl));
+	AcctIDAmountFPPair newPair = new AcctIDAmountFPPair(acctID, new FixedPointNumber(amtDbl));
 
     return newPair;
   }

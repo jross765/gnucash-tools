@@ -561,7 +561,7 @@ public class GetAcctInfo extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "GetacctInfo", "", options, "", true );
+		formatter.printHelp( "GetAcctInfo", "", options, "", true );
 	}
 	catch ( IOException e )
 	{

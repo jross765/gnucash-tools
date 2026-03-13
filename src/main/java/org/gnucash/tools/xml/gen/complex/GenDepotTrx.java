@@ -26,7 +26,7 @@ import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
 import org.gnucash.apiext.secacct.SecuritiesAccountTransactionManager;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.base.basetypes.simple.GCshTrxID;
-import org.gnucash.base.tuples.AcctIDAmountPair;
+import org.gnucash.base.tuples.AcctIDAmountFPPair;
 import org.gnucash.tools.CommandLineTool;
 import org.gnucash.tools.xml.helper.CmdLineHelper;
 import org.joda.money.BigMoney;
@@ -72,7 +72,7 @@ public class GenDepotTrx extends CommandLineTool
   
   private static GCshAcctID        stockAcctID = null;
   private static GCshAcctID        incomeAcctID = null;
-  private static Collection<AcctIDAmountPair> expensesAcctAmtList = null;
+  private static Collection<AcctIDAmountFPPair> expensesAcctAmtList = null;
   private static GCshAcctID        offsetAcctID = null;
   
   private static FixedPointNumber  nofStocks = null;
@@ -417,7 +417,7 @@ public class GenDepotTrx extends CommandLineTool
 		}
 	}
 	
-	for ( AcctIDAmountPair elt : expensesAcctAmtList )
+	for ( AcctIDAmountFPPair elt : expensesAcctAmtList )
 	{
 		GnuCashAccount expensesAcct = gcshFile.getAccountByID(elt.accountID());
 		if ( expensesAcct == null )
@@ -448,7 +448,7 @@ public class GenDepotTrx extends CommandLineTool
 	}
 
 	int counter = 1;
-	for ( AcctIDAmountPair elt : expensesAcctAmtList )
+	for ( AcctIDAmountFPPair elt : expensesAcctAmtList )
 	{
 		GnuCashAccount expensesAcct = gcshFile.getAccountByID(elt.accountID());
 		System.err.println("Account 3." + counter + " name (expenses): '" + expensesAcct.getQualifiedName() + "'");
@@ -906,7 +906,7 @@ public class GenDepotTrx extends CommandLineTool
            		throw new InvalidCommandLineArgsException();
            	}
 
-           	expensesAcctAmtList = new ArrayList<AcctIDAmountPair>();
+           	expensesAcctAmtList = new ArrayList<AcctIDAmountFPPair>();
     	}
     	else
     	{
@@ -938,7 +938,7 @@ public class GenDepotTrx extends CommandLineTool
     		throw new InvalidCommandLineArgsException();
     	}
 
-    	expensesAcctAmtList = new ArrayList<AcctIDAmountPair>();
+    	expensesAcctAmtList = new ArrayList<AcctIDAmountFPPair>();
     }
     if (! silent)
     {
@@ -950,7 +950,7 @@ public class GenDepotTrx extends CommandLineTool
        	else
        	{
        		System.err.println("");
-       		for ( AcctIDAmountPair elt : expensesAcctAmtList )
+       		for ( AcctIDAmountFPPair elt : expensesAcctAmtList )
        			System.err.println(" - " + elt);
        	}
     }
