@@ -106,7 +106,7 @@ public class GetTrxSpltList extends CommandLineTool
     Option optReconState = Option.builder("stat")
       .hasArg()
       .argName("stat")
-      .desc("Reconciliation state (split level)")
+      .desc("Reconciliation state")
       .longOpt("recon-state")
       .get();
     
@@ -124,14 +124,14 @@ public class GetTrxSpltList extends CommandLineTool
     Option optValueFrom = Option.builder("fv")
       .hasArg()
       .argName("value")
-      .desc("From value (split level)")
+      .desc("From value")
       .longOpt("from-value")
       .get();
     	          
     Option optValueTo = Option.builder("tv")
       .hasArg()
       .argName("value")
-      .desc("To value (split level)")
+      .desc("To value")
       .longOpt("to-value")
       .get();
     	    	          
@@ -140,14 +140,14 @@ public class GetTrxSpltList extends CommandLineTool
     Option optNofSharesFrom = Option.builder("fq")
       .hasArg()
       .argName("no")
-      .desc("From quantity (split level)")
+      .desc("From quantity")
       .longOpt("from-quantity")
       .get();
     	          
     Option optNofSharesTo = Option.builder("tq")
       .hasArg()
       .argName("no")
-      .desc("To quantity (split level)")
+      .desc("To quantity")
       .longOpt("to-quantity")
       .get();
     	    	          

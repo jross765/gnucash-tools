@@ -131,7 +131,7 @@ public class GetTrxList extends CommandLineTool
     Option optAcct = Option.builder("acct")
       .hasArg()
       .argName("acct")
-      .desc("Account ID")
+      .desc("Account ID (split level)")
       .longOpt("account-id")
       .get();
     

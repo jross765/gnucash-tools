@@ -33,7 +33,7 @@ public class GetTrxSpltInfo extends CommandLineTool
   private static Options options;
   
   private static String     gcshFileName = null;
-  private static GCshSpltID spltID = null;
+  private static GCshSpltID spltID       = null;
   
   private static boolean scriptMode = false; // ::TODO
 

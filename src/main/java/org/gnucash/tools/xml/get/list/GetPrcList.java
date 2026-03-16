@@ -12,9 +12,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.gnucash.api.read.GnuCashCommodity;
 import org.gnucash.api.read.GnuCashPrice;
-import org.gnucash.api.read.impl.GnuCashFileImpl;
+import org.gnucash.apispec.read.GnuCashSecurity;
+import org.gnucash.apispec.read.impl.GnuCashFileExtImpl;
 import org.gnucash.base.basetypes.complex.GCshCmdtyID;
 import org.gnucash.tools.CommandLineTool;
 import org.slf4j.Logger;
@@ -37,10 +37,10 @@ public class GetPrcList extends CommandLineTool
   private static Options options;
   
   private static String                gcshFileName    = null;
-  private static Helper.CmdtySecSingleSelMode   cmdtyMode = null;
-  private static GCshCmdtyID           fromCmdtyCurrID = null;
-  private static String                fromCmdtyIsin   = null;
-  private static String                fromCmdtyName   = null;
+  private static Helper.CmdtySecSingleSelMode   secMode = null;
+  private static GCshCmdtyID           fromSecCurrID = null;
+  private static String                fromSecIsin   = null;
+  private static String                fromSecName   = null;
   
   private static boolean scriptMode = false; // ::TODO
 
@@ -81,28 +81,28 @@ public class GetPrcList extends CommandLineTool
       .required()
       .hasArg()
       .argName("mode")
-      .desc("Commodity/currency selection mode")
+      .desc("Security/currency selection mode")
       .longOpt("mode")
       .get();
     	    	        
-    Option optFromCmdtyCurr= Option.builder("fr")
+    Option optFromSecCurr= Option.builder("fr")
       .hasArg()
-      .argName("cmdty/curr")
-      .desc("From-commodity/currency")
-      .longOpt("from-cmdty-curr")
+      .argName("qualifiD")
+      .desc("From-security/currency qualified ID")
+      .longOpt("from-sec-curr")
       .get();
     	    	          
     Option optFromISIN = Option.builder("is")
       .hasArg()
       .argName("isin")
-      .desc("From-commodity/currency ISIN")
+      .desc("From-security/currency ISIN")
       .longOpt("isin")
       .get();
     	        
     Option optFromName = Option.builder("fn")
       .hasArg()
       .argName("name")
-      .desc("From-commodity/currency Name (or part of)")
+      .desc("From-security/currency Name (or part of)")
       .longOpt("name")
       .get();
     	          
@@ -112,7 +112,7 @@ public class GetPrcList extends CommandLineTool
     options = new Options();
     options.addOption(optFile);
     options.addOption(optMode);
-    options.addOption(optFromCmdtyCurr);
+    options.addOption(optFromSecCurr);
     options.addOption(optFromISIN);
     options.addOption(optFromName);
   }
@@ -126,23 +126,23 @@ public class GetPrcList extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
+    GnuCashFileExtImpl gcshFile = new GnuCashFileExtImpl(new File(gcshFileName), true);
     
-    if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ISIN )
+    if ( secMode == Helper.CmdtySecSingleSelMode.ISIN )
     {
-        GnuCashCommodity cmdty = gcshFile.getCommodityByXCode(fromCmdtyIsin);
-    	fromCmdtyCurrID = cmdty.getQualifID();
+        GnuCashSecurity sec = gcshFile.getSecurityByXCode(fromSecIsin);
+    	fromSecCurrID = sec.getQualifID();
     }
-    else if ( cmdtyMode == Helper.CmdtySecSingleSelMode.NAME )
+    else if ( secMode == Helper.CmdtySecSingleSelMode.NAME )
     {
-    	GnuCashCommodity cmdty = gcshFile.getCommodityByNameUniq(fromCmdtyName);
-    	fromCmdtyCurrID = cmdty.getQualifID();
+    	GnuCashSecurity sec = gcshFile.getSecurityByNameUniq(fromSecName);
+    	fromSecCurrID = sec.getQualifID();
     }
     
-    List<GnuCashPrice> prcList = gcshFile.getPricesByCmdtyID( fromCmdtyCurrID );
+    List<GnuCashPrice> prcList = gcshFile.getPricesByCmdtyID( fromSecCurrID );
     if ( prcList.size() == 0 ) 
     {
-    	System.err.println("Found no price with for that commodity/currency ID.");
+    	System.err.println("Found no price with for that security/currency ID.");
     	throw new NoEntryFoundException();
     }
 
@@ -189,7 +189,7 @@ public class GetPrcList extends CommandLineTool
     // <mode>
     try
     {
-      cmdtyMode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("mode"));
+      secMode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("mode"));
     }
     catch ( Exception exc )
     {
@@ -197,41 +197,41 @@ public class GetPrcList extends CommandLineTool
       throw new InvalidCommandLineArgsException();
     }
 
-    // <from-cmdty-curr>
-    if ( cmdLine.hasOption("from-cmdty-curr") )
+    // <from-sec-curr>
+    if ( cmdLine.hasOption("from-sec-curr") )
     {
-      if ( cmdtyMode != Helper.CmdtySecSingleSelMode.ID )
+      if ( secMode != Helper.CmdtySecSingleSelMode.ID )
       {
-        System.err.println("<from-cmdty-curr> must only be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
+        System.err.println("<from-sec-curr> must only be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
       
       try
       {
-          fromCmdtyCurrID = GCshCmdtyID.parse(cmdLine.getOptionValue("from-cmdty-curr")); 
+          fromSecCurrID = GCshCmdtyID.parse(cmdLine.getOptionValue("from-sec-curr")); 
       }
       catch (Exception exc)
       {
-        System.err.println("Could not parse <from-cmdty-curr>");
+        System.err.println("Could not parse <from-sec-curr>");
         throw new InvalidCommandLineArgsException();
       }
     }
     else
     {
-      if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ID )
+      if ( secMode == Helper.CmdtySecSingleSelMode.ID )
       {
-        System.err.println("<from-cmdty-curr> must be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
+        System.err.println("<from-sec-curr> must be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
     }
 
     if (!scriptMode)
-      System.err.println("From-commodity/currency ID:   '" + fromCmdtyCurrID + "'");
+      System.err.println("From-security/currency ID:   '" + fromSecCurrID + "'");
 
     // <isin>
     if ( cmdLine.hasOption("isin") )
     {
-      if ( cmdtyMode != Helper.CmdtySecSingleSelMode.ISIN )
+      if ( secMode != Helper.CmdtySecSingleSelMode.ISIN )
       {
         System.err.println("<isin> must only be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
         throw new InvalidCommandLineArgsException();
@@ -239,7 +239,7 @@ public class GetPrcList extends CommandLineTool
       
       try
       {
-    	  fromCmdtyIsin = cmdLine.getOptionValue("isin");
+    	  fromSecIsin = cmdLine.getOptionValue("isin");
       }
       catch (Exception exc)
       {
@@ -249,7 +249,7 @@ public class GetPrcList extends CommandLineTool
     }
     else
     {
-      if ( cmdtyMode == Helper.CmdtySecSingleSelMode.ISIN )
+      if ( secMode == Helper.CmdtySecSingleSelMode.ISIN )
       {
         System.err.println("<isin> must be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
         throw new InvalidCommandLineArgsException();
@@ -257,12 +257,12 @@ public class GetPrcList extends CommandLineTool
     }
 
     if (!scriptMode)
-      System.err.println("From-commodity/currency ISIN: '" + fromCmdtyIsin + "'");
+      System.err.println("From-security/currency ISIN: '" + fromSecIsin + "'");
 
     // <name>
     if ( cmdLine.hasOption("name") )
     {
-      if ( cmdtyMode != Helper.CmdtySecSingleSelMode.NAME )
+      if ( secMode != Helper.CmdtySecSingleSelMode.NAME )
       {
         System.err.println("<name> must only be set with <mode> = '" + Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
         throw new InvalidCommandLineArgsException();
@@ -270,7 +270,7 @@ public class GetPrcList extends CommandLineTool
       
       try
       {
-    	  fromCmdtyName = cmdLine.getOptionValue("name");
+    	  fromSecName = cmdLine.getOptionValue("name");
       }
       catch (Exception exc)
       {
@@ -280,7 +280,7 @@ public class GetPrcList extends CommandLineTool
     }
     else
     {
-      if ( cmdtyMode == Helper.CmdtySecSingleSelMode.NAME )
+      if ( secMode == Helper.CmdtySecSingleSelMode.NAME )
       {
         System.err.println("<name> must be set with <mode> = '" + Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
         throw new InvalidCommandLineArgsException();
@@ -288,7 +288,7 @@ public class GetPrcList extends CommandLineTool
     }
 
     if (!scriptMode)
-      System.err.println("From-commodity/currency name: '" + fromCmdtyName + "'");
+      System.err.println("From-security/currency name: '" + fromSecName + "'");
   }
   
   @Override

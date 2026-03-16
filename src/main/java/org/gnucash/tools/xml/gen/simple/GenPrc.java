@@ -41,7 +41,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
   private static String gcshInFileName = null;
   private static String gcshOutFileName = null;
 
-  private static GCshCmdtyID         fromCmdtyCurrID = null;
+  private static GCshCmdtyID         fromSecCurrID = null;
   private static GCshCurrID          toCurrID = null;
   private static Helper.DateFormat   dateFmt = null;
   private static LocalDate           date = null;
@@ -95,8 +95,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
       .required()
       .hasArg()
       .argName("sec/curr")
-      .desc("From-commodity/currency")
-      .longOpt("from-cmdty-curr")
+      .desc("From-security/currency")
+      .longOpt("from-sec-curr")
       .get();
           
     Option optToCurr = Option.builder("t")
@@ -160,8 +160,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
   {
     GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
     
-    GnuCashWritablePrice prc = gcshFile.createWritablePrice(fromCmdtyCurrID, toCurrID, date);
-    // prc.setFromCmdtyCurrQualifID(fromCmdtyCurrID);
+    GnuCashWritablePrice prc = gcshFile.createWritablePrice(fromSecCurrID, toCurrID, date);
+    // prc.setFromSecCurrQualifID(fromSecCurrID);
     // prc.setToCurrencyQualifID(toCurrID);
     prc.setType(GnuCashPrice.Type.LAST);
     // prc.setDate(date);
@@ -219,8 +219,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
     // <from-sec-curr>
     try
     {
-      fromCmdtyCurrID = GCshCmdtyID.parse(cmdLine.getOptionValue("from-sec-curr")); 
-      System.err.println("from-sec-curr: " + fromCmdtyCurrID);
+      fromSecCurrID = GCshCmdtyID.parse(cmdLine.getOptionValue("from-sec-curr")); 
+      System.err.println("from-sec-curr: " + fromSecCurrID);
     }
     catch ( Exception exc )
     {

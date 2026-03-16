@@ -40,7 +40,7 @@ public class GenAcct extends CommandLineTool
   
   private static String               name        = null;
   private static GnuCashAccount.Type  type        = null;
-  private static GCshCmdtyID          cmdtyCurrID = null;
+  private static GCshCmdtyID          secCurrID   = null;
   private static GCshAcctID           parentID    = null;
   
   // -----------------------------------------------------------------
@@ -102,12 +102,12 @@ public class GenAcct extends CommandLineTool
       .longOpt("type")
       .get();
     	    
-    Option optCmdtyCurr = Option.builder("sc")
+    Option optSecCurr = Option.builder("sc")
       .required()
       .hasArg()
-      .argName("cmdty/curr")
-      .desc("Account currency: a (qualified) commodity or a currency ID")
-      .longOpt("commodity-currency")
+      .argName("sec/curr")
+      .desc("Account currency: a (qualified) security or a currency ID")
+      .longOpt("security-currency")
       .get();
     	    
     Option optParent = Option.builder("p")
@@ -125,7 +125,7 @@ public class GenAcct extends CommandLineTool
     options.addOption(optFileOut);
     options.addOption(optName);
     options.addOption(optType);
-    options.addOption(optCmdtyCurr);
+    options.addOption(optSecCurr);
     options.addOption(optParent);
   }
 
@@ -145,7 +145,7 @@ public class GenAcct extends CommandLineTool
     	throw new Exception();
     }
     
-    GnuCashWritableAccount acct = gcshFile.createWritableAccount(type, cmdtyCurrID, parentID, name);
+    GnuCashWritableAccount acct = gcshFile.createWritableAccount(type, secCurrID, parentID, name);
     
     System.out.println("Account to write: " + acct.toString());
     gcshFile.writeFile(new File(gcshOutFileName));
@@ -250,17 +250,17 @@ public class GenAcct extends CommandLineTool
     }
     System.err.println("Type:                        " + type);
     
-    // <commodity-currency>
+    // <security-currency>
     try
     {
-      cmdtyCurrID = GCshCmdtyID.parse( cmdLine.getOptionValue("commodity-currency") );
-      if ( ( cmdtyCurrID.getType() == GCshCmdtyID.Type.SECURITY ) &&
+      secCurrID = GCshCmdtyID.parse( cmdLine.getOptionValue("security-currency") );
+      if ( ( secCurrID.getType() == GCshCmdtyID.Type.SECURITY ) &&
     	   type != GnuCashAccount.Type.STOCK ) {
-          System.err.println("<commodity-currency> may be set to a security only if <type> = " + GnuCashAccount.Type.STOCK + "");
+          System.err.println("<security-currency> may be set to a security only if <type> = " + GnuCashAccount.Type.STOCK + "");
           throw new InvalidCommandLineArgsException();
-      } else if ( cmdtyCurrID.getType() == GCshCmdtyID.Type.CURRENCY &&
+      } else if ( secCurrID.getType() == GCshCmdtyID.Type.CURRENCY &&
     		      type == GnuCashAccount.Type.STOCK ) {
-          System.err.println("<commodity-currency> may be set to a (real) currency only if <type> != " + GnuCashAccount.Type.STOCK + "");
+          System.err.println("<security-currency> may be set to a (real) currency only if <type> != " + GnuCashAccount.Type.STOCK + "");
           throw new InvalidCommandLineArgsException();
       }
     }
@@ -269,7 +269,7 @@ public class GenAcct extends CommandLineTool
       System.err.println("Could not parse <security-currency>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("Account currency (cmdty/curr): " + cmdtyCurrID);
+    System.err.println("Account currency (sec/curr): " + secCurrID);
     
     // <parent>
     try

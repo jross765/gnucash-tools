@@ -42,8 +42,8 @@ public class GetPrcInfo extends CommandLineTool
   private static CmdLineHelper.PrcSelectMode mode = null;
   
   private static GCshPrcID         prcID         = null;
-  // Provide for selecting a currency as well ==> GCshCurrID and/ord GCshCmdtyCurrID
-  private static GCshSecID         cmdtyID       = null;  
+  // Provide for selecting a currency as well ==> GCshCurrID and/or GCshCmdtyID
+  private static GCshSecID         secID         = null;  
   private static Helper.DateFormat dateFormat    = null;
   private static LocalDate         date          = null;
   
@@ -70,7 +70,7 @@ public class GetPrcInfo extends CommandLineTool
   protected void init() throws Exception
   {
   	prcID = new GCshPrcID();
-  	cmdtyID = new GCshSecID();
+  	secID = new GCshSecID();
 
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
@@ -84,7 +84,7 @@ public class GetPrcInfo extends CommandLineTool
       .desc("GnuCash file")
       .longOpt("gnucash-file")
       .get();
-      
+
     Option optMode = Option.builder("m")
       .required()
       .hasArg()
@@ -92,41 +92,41 @@ public class GetPrcInfo extends CommandLineTool
       .desc("Selection mode")
       .longOpt("mode")
       .get();
-    	      
+
     Option optID = Option.builder("prc")
       .hasArg()
       .argName("UUID")
       .desc("Price ID (for mode = '" + CmdLineHelper.PrcSelectMode.ID + "' only)")
       .longOpt("price-id")
       .get();
-    	          
+
     // ::TODO:
     //  - Provide for selecting a currency as well
-    //  - For commodity: This is a temporary solution.
-    //    We need the commodity-sub-selection mode here as well,
-    //    just as in GetCmdtyInfo.
+    //  - For security: This is a temporary solution.
+    //    We need the security-sub-selection mode here as well,
+    //    just as in GetSecInfo.
     //    (And, of course, do that with minimal code redundancies.)
-    Option optCmdtyID = Option.builder("cmdty")
+    Option optSecID = Option.builder("sec")
       .hasArg()
-      .argName("cmdtyid")
-      .desc("Commodity ID (qualified) (for mode = '" + CmdLineHelper.PrcSelectMode.CMDTY_DATE + "' only)")
-      .longOpt("commodity-id")
+      .argName("secid")
+      .desc("Security ID (qualified) (for mode = '" + CmdLineHelper.PrcSelectMode.SEC_DATE + "' only)")
+      .longOpt("security-id")
       .get();
-    	    	          
+
     Option optDateFormat = Option.builder("df")
       .hasArg()
       .argName("date-format")
       .desc("Date format")
       .longOpt("date-format")
       .get();
-    	    	            
+
     Option optDate = Option.builder("dat")
       .hasArg()
       .argName("date")
       .desc("Date")
       .longOpt("date")
       .get();
-    	    	          
+
     // The convenient ones
     // ::EMPTY
             
@@ -134,7 +134,7 @@ public class GetPrcInfo extends CommandLineTool
     options.addOption(optFile);
     options.addOption(optMode);
     options.addOption(optID);
-    options.addOption(optCmdtyID);
+    options.addOption(optSecID);
     options.addOption(optDateFormat);
     options.addOption(optDate);
   }
@@ -161,9 +161,9 @@ public class GetPrcInfo extends CommandLineTool
           throw new NoEntryFoundException();
         }
     }
-    else if ( mode == CmdLineHelper.PrcSelectMode.CMDTY_DATE )
+    else if ( mode == CmdLineHelper.PrcSelectMode.SEC_DATE )
     {
-        prc = gcshFile.getPriceBySecIDDate(cmdtyID, date);
+        prc = gcshFile.getPriceBySecIDDate(secID, date);
         if ( prc == null )
         {
           System.err.println("Could not find a price matching this commodity-ID/date.");
@@ -319,15 +319,15 @@ public class GetPrcInfo extends CommandLineTool
     // <commodity-id>
     if ( cmdLine.hasOption( "commodity-id" ) )
     {
-    	if ( mode != CmdLineHelper.PrcSelectMode.CMDTY_DATE )
+    	if ( mode != CmdLineHelper.PrcSelectMode.SEC_DATE )
     	{
-            System.err.println("<commodity-id> may only be set with <mode> = " + CmdLineHelper.PrcSelectMode.CMDTY_DATE);
+            System.err.println("<commodity-id> may only be set with <mode> = " + CmdLineHelper.PrcSelectMode.SEC_DATE);
             throw new InvalidCommandLineArgsException();
     	}
     		
         try
         {
-          cmdtyID = GCshSecID.parse( cmdLine.getOptionValue("commodity-id") ); 
+          secID = GCshSecID.parse( cmdLine.getOptionValue("commodity-id") ); 
         }
         catch ( Exception exc )
         {
@@ -337,22 +337,22 @@ public class GetPrcInfo extends CommandLineTool
     }
     else
     {
-    	if ( mode == CmdLineHelper.PrcSelectMode.CMDTY_DATE )
+    	if ( mode == CmdLineHelper.PrcSelectMode.SEC_DATE )
     	{
-            System.err.println("<commodity-id> must be set with <mode> = " + CmdLineHelper.PrcSelectMode.CMDTY_DATE);
+            System.err.println("<commodity-id> must be set with <mode> = " + CmdLineHelper.PrcSelectMode.SEC_DATE);
             throw new InvalidCommandLineArgsException();
     	}
     }
     
     if (!scriptMode)
-        System.err.println("Commodity ID: " + cmdtyID);
+        System.err.println("Commodity ID: " + secID);
 
     // <date-format>
     if ( cmdLine.hasOption( "date-format" ) )
     {
-    	if ( mode != CmdLineHelper.PrcSelectMode.CMDTY_DATE )
+    	if ( mode != CmdLineHelper.PrcSelectMode.SEC_DATE )
     	{
-            System.err.println("<date-format> may only be set with <mode> = " + CmdLineHelper.PrcSelectMode.CMDTY_DATE);
+            System.err.println("<date-format> may only be set with <mode> = " + CmdLineHelper.PrcSelectMode.SEC_DATE);
             throw new InvalidCommandLineArgsException();
     	}
     	
@@ -360,9 +360,9 @@ public class GetPrcInfo extends CommandLineTool
     }
     else
     {
-    	if ( mode == CmdLineHelper.PrcSelectMode.CMDTY_DATE )
+    	if ( mode == CmdLineHelper.PrcSelectMode.SEC_DATE )
     	{
-            System.err.println("<date-format> must be set with <mode> = " + CmdLineHelper.PrcSelectMode.CMDTY_DATE);
+            System.err.println("<date-format> must be set with <mode> = " + CmdLineHelper.PrcSelectMode.SEC_DATE);
             throw new InvalidCommandLineArgsException();
     	}
     }
@@ -373,9 +373,9 @@ public class GetPrcInfo extends CommandLineTool
     // <date>
     if ( cmdLine.hasOption( "date" ) )
     {
-    	if ( mode != CmdLineHelper.PrcSelectMode.CMDTY_DATE )
+    	if ( mode != CmdLineHelper.PrcSelectMode.SEC_DATE )
     	{
-            System.err.println("<date> may only be set with <mode> = " + CmdLineHelper.PrcSelectMode.CMDTY_DATE);
+            System.err.println("<date> may only be set with <mode> = " + CmdLineHelper.PrcSelectMode.SEC_DATE);
             throw new InvalidCommandLineArgsException();
     	}
     		
@@ -383,9 +383,9 @@ public class GetPrcInfo extends CommandLineTool
     }
     else
     {
-    	if ( mode == CmdLineHelper.PrcSelectMode.CMDTY_DATE )
+    	if ( mode == CmdLineHelper.PrcSelectMode.SEC_DATE )
     	{
-            System.err.println("<date> must be set with <mode> = " + CmdLineHelper.PrcSelectMode.CMDTY_DATE);
+            System.err.println("<date> must be set with <mode> = " + CmdLineHelper.PrcSelectMode.SEC_DATE);
             throw new InvalidCommandLineArgsException();
     	}
     }

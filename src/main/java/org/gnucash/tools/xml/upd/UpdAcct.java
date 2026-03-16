@@ -43,7 +43,7 @@ public class UpdAcct extends CommandLineTool
   private static String              name = null;
   private static String              descr = null;
   private static GnuCashAccount.Type type = null;
-  private static GCshCmdtyID         cmdtyID = null;
+  private static GCshCmdtyID         secCurrID = null;
 
   private static GnuCashWritableAccount acct = null;
 
@@ -189,10 +189,10 @@ public class UpdAcct extends CommandLineTool
       acct.setType(type);
     }
 
-    if ( cmdtyID != null )
+    if ( secCurrID != null )
     {
       System.err.println("Setting security/currency");
-      acct.setCmdtyID(cmdtyID);
+      acct.setCmdtyID(secCurrID);
     }
   }
 
@@ -301,7 +301,7 @@ public class UpdAcct extends CommandLineTool
     {
       try
       {
-        cmdtyID = GCshCmdtyID.parse( cmdLine.getOptionValue("security-currency-id") );
+        secCurrID = GCshCmdtyID.parse( cmdLine.getOptionValue("security-currency-id") );
       }
       catch ( Exception exc )
       {
@@ -309,7 +309,7 @@ public class UpdAcct extends CommandLineTool
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Sec/Curr: '" + cmdtyID + "'");
+    System.err.println("Sec/Curr: '" + secCurrID + "'");
   }
   
   @Override

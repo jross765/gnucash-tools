@@ -1,4 +1,4 @@
-package org.gnucash.tools.xml.get.info;
+package org.gnucash.tools.xml.sonstige;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.gnucash.api.read.GnuCashPrice;
 import org.gnucash.apispec.read.GnuCashSecurity;
 import org.gnucash.apispec.read.impl.GnuCashFileExtImpl;
 import org.gnucash.base.basetypes.complex.GCshCmdtyNameSpace;
@@ -27,11 +26,11 @@ import org.slf4j.LoggerFactory;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class GetSecInfo extends CommandLineTool
+public class TestSelSec extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(GetSecInfo.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestSelSec.class);
   
   // -----------------------------------------------------------------
 
@@ -54,15 +53,13 @@ public class GetSecInfo extends CommandLineTool
   private static StringBuffer  micID    = new StringBuffer();
   private static StringBuffer  isin     = new StringBuffer();
   // Possibly later:
-  // private static String  wkn      = new StringBuffer();
-  // private static String  cusip    = new StringBuffer();
-  // private static String  sedol    = new StringBuffer();
+  // private static StringBuffer  wkn      = new StringBuffer();
+  // private static StringBuffer  cusip    = new StringBuffer();
+  // private static StringBuffer  sedol    = new StringBuffer();
   
   private static StringBuffer  secName     = new StringBuffer();
   
-  private static boolean showQuotes = false;
-  
-  private static boolean scriptMode = false; // ::TODO
+  private static boolean scriptMode = false;
   
   // -----------------------------------------------------------------
 
@@ -70,7 +67,7 @@ public class GetSecInfo extends CommandLineTool
   {
     try
     {
-      GetSecInfo tool = new GetSecInfo ();
+      TestSelSec tool = new TestSelSec ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -177,10 +174,7 @@ public class GetSecInfo extends CommandLineTool
       .get();
           
     // The convenient ones
-    Option optShowQuote = Option.builder("squt")
-      .desc("Show quotes")
-      .longOpt("show-quotes")
-      .get();
+    // ::EMPTY
             
     options = new Options();
     options.addOption(optFile);
@@ -193,7 +187,6 @@ public class GetSecInfo extends CommandLineTool
     options.addOption(optSecIDType);
     options.addOption(optISIN);
     options.addOption(optSecName);
-    options.addOption(optShowQuote);
   }
 
   @Override
@@ -207,91 +200,12 @@ public class GetSecInfo extends CommandLineTool
   {
 	GnuCashFileExtImpl gcshFile = new GnuCashFileExtImpl(new File(gcshFileName), true);
 
-    GnuCashSecurity sec = SecurityHelper.getSec(mode.mode,
+	System.err.println("mmodexx: " + mode);
+    GnuCashSecurity sec = SecurityHelper.getSec(mode.mode, 
     											secID, isin.toString(), secName.toString(), 
-												gcshFile);
-    
-    // ----------------------------
+    											gcshFile);
 
-    try
-    {
-      System.out.println("Qualified ID:      '" + sec.getQualifID() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Qualified ID:      " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("XCode (ISIN):      '" + sec.getXCode() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("XCode (ISIN):      " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("toString:          " + sec.toString());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("toString:          " + "ERROR");
-    }
-    
-    try
-    {
-      System.out.println("Symbol:            '" + sec.getSymbol() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Symbol:            " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Name:              '" + sec.getName() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Name:              " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Fraction:          " + sec.getFraction());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Fraction:          " + "ERROR");
-    }
-
-    // ---
-
-    if ( showQuotes )
-      showQuotes(sec);
-  }
-
-  // -----------------------------------------------------------------
-
-  private void showQuotes(GnuCashSecurity sec)
-  {
-    System.out.println("");
-    System.out.println("Quotes:");
-
-    System.out.println("");
-    System.out.println("Number of quotes: " + sec.getQuotes().size());
-    
-    System.out.println("");
-    for ( GnuCashPrice prc : sec.getQuotes() )
-    {
-      System.out.println(" - " + prc.toString());
-    }
-
-    System.out.println("");
-    System.out.println("Youngest Quote:");
-    System.out.println(sec.getYoungestQuote());
+    System.out.println("Selected security: " + sec.toString());
   }
 
   // -----------------------------------------------------------------
@@ -339,19 +253,6 @@ public class GetSecInfo extends CommandLineTool
     								 ticker, micID, isin, 
     								 secName, 
     								 scriptMode );
-
-    // <show-quotes>
-    if (cmdLine.hasOption("show-quotes"))
-    {
-      showQuotes = true;
-    }
-    else
-    {
-      showQuotes = false;
-    }
-
-    if (!scriptMode)
-      System.err.println("Show quotes: " + showQuotes);
   }
 
   @Override
@@ -360,7 +261,7 @@ public class GetSecInfo extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "GetSecInfo", "", options, "", true );
+		formatter.printHelp( "TestSelSec", "", options, "", true );
 	}
 	catch ( IOException e )
 	{

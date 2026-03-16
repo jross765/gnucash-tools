@@ -37,7 +37,7 @@ public class GetAcctList extends CommandLineTool
   private static Helper.AcctListMode mode         = null;
   private static GnuCashAccount.Type type         = null;
   private static String              name         = null;
-  private static boolean             exclHidden  = false;
+  private static boolean             exclHidden   = false;
   
   private static boolean scriptMode = false; // ::TODO
 
