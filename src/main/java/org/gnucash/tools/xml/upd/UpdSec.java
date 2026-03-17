@@ -11,17 +11,17 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
 import org.gnucash.apispec.write.GnuCashWritableSecurity;
 import org.gnucash.apispec.write.impl.GnuCashWritableFileExtImpl;
 import org.gnucash.base.basetypes.complex.GCshCmdtyNameSpace;
 import org.gnucash.base.basetypes.complex.GCshSecID;
 import org.gnucash.tools.CommandLineTool;
+import org.gnucash.tools.xml.get.list.Helper;
 import org.gnucash.tools.xml.helper.CmdLineHelper;
+import org.gnucash.tools.xml.helper.SecurityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
@@ -38,18 +38,25 @@ public class UpdSec extends CommandLineTool
   private static String gcshInFileName  = null;
   private static String gcshOutFileName = null;
   
-  private static xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode mode = null;
-  private static CmdLineHelper.SecSelectSubMode subMode = null;
+  private static Helper.CmdtySecSingleSelMode secSelMode = null;
+  private static CmdLineHelper.SecSelectSubMode secSelSubMode = null;
 
-  private static GCshSecID secID = null;
+  // CAUTION: As opposed to most other tools, the following variables
+  // have to be instantiated here.
   
-  private static String  isin     = null;
+  private static GCshSecID     secID    = new GCshSecID();
+  // This one and the following: sic, StringBuffer, not String,
+  // for it has to be mutable because of the way the args are parsed.
+  private static StringBuffer  ticker   = new StringBuffer();
+  private static StringBuffer  micID    = new StringBuffer();
+  private static StringBuffer  isin     = new StringBuffer();
   // Possibly later:
-  // private static String  wkn      = null;
-  // private static String  cusip    = null;
-  // private static String  sedol    = null;
+  // private static StringBuffer  wkn      = new StringBuffer();
+  // private static StringBuffer  cusip    = new StringBuffer();
+  // private static StringBuffer  sedol    = new StringBuffer();
+  // private static StringBuffer  secName  = new StringBuffer(); // <-- NOT for selection
 
-  private static String  name     = null;
+  private static String  newName     = null;
 
   private static GnuCashWritableSecurity sec = null;
 
@@ -75,8 +82,6 @@ public class UpdSec extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // acctID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -89,7 +94,7 @@ public class UpdSec extends CommandLineTool
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
       .get();
-          
+
     Option optFileOut = Option.builder("of")
       .required()
       .hasArg()
@@ -97,38 +102,48 @@ public class UpdSec extends CommandLineTool
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
       .get();
-      
-    Option optMode = Option.builder("m")
+
+    Option optMode = Option.builder("ssm")
       .required()
       .hasArg()
       .argName("mode")
-      .desc("Selection mode")
-      .longOpt("mode")
+      .desc("Selection mode for security")
+      .longOpt("sec-sel-mode")
       .get();
-        
-    Option optSubMode = Option.builder("sm")
+
+    Option optSubMode = Option.builder("sssm")
       .hasArg()
       .argName("submode")
-      .desc("Selection sub-mode " +
-    		"(for <mode> = " + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID + " only)")
-      .longOpt("sub-mode")
+      .desc("Selection sub-mode for security" +
+    		"(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " only)")
+      .longOpt("sec-sel-sub-mode")
       .get();
-    	        
+
+    Option optSecID = Option.builder("sec")
+      .hasArg()
+      .argName("secid")
+      .desc("Security ID (direct)" +
+      		"(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " only)")
+      .longOpt("security-id")
+      .get();
+
     Option optExchange = Option.builder("exch")
       .hasArg()
       .argName("exch")
       .desc("Exchange code " +
-   		    "(for <mode> = " + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.EXCHANGE_TICKER + " only)")
+    		"(Security ID indirect). " +
+   		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
+            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
       .longOpt("exchange")
       .get();
-    
+
     Option optTicker = Option.builder("tkr")
       .hasArg()
       .argName("ticker")
       .desc("Ticker " + 
-   		    "(for <mode> = " + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.EXCHANGE_TICKER + " only)")
+      		"(Security ID indirect). " +
+   		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
+            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
       .longOpt("ticker")
       .get();
     
@@ -136,8 +151,9 @@ public class UpdSec extends CommandLineTool
       .hasArg()
       .argName("mic")
       .desc("MIC " +
-   		    "(for <mode> = " + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.MIC + " only)")
+      		"(Security ID indirect). " +
+   		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
+            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_MIC + " only)")
       .longOpt("mic")
       .get();
     	      
@@ -145,8 +161,9 @@ public class UpdSec extends CommandLineTool
       .hasArg()
       .argName("micid")
       .desc("MIC-ID " +
-   		    "(for <mode> = " + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.MIC + " only)")
+      		"(Security ID indirect). " +
+   		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
+            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_MIC + " only)")
       .longOpt("mic-id")
       .get();
     	    
@@ -154,36 +171,33 @@ public class UpdSec extends CommandLineTool
       .hasArg()
       .argName("type")
       .desc("Security ID type " + 
-   		    "(for <mode> = " + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.SEC_ID_TYPE + " only)")
+      		"(Security ID indirect). " +
+   		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
+            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " only)")
       .longOpt("secid-type")
       .get();
-    	    	      
+
     Option optISIN = Option.builder("is")
       .hasArg()
       .argName("isin")
       .desc("ISIN " + 
-  		   	"(for <mode> = " + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN + " xor " +
-  		   	"( <mode> = " + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.SEC_ID_TYPE + " ) only)")
+      		"(Security ID indirect). " +
+  		   	"(for <mode> = " + Helper.CmdtySecSingleSelMode.ISIN + " xor " +
+  		   	"( <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
+            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " ) only)")
       .longOpt("isin")
       .get();
-            
-    Option optName = Option.builder("n")
+
+    // ---
+    
+    Option optNewName = Option.builder("n")
       .hasArg()
       .argName("name")
-      .desc("Security name")
-      .longOpt("name")
+      .desc("Security name (new)") // <-- !
+      .longOpt("new-name")
       .get();
-    
-//    Option optDescr = Option.builder("desc")
-//      .hasArg()
-//      .argName("descr")
-//      .desc("Account description")
-//      .longOpt("description")
-//      .get();
-      
-    Option optType = Option.builder("t")
+    	    
+    Option optNewType = Option.builder("t")
       .hasArg()
       .argName("type")
       .desc("Account type")
@@ -198,13 +212,15 @@ public class UpdSec extends CommandLineTool
     options.addOption(optFileOut);
     options.addOption(optMode);
     options.addOption(optSubMode);
+    options.addOption(optSecID);
     options.addOption(optExchange);
     options.addOption(optTicker);
     options.addOption(optMIC);
     options.addOption(optMICID);
     options.addOption(optSecIDType);
     options.addOption(optISIN);
-    options.addOption(optName);
+    options.addOption(optNewName);
+    options.addOption(optNewType);
   }
 
   @Override
@@ -218,57 +234,28 @@ public class UpdSec extends CommandLineTool
   {
     GnuCashWritableFileExtImpl gcshFile = new GnuCashWritableFileExtImpl(new File(gcshInFileName), true);
 
-    sec = null;
-    if ( mode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
-    {
-    	if ( secID != null ) 
-    	{
-    		sec = gcshFile.getWritableSecurityByID(secID);
-    		if ( sec == null )
-    		{
-    			System.err.println("Could not find security with ID " + secID);
-    	        throw new NoEntryFoundException();
-    		}
-    	}
-    	else
-    	{
-    		// Should not happen -- just in case
-			System.err.println("Parsed security ID is null. Cannot continue");
-	        throw new NoEntryFoundException();
-    	}
-    }
-    else if ( mode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN )
-    {
-      // CAUTION: This branch is *not necessarily* redundant to
-	  // the Mode.ID / SubMode.SEC_ID_TYPE branch above 
-      // (it only is in the project's specific test file, which 
-      // reflects the way the author organizes his data, but by 
-      // no means is the only "correct", let alone conceivable way).
-      sec = gcshFile.getWritableSecurityByXCode(isin);
-      if ( sec == null )
-      {
-        System.err.println("Could not find a security with this ISIN.");
-        throw new NoEntryFoundException();
-      }
-    }
-    // NOT by name!
+    sec = SecurityHelper.getWrtSec(secSelMode,
+    							secID, isin.toString(), null, // <-- sic, not by name 
+    							gcshFile,
+    							scriptMode);
+    System.err.println("Security before update: " + sec.toString());
     
-    // ----------------------------
+	// ----------------------------
     
-    doChanges(gcshFile);
-    System.err.println("Account after update: " + sec.toString());
+    doChanges();
+    System.err.println("Security after update: " + sec.toString());
     
     gcshFile.writeFile(new File(gcshOutFileName));
     
     System.out.println("OK");
   }
 
-  private void doChanges(GnuCashWritableFileImpl gcshFile) throws Exception
+  private void doChanges() throws Exception
   {
-    if ( name != null )
+    if ( newName != null )
     {
       System.err.println("Setting name");
-      sec.setName(name);
+      sec.setName(newName);
     }
   }
 
@@ -319,165 +306,85 @@ public class UpdSec extends CommandLineTool
     if ( ! scriptMode )
     	System.err.println("GnuCash file (out): '" + gcshOutFileName + "'");
 
-    // <mode>
+  	// ---------
+  	
+    // <sec-sel-mode>
     try
     {
-      mode = xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("mode"));
-      if ( mode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME )
-      {
-          System.err.println("<mode> = " + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME + " is not allowed in this context");
-          throw new InvalidCommandLineArgsException();
-      }
+      secSelMode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("sec-sel-mode"));
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <mode>");
+      System.err.println("Could not parse <sec-sel-mode>");
       throw new InvalidCommandLineArgsException();
     }
     
     if ( ! scriptMode )
-      System.err.println("Mode:         " + mode);
+      System.err.println("Security mode:         " + secSelMode);
 
-    // <sub-mode>
-    if ( cmdLine.hasOption("sub-mode") )
+    // <sec-sel-sub-mode>
+    if ( cmdLine.hasOption("sec-sel-sub-mode") )
     {
-        if ( mode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
+        if ( secSelMode != Helper.CmdtySecSingleSelMode.ID )
         {
-          System.err.println("<sub-mode> must only be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID.toString() + "'");
+          System.err.println("<sec-sel-sub-mode> must only be set with <sec-sel-mode> = '" + Helper.CmdtySecSingleSelMode.ID + "'");
           throw new InvalidCommandLineArgsException();
         }
         
         try
         {
-          subMode = CmdLineHelper.SecSelectSubMode.valueOf(cmdLine.getOptionValue("sub-mode"));
+          secSelSubMode = CmdLineHelper.SecSelectSubMode.valueOf(cmdLine.getOptionValue("sec-sel-sub-mode"));
         }
         catch ( Exception exc )
         {
-          System.err.println("Could not parse <sub-mode>");
+          System.err.println("Could not parse <sec-sel-sub-mode>");
           throw new InvalidCommandLineArgsException();
         }
     }
     else
     {
-        if ( mode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
+        if ( secSelMode == Helper.CmdtySecSingleSelMode.ID )
         {
-          System.err.println("<sub-mode> must be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID.toString() + "'");
+          System.err.println("<sec-sel-sub-mode> must be set with <sec-sel-mode> = '" + Helper.CmdtySecSingleSelMode.ID + "'");
           throw new InvalidCommandLineArgsException();
         }
     }
     
     if ( ! scriptMode )
-      System.err.println("Sub-mode:     " + subMode);
+      System.err.println("Security sub-mode:     " + secSelSubMode);
+    
+  	// ---------
 
+    // <sec-sel-mode>, <sec-sel-sub-mode>,
     // <exchange>, <ticker>,
     // <mid>, <mic-id>,
     // <secid-type>, <isin>
-    if ( ( cmdLine.hasOption("exchange")   && cmdLine.hasOption("ticker") ) ||
-    	 ( cmdLine.hasOption("mic")        && cmdLine.hasOption("mic-id") ) ||
-    	 ( cmdLine.hasOption("secid-type") && cmdLine.hasOption("isin") ) )
-    {
-        if ( mode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
-        {
-          System.err.println("Pair <exchange>/<ticker>, <mic>/<mic-id>, <secid-type>/<isin> must only be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID.toString() + "'");
-          throw new InvalidCommandLineArgsException();
-        }
-    	
-    	secID = CmdLineHelper.getSecID_ByID( cmdLine,
-    										mode, subMode,
-    										scriptMode);
-    	if ( secID == null )
-    	{
-            System.err.println("Could not get security ID from " + 
-            				   "<exchange>/<ticker> nor from" + 
-            				   "<mic>/<mic-id> nor from" + 
-            				   "<secid-type>/<isin>");
-            throw new InvalidCommandLineArgsException();
-    	}
-    }
-    else
-    {
-    	if ( ! cmdLine.hasOption("isin") )
-       	{
-               System.err.println("One of the following must be set:\n" + 
-            		   			  " - <exchange>/<ticker> (pair) xor\n"+ 
-            		   			  " - <mic>/<mic-id> (pair) xor\n"+ 
-               				   	  " - <secid-type>/<isin> (pair) xor\n"+ 
-               				   	  " - <isin> (alone)");
-               throw new InvalidCommandLineArgsException();
-       	}
-    }
+    // NOT NAME!
+    CmdLineHelper.parseSecStuffWrap( cmdLine, 
+    								 secSelMode, secSelSubMode, null,
+    								 secID, 
+    								 ticker, micID, isin, 
+    								 null, // <-- !
+    								 scriptMode );
 
-    // <isin> (alone)
-    if ( cmdLine.hasOption("isin") && 
-    	 ! cmdLine.hasOption("secid-type") )
-    {
-        if ( cmdLine.hasOption("exchange") ) 
-        {
-          System.err.println("Error: <isin> and <exchange> are mutually exclusive");
-          throw new InvalidCommandLineArgsException();
-        }
-
-        if ( cmdLine.hasOption("mic") ) 
-        {
-          System.err.println("Error: <isin> and <mic> are mutually exclusive");
-          throw new InvalidCommandLineArgsException();
-        }
-
-      if ( mode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN )
-      {
-        System.err.println("<isin> (alone) must only be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-      
-      try
-      {
-        isin = cmdLine.getOptionValue("isin");
-      }
-      catch (Exception exc)
-      {
-        System.err.println("Could not parse <isin>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    else
-    {
-//    	if ( ! cmdLine.hasOption("name") )
-//    	{
-//                  System.err.println("One of the following must be set:\n" + 
-//               		   			  " - <exchange>/<ticker> (pair) xor\n"+ 
-//               		   			  " - <mic>/<mic-id> (pair) xor\n"+ 
-//                  				   	  " - <secid-type>/<isin> (pair) xor\n"+ 
-//                  				   	  " - <isin> (alone)");
-//                  throw new InvalidCommandLineArgsException();
-//    	}
-    	
-      if ( mode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN &&
-    	   ! cmdLine.hasOption("secid-type") )
-      {
-        System.err.println("<isin> (alone) must be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-
-    if ( ! scriptMode )
-      System.err.println("ISIN:         '" + isin + "'");
+  	// ---------
 
     // <name>
-    if ( cmdLine.hasOption("name") )
+    if ( cmdLine.hasOption("new-name") )
     {
       try
       {
-        name = cmdLine.getOptionValue("name");
+        newName = cmdLine.getOptionValue("new-name").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <name>");
+        System.err.println("Could not parse <new-name>");
         throw new InvalidCommandLineArgsException();
       }
     }
 
     if (!scriptMode)
-      System.err.println("Name:         '" + name + "'");
+      System.err.println("New name:     '" + newName + "'");
   }
 
   @Override
@@ -495,17 +402,12 @@ public class UpdSec extends CommandLineTool
 	}
     
     System.out.println("");
-    System.out.println("Valid values for <mode>:");
-    for ( xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode elt : xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.values() )
-    {
-      if ( elt != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME ) // sic
-      {
-    	  System.out.println(" - " + elt);
-      }
-    }
+    System.out.println("Valid values for <sec-sel-mode>:");
+    for ( Helper.CmdtySecSingleSelMode elt : Helper.CmdtySecSingleSelMode.values() )
+      System.out.println(" - " + elt);
     
     System.out.println("");
-    System.out.println("Valid values for <sub-mode>:");
+    System.out.println("Valid values for <sec-sel-sub-mode>:");
     for ( CmdLineHelper.SecSelectSubMode elt : CmdLineHelper.SecSelectSubMode.values() )
       System.out.println(" - " + elt);
     

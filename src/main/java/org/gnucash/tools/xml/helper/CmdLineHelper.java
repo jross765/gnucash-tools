@@ -22,11 +22,12 @@ import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
 public class CmdLineHelper
 {
-  public enum SecSelectSubMode // for <cmdty-select-mode> = 'ID' only
+  public enum SecSelectSubMode // for <sec-select-mode> = 'ID' only
   {
-    EXCHANGE_TICKER,
-    MIC,
-    SEC_ID_TYPE
+	DIRECT,
+    INDIRECT_EXCHANGE_TICKER,
+    INDIRECT_MIC,
+    INDIRECT_SEC_ID_TYPE
   }
 
   public enum PrcSelectMode
@@ -209,11 +210,84 @@ public class CmdLineHelper
   // -----------------------------------------------------------------
 
   // For SecSelectMode = ID only!
-  public static GCshSecID getSecID_ByID(CommandLine cmdLine,
+  public static GCshSecID getSecID_direct(
+		  CommandLine cmdLine,
+		  CmdtySecSingleSelMode secSelmode, PrcSelectMode prcSelmode,
+		  boolean scriptMode) throws InvalidCommandLineArgsException {
+	  return getSecID_direct(cmdLine,
+			  secSelmode, prcSelmode,
+			  "sec-sel-mode", "prc-sel-mode",
+			  "security-id",
+			  scriptMode );
+  }
+  
+  // For SecSelectMode = ID only!
+  public static GCshSecID getSecID_direct(
+		  CommandLine cmdLine,
+		  CmdtySecSingleSelMode secSelmode, PrcSelectMode prcSelmode,
+		  String secSelModeArgName, String prcSelModeArgName,
+		  String secIDArgName,
+		  boolean scriptMode) throws InvalidCommandLineArgsException {
+	  GCshSecID secID = null;
+	    
+	  // < secSelModeArgName >
+	  if ( cmdLine.hasOption( secIDArgName ) )
+	  {
+		  if ( secSelmode != CmdtySecSingleSelMode.ID )
+		  {
+			  System.err.println("<" + secIDArgName + "> may only be set with <" + secSelModeArgName + "> = " + CmdtySecSingleSelMode.ID);
+			  throw new InvalidCommandLineArgsException();
+		  }
+
+		  if ( prcSelmode != null )
+		  {
+			  if ( prcSelmode != CmdLineHelper.PrcSelectMode.SEC_DATE )
+			  {
+				  System.err.println("<" + secIDArgName+ "> may only be set with <" + prcSelModeArgName + "> = " + CmdLineHelper.PrcSelectMode.SEC_DATE);
+				  throw new InvalidCommandLineArgsException();
+			  }
+		  }
+	    		
+		  try
+		  {
+			  secID = GCshSecID.parse( cmdLine.getOptionValue(secIDArgName) ); 
+		  }	
+		  catch ( Exception exc )
+		  {
+			  System.err.println("Could not parse <" + secIDArgName+ ">");
+	          throw new InvalidCommandLineArgsException();
+		  }
+	  }
+	  else
+	  {
+		  if ( secSelmode == CmdtySecSingleSelMode.ID )
+		  {
+			  System.err.println("<" + secIDArgName+ "> must be set with <" + secSelModeArgName + "> = " + CmdtySecSingleSelMode.ID);
+			  throw new InvalidCommandLineArgsException();
+		  }
+
+		  if ( prcSelmode != null )
+		  {
+			  if ( prcSelmode == CmdLineHelper.PrcSelectMode.SEC_DATE )
+			  {
+				  System.err.println("<" + secIDArgName+ "> must be set with <" + prcSelModeArgName + "> = " + CmdLineHelper.PrcSelectMode.SEC_DATE);
+				  throw new InvalidCommandLineArgsException();
+			  }
+		  }
+	  }
+	  
+	  if ( ! scriptMode )
+		  System.err.println("Security ID (direct): " + secID);
+	  
+	  return secID;
+  }
+  
+  // For SecSelectMode = ID only!
+  public static GCshSecID getSecID_indirect(CommandLine cmdLine,
 		  						CmdtySecSingleSelMode mode, SecSelectSubMode subMode,
 		  						boolean scriptMode) throws InvalidCommandLineArgsException
   {
-	  return getSecID_ByID(cmdLine,
+	  return getSecID_indirect(cmdLine,
 			  			mode, subMode,
 			  			"exchange", "ticker",
 			  			"mic", "mic-id",
@@ -222,7 +296,7 @@ public class CmdLineHelper
   }
   
   // For CmdtySelectMode = ID only!
-  public static GCshSecID getSecID_ByID(CommandLine cmdLine,
+  public static GCshSecID getSecID_indirect(CommandLine cmdLine,
 		  						CmdtySecSingleSelMode mode, SecSelectSubMode subMode,
 		  						String exchArgName, String tickerArgName,
 		  						String micArgName, String micIDArgName,
@@ -231,17 +305,17 @@ public class CmdLineHelper
   {
 	if ( mode == null )
 	{
-		throw new IllegalArgumentException("arg <mode> is null");
+		throw new IllegalArgumentException("arg <sec-sel-mode> is null");
 	}
 		
 	if ( mode != CmdtySecSingleSelMode.ID )
 	{
-		throw new IllegalArgumentException("arg <mode> must be " + CmdtySecSingleSelMode.ID);
+		throw new IllegalArgumentException("arg <sec-sel-mode> must be " + CmdtySecSingleSelMode.ID);
 	}
 	
 	if ( subMode == null )
 	{
-		throw new IllegalArgumentException("arg <sub-mode> is null");
+		throw new IllegalArgumentException("arg <sec-sel-sub-mode> is null");
 	}
 	
     GCshCmdtyNameSpace.Exchange  exch      = null;
@@ -285,11 +359,11 @@ public class CmdLineHelper
 //      }
 
       if ( ! ( mode    == CmdtySecSingleSelMode.ID &&
-               subMode == SecSelectSubMode.EXCHANGE_TICKER ) )
+               subMode == SecSelectSubMode.INDIRECT_EXCHANGE_TICKER ) )
       {
         System.err.println("<" + exchArgName + "> and <" + tickerArgName + "> must only be set with " +
-                           "<mode> = '" + CmdtySecSingleSelMode.ID + "' and " +
-                           "<sub-mode> = '" + SecSelectSubMode.EXCHANGE_TICKER + "'");
+                           "<sec-sel-mode> = '" + CmdtySecSingleSelMode.ID + "' and " +
+                           "<sec-sel-sub-mode> = '" + SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + "'");
         throw new InvalidCommandLineArgsException();
       }
       
@@ -322,11 +396,11 @@ public class CmdLineHelper
       }
       
       if ( mode    == CmdtySecSingleSelMode.ID &&
-           subMode == SecSelectSubMode.EXCHANGE_TICKER )
+           subMode == SecSelectSubMode.INDIRECT_EXCHANGE_TICKER )
       {
     	  System.err.println("<" + exchArgName + "> and <" + tickerArgName + "> must only be set with " +
-                             "<mode> = '" + CmdtySecSingleSelMode.ID + "' and " +
-                             "<sub-mode> = '" + SecSelectSubMode.EXCHANGE_TICKER + "'");
+                             "<sec-sel-mode> = '" + CmdtySecSingleSelMode.ID + "' and " +
+                             "<sec-sel-sub-mode> = '" + SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + "'");
     	  throw new InvalidCommandLineArgsException();
       }
     }
@@ -371,11 +445,11 @@ public class CmdLineHelper
 //      }
 
       if ( ! ( mode    == CmdtySecSingleSelMode.ID &&
-               subMode == SecSelectSubMode.MIC ) )
+               subMode == SecSelectSubMode.INDIRECT_MIC ) )
       {
         System.err.println("<" + micArgName + "> and <" + micIDArgName + "> must only be set with " +
-                           "<mode> = '" + CmdtySecSingleSelMode.ID + "' and " +
-                           "<sub-mode> = '" + SecSelectSubMode.MIC + "'");
+                           "<sec-sel-mode> = '" + CmdtySecSingleSelMode.ID + "' and " +
+                           "<sec-sel-sub-mode> = '" + SecSelectSubMode.INDIRECT_MIC + "'");
         throw new InvalidCommandLineArgsException();
       }
       
@@ -408,11 +482,11 @@ public class CmdLineHelper
       }
       
       if ( mode    == CmdtySecSingleSelMode.ID &&
-           subMode == SecSelectSubMode.MIC )
+           subMode == SecSelectSubMode.INDIRECT_MIC )
       {
     	  System.err.println("<" + micArgName + "> and <" + micIDArgName + "> must be set with " +
-                             "<mode> = '" + CmdtySecSingleSelMode.ID + "' and " +
-                             "<sub-mode> = '" + SecSelectSubMode.MIC + "'");
+                             "<sec-sel-mode> = '" + CmdtySecSingleSelMode.ID + "' and " +
+                             "<sec-sel-sub-mode> = '" + SecSelectSubMode.INDIRECT_MIC + "'");
     	  throw new InvalidCommandLineArgsException();
       }
     }
@@ -451,11 +525,11 @@ public class CmdLineHelper
 //      }
 
       if ( ! ( mode    == CmdtySecSingleSelMode.ID &&
-               subMode == SecSelectSubMode.SEC_ID_TYPE ) )
+               subMode == SecSelectSubMode.INDIRECT_SEC_ID_TYPE ) )
       {
         System.err.println("<" + secIDTypeArgName + "> and <" + isinArgName + "> must only be set with " +
-                           "<mode> = '" + CmdtySecSingleSelMode.ID + "' and " +
-                           "<sub-mode> = '" + SecSelectSubMode.SEC_ID_TYPE + "'");
+                           "<sec-sel-mode> = '" + CmdtySecSingleSelMode.ID + "' and " +
+                           "<sec-sel-sub-mode> = '" + SecSelectSubMode.INDIRECT_SEC_ID_TYPE + "'");
         throw new InvalidCommandLineArgsException();
       }
       
@@ -493,11 +567,11 @@ public class CmdLineHelper
       }
 
       if ( mode    == CmdtySecSingleSelMode.ID &&
-    	   subMode == SecSelectSubMode.SEC_ID_TYPE )
+    	   subMode == SecSelectSubMode.INDIRECT_SEC_ID_TYPE )
       {
     	  System.err.println("<" + secIDTypeArgName + "> and <" + isinArgName + "> must be set with " +
-                             "<mode> = '" + CmdtySecSingleSelMode.ID + "' and " +
-                             "<sub-mode> = '" + SecSelectSubMode.SEC_ID_TYPE + "'");
+                             "<sec-sel-mode> = '" + CmdtySecSingleSelMode.ID + "' and " +
+                             "<sec-sel-sub-mode> = '" + SecSelectSubMode.INDIRECT_SEC_ID_TYPE + "'");
     	  throw new InvalidCommandLineArgsException();
       }
     }
@@ -508,13 +582,18 @@ public class CmdLineHelper
       System.err.println("ISIN:         '" + isin + "'");
     }
 
-    return getSecID_ByID_Core(subMode, 
+    GCshSecID secID = getSecID_indirect_Core(subMode, 
     				   	   exch, ticker, 
     				   	   mic, micID, 
     				   	   secIDType, isin);
+    
+    if ( ! scriptMode )
+    	System.err.println("Security ID (indirect): " + secID);
+    
+    return secID;
   }
   
-  private static GCshSecID getSecID_ByID_Core(
+  private static GCshSecID getSecID_indirect_Core(
 		  SecSelectSubMode subMode,
 	      GCshCmdtyNameSpace.Exchange exch, String ticker,
 	      GCshCmdtyNameSpace.MIC mic, String micID,
@@ -522,15 +601,15 @@ public class CmdLineHelper
   {
 		GCshSecID secID = null;
 	    
-	    if ( subMode == SecSelectSubMode.EXCHANGE_TICKER ) 
+	    if ( subMode == SecSelectSubMode.INDIRECT_EXCHANGE_TICKER ) 
 	    {
 	    	secID = new GCshSecID_Exchange( exch, ticker );
 	    }
-	    else if ( subMode == SecSelectSubMode.MIC )
+	    else if ( subMode == SecSelectSubMode.INDIRECT_MIC )
 	    {
 	    	secID = new GCshSecID_MIC( mic, micID );
 	    }
-	    else if ( subMode == SecSelectSubMode.SEC_ID_TYPE )
+	    else if ( subMode == SecSelectSubMode.INDIRECT_SEC_ID_TYPE )
 	    {
 	    	// ::TODO / possibly later: variants for wkn, cusip, sedol
 	    	// 
@@ -546,78 +625,138 @@ public class CmdLineHelper
 	    return secID;
   }
   
-  // For CmdtySelectMode = ID only!
-  public static void setSecID_ByID(GCshSecID secID,
+  // ------------------------------
+  
+  // For CmdtySecSelectMode = ID only!
+  public static void setSecID_direct(GCshSecID secID,
 		  						CommandLine cmdLine,
-		  						CmdtySecSingleSelMode mode, SecSelectSubMode subMode,
-		  						String exchArgName, String tickerArgName, StringBuffer ticker,
-		  						String micArgName, String micIDArgName, StringBuffer micID,
-		  						String secIDTypeArgName, String isinArgName, StringBuffer isin,
+		  						CmdtySecSingleSelMode secSelmode, PrcSelectMode prcSelMode,
 		  						boolean scriptMode) throws InvalidCommandLineArgsException
   {
-	  	GCshSecID locSecID = getSecID_ByID( cmdLine, mode, subMode, exchArgName, tickerArgName, micArgName, micIDArgName, secIDTypeArgName, isinArgName, scriptMode );
-	  	secID.reset();
-	  	secID.setType(locSecID.getType());
-	  	secID.setNameSpace(locSecID.getNameSpace());
-	  	secID.setCode(locSecID.getCode());
+	  GCshSecID locSecID = getSecID_direct(cmdLine,
+			  							secSelmode, prcSelMode, 
+			  							scriptMode );
+	  
+	  secID.reset();
+	  secID.setType(locSecID.getType());
+	  secID.setNameSpace(locSecID.getNameSpace());
+	  secID.setCode(locSecID.getCode());
+  }
+  
+  // For CmdtySecSelectMode = ID only!
+  public static void setSecID_indirect(GCshSecID secID,
+		  						CommandLine cmdLine,
+		  						CmdtySecSingleSelMode secSelMode, SecSelectSubMode secSelSubMode,
+		  						boolean scriptMode) throws InvalidCommandLineArgsException
+  {
+	  GCshSecID locSecID = getSecID_indirect(cmdLine, 
+			  								secSelMode, secSelSubMode,
+			  								scriptMode);
+	  
+	  secID.reset();
+	  secID.setType(locSecID.getType());
+	  secID.setNameSpace(locSecID.getNameSpace());
+	  secID.setCode(locSecID.getCode());
   }
   
   // ------------------------------
   
   public static void parseSecStuffWrap(
 		  CommandLine cmdLine,
-		  EnumSecSingleSelMode mode, EnumSecSelectSubMode subMode,
+		  xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode secSelMode, 
+		  CmdLineHelper.SecSelectSubMode secSelSubMode,
+		  PrcSelectMode prcSelMode,
 		  GCshSecID secID, 
 		  StringBuffer ticker, StringBuffer micID, StringBuffer isin, 
 		  StringBuffer secName,
 		  boolean scriptMode) throws InvalidCommandLineArgsException {
-	    // <mode>
-	    try
-	    {
-	      mode.mode = xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("mode"));
-	    }
-	    catch ( Exception exc )
-	    {
-	      System.err.println("Could not parse <mode>");
-	      throw new InvalidCommandLineArgsException();
-	    }
-	    
-	    if ( ! scriptMode )
-	      System.err.println("Mode:         " + mode.mode);
-
-	    // <sub-mode>
-	    if ( cmdLine.hasOption("sub-mode") )
-	    {
-	        if ( mode.mode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
-	        {
-	          System.err.println("<sub-mode> must only be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID.toString() + "'");
+	  if ( cmdLine.hasOption( "security-id" ) )
+	  {
+		  parseSecStuffWrap_direct(cmdLine,
+				  secSelMode, prcSelMode,
+				  secID,
+				  scriptMode);
+	  }
+	  else
+	  {
+		  parseSecStuffWrap_indirect(cmdLine,
+				  secSelMode, secSelSubMode,
+				  secID,
+				  ticker, micID, isin, secName,
+				  scriptMode);
+	  }
+  }
+  
+  // For CmdtySelectMode = ID only!
+  private static void parseSecStuffWrap_direct(
+		  CommandLine cmdLine,
+		  xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode secSelmode, 
+		  PrcSelectMode prcSelMode, 
+		  GCshSecID secID,
+		  boolean scriptMode) throws InvalidCommandLineArgsException {
+	  // <security-id>
+	  if ( cmdLine.hasOption( "security-id" ) )
+	  {
+		  if ( secSelmode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
+		  {
+			  System.err.println("<security-id> may only be set with <sec-sel-mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID + "'");
 	          throw new InvalidCommandLineArgsException();
-	        }
-	        
-	        try
-	        {
-	          subMode.subMode = CmdLineHelper.SecSelectSubMode.valueOf(cmdLine.getOptionValue("sub-mode"));
-	        }
-	        catch ( Exception exc )
-	        {
-	          System.err.println("Could not parse <sub-mode>");
+		  }
+	    	
+		  if ( prcSelMode != null )
+		  {
+			  if ( prcSelMode != CmdLineHelper.PrcSelectMode.SEC_DATE )
+			  {
+				  System.err.println("<security-id> may only be set with <prc-sel-mode> = " + CmdLineHelper.PrcSelectMode.SEC_DATE);
+				  throw new InvalidCommandLineArgsException();
+			  }
+		  }
+	    		
+		  try
+		  {
+			  // No:
+			  // secID = GCshSecID.parse( cmdLine.getOptionValue("security-id") );
+			  // Instead:
+			  setSecID_direct(secID, 
+					  cmdLine,
+					  secSelmode, prcSelMode,
+					  scriptMode);
+		  }	
+		  catch ( Exception exc )
+		  {
+			  System.err.println("Could not parse <security-id>");
 	          throw new InvalidCommandLineArgsException();
-	        }
-	    }
-	    else
-	    {
-	        if ( mode.mode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
-	        {
-	          System.err.println("<sub-mode> must be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID.toString() + "'");
+		  }
+	  }
+	  else
+	  {
+		  if ( secSelmode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
+		  {
+			  System.err.println("<security-id> must be set with <sec-sel-mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID + "'");
 	          throw new InvalidCommandLineArgsException();
-	        }
-	    }
-	    
-	    if ( ! scriptMode )
-	      System.err.println("Sub-mode:     " + subMode.subMode);
-	    
-	  	// ---------
-	  	
+		  }
+	    	
+		  if ( prcSelMode != null )
+		  {
+			  if ( prcSelMode == CmdLineHelper.PrcSelectMode.SEC_DATE )
+			  {
+				  System.err.println("<security-id> must be set with <prc-sel-mode> = " + CmdLineHelper.PrcSelectMode.SEC_DATE);
+				  throw new InvalidCommandLineArgsException();
+			  }
+		  }
+	  }
+  }
+  
+  private static void parseSecStuffWrap_indirect(
+		  CommandLine cmdLine,
+		  xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode secSelMode, 
+		  CmdLineHelper.SecSelectSubMode secSelSubMode,
+		  GCshSecID secID, 
+		  StringBuffer ticker, StringBuffer micID, StringBuffer isin, 
+		  StringBuffer secName,
+		  boolean scriptMode) throws InvalidCommandLineArgsException {
+	    // <security-id>
+	    // Well, not directly, but rather:
 	    // <exchange>, <ticker>,
 	    // <mid>, <mic-id>,
 	    // <secid-type>, <isin>
@@ -625,35 +764,32 @@ public class CmdLineHelper
 	    	 ( cmdLine.hasOption("mic")        && cmdLine.hasOption("mic-id") ) ||
 	    	 ( cmdLine.hasOption("secid-type") && cmdLine.hasOption("isin") ) )
 	    {
-	        if ( mode.mode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
+	        if ( secSelMode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
 	        {
-	          System.err.println("Pair <exchange>/<ticker>, <mic>/<mic-id>, <secid-type>/<isin> must only be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID.toString() + "'");
+	          System.err.println("Pair <exchange>/<ticker>, <mic>/<mic-id>, <secid-type>/<isin> must only be set with <sec-sel-mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID + "'");
 	          throw new InvalidCommandLineArgsException();
 	        }
 	    	
-	        if ( subMode.subMode != SecSelectSubMode.EXCHANGE_TICKER && 
-	        	 subMode.subMode != SecSelectSubMode.MIC && 
-	        	 subMode.subMode != SecSelectSubMode.SEC_ID_TYPE )
+	        if ( secSelSubMode != SecSelectSubMode.INDIRECT_EXCHANGE_TICKER && 
+	        	 secSelSubMode != SecSelectSubMode.INDIRECT_MIC && 
+	        	 secSelSubMode != SecSelectSubMode.INDIRECT_SEC_ID_TYPE )
 	        {
-	          System.err.println("Pair <exchange>/<ticker>, <mic>/<mic-id>, <secid-type>/<isin> must only be set with <sub-mode> = '" + 
-	      	        SecSelectSubMode.EXCHANGE_TICKER.toString() + "', " +
-	    	        SecSelectSubMode.MIC.toString() + "' or " +
-	    	        SecSelectSubMode.SEC_ID_TYPE.toString() + "', ");
+	          System.err.println("Pair <exchange>/<ticker>, <mic>/<mic-id>, <secid-type>/<isin> must only be set with <sec-sel-sub-mode> = '" + 
+	      	        SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + "', " +
+	    	        SecSelectSubMode.INDIRECT_MIC + "' or " +
+	    	        SecSelectSubMode.INDIRECT_SEC_ID_TYPE + "', ");
 	          throw new InvalidCommandLineArgsException();
 	        }
 
 	        // No:
-//	    	secID = CmdLineHelper.getSecID_ByID(cmdLine,
-//	    										mode, subMode,
-//	    										scriptMode);
+//	    	secID = getSecID_ByID(cmdLine,
+//	    				mode, subMode,
+//	    				scriptMode);
 	    	// Instead:
-	        CmdLineHelper.setSecID_ByID(secID, 
-	        							cmdLine,
-	        							mode.mode, subMode.subMode,
-	        							"exchange", "ticker", ticker,
-	    		  						"mic", "mic-id", micID,
-	    		  						"secid-type", "isin", isin,
-	    		  						scriptMode);
+	        setSecID_indirect(secID, 
+	        				cmdLine,
+	        				secSelMode, secSelSubMode,
+	        				scriptMode);
 	    	
 	    	if ( secID == null )
 	    	{
@@ -666,15 +802,15 @@ public class CmdLineHelper
 	    }
 	    else
 	    {
-	        if ( mode.mode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
+	        if ( secSelMode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
 	        {
-	          System.err.println("Pair <exchange>/<ticker>, <mic>/<mic-id>, <secid-type>/<isin> must be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID.toString() + "'");
+	          System.err.println("Pair <exchange>/<ticker>, <mic>/<mic-id>, <secid-type>/<isin> must be set with <sec-sel-mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID + "'");
 	          throw new InvalidCommandLineArgsException();
 	        }
 	    	
-	        if ( subMode.subMode == SecSelectSubMode.SEC_ID_TYPE )
+	        if ( secSelSubMode == SecSelectSubMode.INDIRECT_SEC_ID_TYPE )
 	        {
-	          System.err.println("Pair <exchange>/<ticker>, <mic>/<mic-id>, <secid-type>/<isin> must be set with <sub-mode> = '" + SecSelectSubMode.SEC_ID_TYPE.toString() + "'");
+	          System.err.println("Pair <exchange>/<ticker>, <mic>/<mic-id>, <secid-type>/<isin> must be set with <sec-sel-sub-mode> = '" + SecSelectSubMode.INDIRECT_SEC_ID_TYPE + "'");
 	          throw new InvalidCommandLineArgsException();
 	        }
 	    	
@@ -690,9 +826,6 @@ public class CmdLineHelper
 	               throw new InvalidCommandLineArgsException();
 	       	}
 	    }
-
-	    if ( ! scriptMode )
-	    	System.err.println("Security ID:  " + secID);
 
 	    // ---------
 	  	
@@ -718,10 +851,10 @@ public class CmdLineHelper
 	          throw new InvalidCommandLineArgsException();
 	        }
 
-	      if ( mode.mode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN ||
+	      if ( secSelMode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN ||
 	    	   cmdLine.hasOption("secid-type") )
 	      {
-	        System.err.println("<isin> (alone) must only be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN + "'");
+	        System.err.println("<isin> (alone) must only be set with <sec-sel-mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN + "'");
 	        throw new InvalidCommandLineArgsException();
 	      }
 	      
@@ -737,12 +870,6 @@ public class CmdLineHelper
 	    }
 	    else
 	    {
-	        if ( mode.mode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN )
-	        {
-	          System.err.println("<isin> (alone) must be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
-	          throw new InvalidCommandLineArgsException();
-	        }
-	    	
 //	    	if ( ! cmdLine.hasOption("name") )
 //	    	{
 //	                  System.err.println("One of the following must be set:\n" + 
@@ -754,74 +881,77 @@ public class CmdLineHelper
 //	                  throw new InvalidCommandLineArgsException();
 //	    	}
 	    	
-	      if ( mode.mode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN &&
+	      if ( secSelMode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN &&
 	    	   ! cmdLine.hasOption("secid-type") )
 	      {
-	        System.err.println("<isin> (alone) must be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN + "'");
+	        System.err.println("<isin> (alone) must be set with <sec-sel-mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN + "'");
 	        throw new InvalidCommandLineArgsException();
 	      }
 	    }
 
 	    if ( ! scriptMode && 
-	    	 mode.mode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
+	    	 secSelMode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
 	      System.err.println("ISIN:         '" + isin + "'");
 	  	
 	  	// ---------
 	  	
 	    // <name>
-	    if ( cmdLine.hasOption("name") )
+	    if ( secName != null )
 	    {
-	      if ( cmdLine.hasOption("exchange") ) 
-	      {
-	        System.err.println("Error: <name> and <exchange> are mutually exclusive");
-	        throw new InvalidCommandLineArgsException();
-	      }
+		    if ( cmdLine.hasOption("name") )
+		    {
+		      if ( cmdLine.hasOption("exchange") ) 
+		      {
+		        System.err.println("Error: <name> and <exchange> are mutually exclusive");
+		        throw new InvalidCommandLineArgsException();
+		      }
 
-	      if ( cmdLine.hasOption("mic") ) 
-	      {
-	        System.err.println("Error: <name> and <mic> are mutually exclusive");
-	        throw new InvalidCommandLineArgsException();
-	      }
+		      if ( cmdLine.hasOption("mic") ) 
+		      {
+		        System.err.println("Error: <name> and <mic> are mutually exclusive");
+		        throw new InvalidCommandLineArgsException();
+		      }
 
-	      if ( cmdLine.hasOption("secid-type") ) 
-	      {
-	        System.err.println("Error: <name> and <secid-type> are mutually exclusive");
-	        throw new InvalidCommandLineArgsException();
-	      }
+		      if ( cmdLine.hasOption("secid-type") ) 
+		      {
+		        System.err.println("Error: <name> and <secid-type> are mutually exclusive");
+		        throw new InvalidCommandLineArgsException();
+		      }
 
-	      if ( cmdLine.hasOption("isin") ) 
-	      {
-	        System.err.println("Error: <name> and <isin> are mutually exclusive");
-	        throw new InvalidCommandLineArgsException();
-	      }
+		      if ( cmdLine.hasOption("isin") ) 
+		      {
+		        System.err.println("Error: <name> and <isin> are mutually exclusive");
+		        throw new InvalidCommandLineArgsException();
+		      }
 
-	      if ( mode.mode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME )
-	      {
-	        System.err.println("<name> must only be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
-	        throw new InvalidCommandLineArgsException();
-	      }
-	      
-	      try
-	      {
-	        secName.append( cmdLine.getOptionValue("name") );
-	      }
-	      catch (Exception exc)
-	      {
-	        System.err.println("Could not parse <name>");
-	        throw new InvalidCommandLineArgsException();
-	      }
+		      if ( secSelMode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME )
+		      {
+		        System.err.println("<name> must only be set with <sec-sel-mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME + "'");
+		        throw new InvalidCommandLineArgsException();
+		      }
+		      
+		      try
+		      {
+		        secName.append( cmdLine.getOptionValue("name") );
+		      }
+		      catch (Exception exc)
+		      {
+		        System.err.println("Could not parse <name>");
+		        throw new InvalidCommandLineArgsException();
+		      }
+		    }
+		    else
+		    {
+		      if ( secSelMode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME )
+		      {
+		        System.err.println("<name> must be set with <sec-sel-mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME + "'");
+		        throw new InvalidCommandLineArgsException();
+		      }
+		    }
+		    
+		    if ( ! scriptMode )
+			      System.err.println("Security name: '" + secName + "'");
 	    }
-	    else
-	    {
-	      if ( mode.mode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME )
-	      {
-	        System.err.println("<name> must be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
-	        throw new InvalidCommandLineArgsException();
-	      }
-	    }
-
-	    if ( ! scriptMode )
-	      System.err.println("Security name: '" + secName + "'");
   }
 
 }

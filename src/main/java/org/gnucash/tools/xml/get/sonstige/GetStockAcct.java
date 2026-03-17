@@ -2,7 +2,6 @@ package org.gnucash.tools.xml.get.sonstige;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -13,17 +12,19 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashAccount;
+import org.gnucash.apiext.secacct.SecuritiesAccountManager;
 import org.gnucash.apispec.read.GnuCashSecurity;
 import org.gnucash.apispec.read.impl.GnuCashFileExtImpl;
 import org.gnucash.base.basetypes.complex.GCshCmdtyNameSpace;
-import org.gnucash.base.basetypes.complex.GCshSecID_SecIdType;
+import org.gnucash.base.basetypes.complex.GCshSecID;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.tools.CommandLineTool;
+import org.gnucash.tools.xml.helper.AccountHelper;
+import org.gnucash.tools.xml.helper.CmdLineHelper;
+import org.gnucash.tools.xml.helper.SecurityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
-import xyz.schnorxoborx.base.beanbase.TooManyEntriesFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
@@ -40,14 +41,32 @@ public class GetStockAcct extends CommandLineTool
   
   private static String                gcshFileName = null;
   
-  private static Helper.Mode           acctMode     = null;
-  private static GCshAcctID            acctID       = null;
-  private static String                acctName     = null;
+  // ---
   
-  private static Helper.CmdtySecSingleSelMode secMode = null;
-  private static GCshSecID_SecIdType   secID        = null;
-  private static String                isin         = null;
-  private static String                secName      = null;
+  private static Helper.Mode           acctSelMode  = null;
+  private static GCshAcctID            acctID       = null;
+  // This one and the following: sic, StringBuffer, not String,
+  // for it has to be mutable because of the way the args are parsed.
+  private static StringBuffer          acctName     = new StringBuffer();
+  
+  // ---
+  
+  private static Helper.CmdtySecSingleSelMode secSelMode = null;
+  private static CmdLineHelper.SecSelectSubMode secSelSubMode = null;
+
+  private static GCshSecID     secID    = new GCshSecID();
+  // This one and the following: sic, StringBuffer, not String,
+  // for it has to be mutable because of the way the args are parsed.
+  private static StringBuffer  ticker   = new StringBuffer();
+  private static StringBuffer  micID    = new StringBuffer();
+  private static StringBuffer  isin     = new StringBuffer();
+  // Possibly later:
+  // private static String  wkn      = new StringBuffer();
+  // private static String  cusip    = new StringBuffer();
+  // private static String  sedol    = new StringBuffer();
+  private static StringBuffer  secName  = new StringBuffer();
+  
+  // ---
   
   private static boolean scriptMode = false;
 
@@ -84,25 +103,17 @@ public class GetStockAcct extends CommandLineTool
       .longOpt("gnucash-file")
       .get();
       
-    Option optAcctMode = Option.builder("am")
+    Option optAcctMode = Option.builder("asm")
       .required()
       .hasArg()
       .argName("mode")
       .desc("Selection mode for account")
-      .longOpt("account-mode")
+      .longOpt("acct-sel-mode")
       .get();
       
-    Option optSecMode = Option.builder("sm")
-      .required()
-      .hasArg()
-      .argName("mode")
-      .desc("Selection mode for security")
-      .longOpt("security-mode")
-      .get();
-        
     Option optAcctID = Option.builder("acct")
       .hasArg()
-      .argName("acctid")
+      .argName("UUID")
       .desc("Account-ID")
       .longOpt("account-id")
       .get();
@@ -113,28 +124,100 @@ public class GetStockAcct extends CommandLineTool
       .desc("Account name (or part of)")
       .longOpt("account-name")
       .get();
-      
+
+    Option optSecMode = Option.builder("ssm")
+      .required()
+      .hasArg()
+      .argName("mode")
+      .desc("Selection mode for security")
+      .longOpt("sec-sel-mode")
+      .get();
+
+    Option optSecSubMode = Option.builder("sssm")
+      .hasArg()
+      .argName("submode")
+      .desc("Selection sub-mode for security" +
+    		"(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " only)")
+      .longOpt("sec-sel-sub-mode")
+      .get();
+
     Option optSecID = Option.builder("sec")
       .hasArg()
-      .argName("ID")
-      .desc("Security ID")
+      .argName("secid")
+      .desc("Security ID (direct)" +
+      		"(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " only)")
       .longOpt("security-id")
       .get();
-            
+
+    Option optSecExchange = Option.builder("exch")
+      .hasArg()
+      .argName("exch")
+      .desc("Exchange code " +
+    		"(Security ID indirect). " +
+   		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
+            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
+      .longOpt("exchange")
+      .get();
+      
+    Option optSecTicker = Option.builder("tkr")
+      .hasArg()
+      .argName("ticker")
+      .desc("Ticker " + 
+      		"(Security ID indirect). " +
+   		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
+            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
+      .longOpt("ticker")
+      .get();
+    
+    Option optSecMIC = Option.builder("mic")
+      .hasArg()
+      .argName("mic")
+      .desc("MIC " +
+      		"(Security ID indirect). " +
+   		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
+            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_MIC + " only)")
+      .longOpt("mic")
+      .get();
+    	      
+    Option optSecMICID = Option.builder("mid")
+      .hasArg()
+      .argName("micid")
+      .desc("MIC-ID " +
+      		"(Security ID indirect). " +
+   		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
+            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_MIC + " only)")
+      .longOpt("mic-id")
+      .get();
+
+    Option optSecIDType = Option.builder("sit")
+      .hasArg()
+      .argName("type")
+      .desc("Security ID type " + 
+      		"(Security ID indirect). " +
+   		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
+            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " only)")
+      .longOpt("secid-type")
+      .get();
+
     Option optSecISIN = Option.builder("is")
       .hasArg()
       .argName("isin")
-      .desc("ISIN")
+      .desc("ISIN " + 
+      		"(Security ID indirect). " +
+  		   	"(for <mode> = " + Helper.CmdtySecSingleSelMode.ISIN + " xor " +
+  		   	"( <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
+            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " ) only)")
       .longOpt("isin")
       .get();
-          
-    Option optSecName = Option.builder("sn")
+
+    Option optSecName = Option.builder("n")
       .hasArg()
       .argName("name")
-      .desc("Security name (or part of)")
-      .longOpt("security-name")
+      .desc("Security name (full) " + 
+  		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.NAME + " only)")
+      .longOpt("name")
       .get();
-            
+
     // The convenient ones
     Option optScript = Option.builder("sl")
       .desc("Script Mode")
@@ -147,7 +230,13 @@ public class GetStockAcct extends CommandLineTool
     options.addOption(optAcctID);
     options.addOption(optAcctName);
     options.addOption(optSecMode);
+    options.addOption(optSecSubMode);
     options.addOption(optSecID);
+    options.addOption(optSecExchange);
+    options.addOption(optSecTicker);
+    options.addOption(optSecMIC);
+    options.addOption(optSecMICID);
+    options.addOption(optSecIDType);
     options.addOption(optSecISIN);
     options.addOption(optSecName);
     options.addOption(optScript);
@@ -162,91 +251,34 @@ public class GetStockAcct extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashFileExtImpl gcshFile = new GnuCashFileExtImpl(new File(gcshFileName), true);
+	GnuCashFileExtImpl gcshFile = new GnuCashFileExtImpl(new File(gcshFileName), ! scriptMode);
 
-    GnuCashAccount acct = null;
-    
-    if (acctMode == Helper.Mode.ID)
-    {
-      acct = gcshFile.getAccountByID(acctID);
-      if (acct == null)
-      {
-        if ( ! scriptMode )
-          System.err.println("Found no account with that name");
-        throw new NoEntryFoundException();
-      }
-    }
-    else if (acctMode == Helper.Mode.NAME)
-    {
-      Collection<GnuCashAccount> acctList = null;
-      acctList = gcshFile.getAccountsByTypeAndName(GnuCashAccount.Type.ASSET, acctName, 
-                                                  true, true);
-      if (acctList.size() == 0)
-      {
-        if ( ! scriptMode )
-        {
-          System.err.println("Could not find accounts matching this name.");
-        }
-        throw new NoEntryFoundException();
-      }
-      else if (acctList.size() > 1)
-      {
-        if ( ! scriptMode )
-        {
-          System.err.println("Found " + acctList.size() + " accounts with that name.");
-          System.err.println("Please specify more precisely.");
-        }
-        throw new TooManyEntriesFoundException();
-      }
-      acct = acctList.iterator().next();
-    }
+    // ---
+
+    GnuCashAccount acct = AccountHelper.getAcct(acctSelMode,
+												acctID, acctName.toString(), 
+												gcshFile,
+												scriptMode);
 
     if ( ! scriptMode )
       System.out.println("Account:  " + acct.toString());
     
-    // ----------------------------
+    // ---
 
-    GnuCashSecurity sec = null;
-    
-    if ( secMode == Helper.CmdtySecSingleSelMode.ID )
-    {
-      sec = gcshFile.getSecurityByID(secID);
-      if ( sec == null )
-      {
-        if ( ! scriptMode )
-          System.err.println("Could not find a security with this ID.");
-        throw new NoEntryFoundException();
-      }
-    }
-    else if ( secMode == Helper.CmdtySecSingleSelMode.ISIN )
-    {
-      sec = gcshFile.getSecurityByXCode(isin);
-      if ( sec == null )
-      {
-        if ( ! scriptMode )
-          System.err.println("Could not find security with this ISIN.");
-        throw new NoEntryFoundException();
-      }
-    }
-    else if ( secMode == Helper.CmdtySecSingleSelMode.NAME )
-    {
-      sec = gcshFile.getSecurityByNameUniq(secName); 
-      if ( sec == null )
-      {
-        if ( ! scriptMode )
-          System.err.println("Could not find security (uniquely) matching this name.");
-        throw new NoEntryFoundException();
-      }
-    }
-    
+    GnuCashSecurity sec = SecurityHelper.getSec(secSelMode,
+												secID, isin.toString(), secName.toString(), 
+												gcshFile,
+												scriptMode);
+
     if ( ! scriptMode )
       System.out.println("Security: " + sec.toString());
     
     // ----------------------------
     
-    for ( GnuCashAccount chld : acct.getChildren() ) {
-      if ( chld.getType() == GnuCashAccount.Type.STOCK &&
-           chld.getCmdtyID().equals(sec.getQualifID()) ) {
+    SecuritiesAccountManager secAcctMgr = new SecuritiesAccountManager(acct);
+    
+    for ( GnuCashAccount chld : secAcctMgr.getShareAccts(true) ) { // ::TODO: optionally non-active accounts 
+      if ( chld.getCmdtyID().toString().equals(sec.getQualifID().toString()) ) { // important: toString()
           System.out.println(chld.getID());
       }
     }
@@ -295,38 +327,75 @@ public class GetStockAcct extends CommandLineTool
     if ( ! scriptMode )
       System.err.println("GnuCash file:     '" + gcshFileName + "'");
     
-    // <account-mode>
-    try
-    {
-      acctMode = Helper.Mode.valueOf(cmdLine.getOptionValue("account-mode"));
-    }
-    catch ( Exception exc )
-    {
-      System.err.println("Could not parse <account-mode>");
-      throw new InvalidCommandLineArgsException();
-    }
-    
-    if ( ! scriptMode )
-      System.err.println("Account mode:  " + acctMode);
+    // ----------------------------
 
-    // <security-mode>
+    // <acct-sel-mode>
     try
     {
-      secMode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("security-mode"));
+      acctSelMode = Helper.Mode.valueOf(cmdLine.getOptionValue("acct-sel-mode"));
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <security-mode>");
+      System.err.println("Could not parse <acct-sel-mode>");
       throw new InvalidCommandLineArgsException();
     }
     
     if ( ! scriptMode )
-      System.err.println("Security mode: " + secMode);
+      System.err.println("Account mode:      " + acctSelMode);
+    
+  	// ---------
+  	
+    // <sec-sel-mode>
+    try
+    {
+      secSelMode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("sec-sel-mode"));
+    }
+    catch ( Exception exc )
+    {
+      System.err.println("Could not parse <sec-sel-mode>");
+      throw new InvalidCommandLineArgsException();
+    }
+    
+    if ( ! scriptMode )
+      System.err.println("Security mode:     " + secSelMode);
+
+    // <sec-sel-sub-mode>
+    if ( cmdLine.hasOption("sec-sel-sub-mode") )
+    {
+        if ( secSelMode != Helper.CmdtySecSingleSelMode.ID )
+        {
+          System.err.println("<sec-sel-sub-mode> must only be set with <sec-sel-mode> = '" + Helper.CmdtySecSingleSelMode.ID + "'");
+          throw new InvalidCommandLineArgsException();
+        }
+        
+        try
+        {
+          secSelSubMode = CmdLineHelper.SecSelectSubMode.valueOf(cmdLine.getOptionValue("sec-sel-sub-mode"));
+        }
+        catch ( Exception exc )
+        {
+          System.err.println("Could not parse <sec-sel-sub-mode>");
+          throw new InvalidCommandLineArgsException();
+        }
+    }
+    else
+    {
+        if ( secSelMode == Helper.CmdtySecSingleSelMode.ID )
+        {
+          System.err.println("<sec-sel-sub-mode> must be set with <sec-sel-mode> = '" + Helper.CmdtySecSingleSelMode.ID + "'");
+          throw new InvalidCommandLineArgsException();
+        }
+    }
+    
+    if ( ! scriptMode )
+      System.err.println("Security sub-mode: " + secSelSubMode);
+    
+  	// ---------
 
     // <account-id>
     if ( cmdLine.hasOption("account-id") )
     {
-      if ( acctMode != Helper.Mode.ID )
+      if ( acctSelMode != Helper.Mode.ID )
       {
         System.err.println("<account-id> must only be set with <account-mode> = '" + Helper.Mode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
@@ -344,7 +413,7 @@ public class GetStockAcct extends CommandLineTool
     }
     else
     {
-      if ( acctMode == Helper.Mode.ID )
+      if ( acctSelMode == Helper.Mode.ID )
       {
         System.err.println("<account-id> must be set with <account-mode> = '" + Helper.Mode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
@@ -357,7 +426,7 @@ public class GetStockAcct extends CommandLineTool
     // <account-name>
     if ( cmdLine.hasOption("account-name") )
     {
-      if ( acctMode != Helper.Mode.NAME )
+      if ( acctSelMode != Helper.Mode.NAME )
       {
         System.err.println("<account-name> must only be set with <account-mode> = '" + Helper.Mode.NAME.toString() + "'");
         throw new InvalidCommandLineArgsException();
@@ -365,7 +434,7 @@ public class GetStockAcct extends CommandLineTool
       
       try
       {
-        acctName = cmdLine.getOptionValue("account-name");
+        acctName.append( cmdLine.getOptionValue("account-name") );
       }
       catch ( Exception exc )
       {
@@ -375,7 +444,7 @@ public class GetStockAcct extends CommandLineTool
     }
     else
     {
-      if ( acctMode == Helper.Mode.NAME )
+      if ( acctSelMode == Helper.Mode.NAME )
       {
         System.err.println("<account-name> must be set with <account-mode> = '" + Helper.Mode.NAME.toString() + "'");
         throw new InvalidCommandLineArgsException();
@@ -385,98 +454,19 @@ public class GetStockAcct extends CommandLineTool
     if ( ! scriptMode )
       System.err.println("Account name:  '" + acctName + "'");
 
-    // <security-id>
-    if ( cmdLine.hasOption("security-id") )
-    {
-      if ( secMode != Helper.CmdtySecSingleSelMode.ID )
-      {
-        System.err.println("<security-id> must only be set with <security-mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-      
-      try
-      {
-        secID = new GCshSecID_SecIdType( GCshCmdtyNameSpace.SecIdType.ISIN, cmdLine.getOptionValue("security-id") );
-      }
-      catch (Exception exc)
-      {
-        System.err.println("Could not parse <security-id>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    else
-    {
-      if ( secMode == Helper.CmdtySecSingleSelMode.ID )
-      {
-        System.err.println("<security-id> must be set with <security-mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
+  	// ---------
 
-    if (!scriptMode)
-      System.err.println("Security ID:   '" + secID + "'");
-
-    // <isin>
-    if ( cmdLine.hasOption("isin") )
-    {
-      if ( secMode != Helper.CmdtySecSingleSelMode.ISIN )
-      {
-        System.err.println("<isin> must only be set with <security-mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-      
-      try
-      {
-        isin = cmdLine.getOptionValue("isin");
-      }
-      catch (Exception exc)
-      {
-        System.err.println("Could not parse <isin>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    else
-    {
-      if ( secMode == Helper.CmdtySecSingleSelMode.ISIN )
-      {
-        System.err.println("<isin> must be set with <security-mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-
-    if (!scriptMode)
-      System.err.println("Security ISIN: '" + isin + "'");
-
-    // <security-name>
-    if ( cmdLine.hasOption("security-name") )
-    {
-      if ( secMode != Helper.CmdtySecSingleSelMode.NAME )
-      {
-        System.err.println("<security-name> must only be set with <security-mode> = '" + Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-      
-      try
-      {
-        secName = cmdLine.getOptionValue("security-name");
-      }
-      catch (Exception exc)
-      {
-        System.err.println("Could not parse <security-name>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    else
-    {
-      if ( secMode == Helper.CmdtySecSingleSelMode.NAME )
-      {
-        System.err.println("<security-name> must be set with <security-mode> = '" + Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-
-    if (!scriptMode)
-      System.err.println("Security name: '" + secName + "'");
+    // <sec-sel-mode>, <sec-sel-sub-mode>,
+    // <exchange>, <ticker>,
+    // <mid>, <mic-id>,
+    // <secid-type>, <isin>
+    // <sec-name>
+    CmdLineHelper.parseSecStuffWrap( cmdLine, 
+    								 secSelMode, secSelSubMode, null,
+    								 secID, 
+    								 ticker, micID, isin, 
+    								 secName, 
+    								 scriptMode );
   }
   
   @Override
@@ -494,13 +484,33 @@ public class GetStockAcct extends CommandLineTool
 	}
     
     System.out.println("");
-    System.out.println("Valid values for <account-mode>:");
+    System.out.println("Valid values for <acct-sel-mode>:");
     for ( Helper.Mode elt : Helper.Mode.values() )
       System.out.println(" - " + elt);
 
     System.out.println("");
-    System.out.println("Valid values for <security-mode>:");
+    System.out.println("Valid values for <sec-sel-mode>:");
     for ( Helper.CmdtySecSingleSelMode elt : Helper.CmdtySecSingleSelMode.values() )
+      System.out.println(" - " + elt);
+    
+    System.out.println("");
+    System.out.println("Valid values for <sec-sel-sub-mode>:");
+    for ( CmdLineHelper.SecSelectSubMode elt : CmdLineHelper.SecSelectSubMode.values() )
+      System.out.println(" - " + elt);
+
+    System.out.println("");
+    System.out.println("Valid values for <exchange>:");
+    for ( GCshCmdtyNameSpace.Exchange elt : GCshCmdtyNameSpace.Exchange.values() )
+      System.out.println(" - " + elt);
+    
+    System.out.println("");
+    System.out.println("Valid values for <mic>:");
+    for ( GCshCmdtyNameSpace.MIC elt : GCshCmdtyNameSpace.MIC.values() )
+      System.out.println(" - " + elt);
+    
+    System.out.println("");
+    System.out.println("Valid values for <secid-type>:");
+    for ( GCshCmdtyNameSpace.SecIdType elt : GCshCmdtyNameSpace.SecIdType.values() )
       System.out.println(" - " + elt);
   }
 }
