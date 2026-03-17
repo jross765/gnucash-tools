@@ -61,8 +61,6 @@ public class GetCustList extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // cmdtyID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 

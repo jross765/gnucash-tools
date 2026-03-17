@@ -40,9 +40,9 @@ public class UpdPrc extends CommandLineTool
   
   private static GCshPrcID prcID = null;
 
-  private static GnuCashPrice.Type   type = null;
-  private static GnuCashPrice.Source source = null;
-  private static FixedPointNumber    value = null;
+  private static GnuCashPrice.Type    type   = null;
+  private static GnuCashPrice.Source  source = null;
+  private static FixedPointNumber     value  = null;
 
   private static GnuCashWritablePrice prc = null;
 
@@ -88,7 +88,7 @@ public class UpdPrc extends CommandLineTool
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
       .get();
-      
+
     Option optID = Option.builder("id")
       .required()
       .hasArg()
@@ -96,35 +96,35 @@ public class UpdPrc extends CommandLineTool
       .desc("Price ID")
       .longOpt("price-id")
       .get();
-            
+
     Option optType = Option.builder("t")
       .hasArg()
       .argName("type")
       .desc("Price type")
       .longOpt("type")
       .get();
-    	    
+
     Option optSource = Option.builder("s")
       .hasArg()
       .argName("source")
       .desc("Price source")
       .longOpt("source")
       .get();
-    	    	    
+
     Option optValue = Option.builder("v")
       .hasArg()
       .argName("value")
       .desc("Price value")
       .longOpt("val")
       .get();
-    
+
     Option optDescr = Option.builder("desc")
       .hasArg()
       .argName("descr")
       .desc("Price description")
       .longOpt("description")
       .get();
-      
+
     // The convenient ones
     // ::EMPTY
           
@@ -161,7 +161,7 @@ public class UpdPrc extends CommandLineTool
       throw new NoEntryFoundException();
     }
     
-    doChanges(gcshFile);
+    doChanges();
     System.err.println("Price after update: " + prc.toString());
     
     gcshFile.writeFile(new File(gcshOutFileName));
@@ -169,7 +169,7 @@ public class UpdPrc extends CommandLineTool
     System.out.println("OK");
   }
 
-  private void doChanges(GnuCashWritableFileImpl gcshFile) throws Exception
+  private void doChanges() throws Exception
   {
     if ( type != null )
     {

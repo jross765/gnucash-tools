@@ -69,8 +69,6 @@ public class GetGenerJobInfo extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // trxID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 

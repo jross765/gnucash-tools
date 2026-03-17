@@ -151,7 +151,7 @@ public class UpdCust extends CommandLineTool
       throw new NoEntryFoundException();
     }
     
-    doChanges(gcshFile);
+    doChanges();
     System.err.println("Customer after update: " + cust.toString());
     
     gcshFile.writeFile(new File(gcshOutFileName));
@@ -159,7 +159,7 @@ public class UpdCust extends CommandLineTool
     System.out.println("OK");
   }
 
-  private void doChanges(GnuCashWritableFileImpl gcshFile) throws Exception
+  private void doChanges() throws Exception
   {
     if ( number != null )
     {

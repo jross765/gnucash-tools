@@ -59,8 +59,6 @@ public class GetInvcList extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // invcID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 

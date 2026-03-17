@@ -316,22 +316,22 @@ public class GetPrcInfo extends CommandLineTool
     if (!scriptMode)
         System.err.println("Price ID:     " + prcID);
 
-    // <commodity-id>
-    if ( cmdLine.hasOption( "commodity-id" ) )
+    // <security-id>
+    if ( cmdLine.hasOption( "security-id" ) )
     {
     	if ( mode != CmdLineHelper.PrcSelectMode.SEC_DATE )
     	{
-            System.err.println("<commodity-id> may only be set with <mode> = " + CmdLineHelper.PrcSelectMode.SEC_DATE);
+            System.err.println("<security-id> may only be set with <mode> = " + CmdLineHelper.PrcSelectMode.SEC_DATE);
             throw new InvalidCommandLineArgsException();
     	}
     		
         try
         {
-          secID = GCshSecID.parse( cmdLine.getOptionValue("commodity-id") ); 
+          secID = GCshSecID.parse( cmdLine.getOptionValue("security-id") ); 
         }
         catch ( Exception exc )
         {
-          System.err.println("Could not parse <commodity-id>");
+          System.err.println("Could not parse <security-id>");
           throw new InvalidCommandLineArgsException();
         }
     }
@@ -345,7 +345,7 @@ public class GetPrcInfo extends CommandLineTool
     }
     
     if (!scriptMode)
-        System.err.println("Commodity ID: " + secID);
+        System.err.println("Security ID: " + secID);
 
     // <date-format>
     if ( cmdLine.hasOption( "date-format" ) )

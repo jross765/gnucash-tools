@@ -76,7 +76,7 @@ public class GetPrcList extends CommandLineTool
       .desc("GnuCash file")
       .longOpt("gnucash-file")
       .get();
-      
+
     Option optMode = Option.builder("m")
       .required()
       .hasArg()
@@ -84,28 +84,28 @@ public class GetPrcList extends CommandLineTool
       .desc("Security/currency selection mode")
       .longOpt("mode")
       .get();
-    	    	        
+
     Option optFromSecCurr= Option.builder("fr")
       .hasArg()
       .argName("qualifiD")
       .desc("From-security/currency qualified ID")
       .longOpt("from-sec-curr")
       .get();
-    	    	          
+
     Option optFromISIN = Option.builder("is")
       .hasArg()
       .argName("isin")
       .desc("From-security/currency ISIN")
       .longOpt("isin")
       .get();
-    	        
+
     Option optFromName = Option.builder("fn")
       .hasArg()
       .argName("name")
       .desc("From-security/currency Name (or part of)")
       .longOpt("name")
       .get();
-    	          
+
     // The convenient ones
     // ::EMPTY
           

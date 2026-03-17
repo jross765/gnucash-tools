@@ -28,12 +28,16 @@ public class GetCurrList extends CommandLineTool
   @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(GetCurrList.class);
   
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
   private static String               gcshFileName = null;
   
   private static boolean scriptMode = false; // ::TODO
+
+  // -----------------------------------------------------------------
 
   public static void main( String[] args )
   {
@@ -53,8 +57,6 @@ public class GetCurrList extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // currID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 

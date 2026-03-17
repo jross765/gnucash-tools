@@ -161,7 +161,7 @@ public class UpdAcct extends CommandLineTool
       throw new AccountNotFoundException();
     }
     
-    doChanges(gcshFile);
+    doChanges();
     System.err.println("Account after update: " + acct.toString());
     
     gcshFile.writeFile(new File(gcshOutFileName));
@@ -169,7 +169,7 @@ public class UpdAcct extends CommandLineTool
     System.out.println("OK");
   }
 
-  private void doChanges(GnuCashWritableFileImpl gcshFile) throws Exception
+  private void doChanges() throws Exception
   {
     if ( name != null )
     {

@@ -61,8 +61,6 @@ public class GetJobList extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // jobID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 

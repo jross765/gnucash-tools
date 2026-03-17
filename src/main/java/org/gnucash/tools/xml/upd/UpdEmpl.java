@@ -142,7 +142,7 @@ public class UpdEmpl extends CommandLineTool
       throw new NoEntryFoundException();
     }
     
-    doChanges(gcshFile);
+    doChanges();
     System.err.println("Employee after update: " + empl.toString());
     
     gcshFile.writeFile(new File(gcshOutFileName));
@@ -150,7 +150,7 @@ public class UpdEmpl extends CommandLineTool
     System.out.println("OK");
   }
 
-  private void doChanges(GnuCashWritableFileImpl gcshFile) throws Exception
+  private void doChanges() throws Exception
   {
     if ( number != null )
     {
