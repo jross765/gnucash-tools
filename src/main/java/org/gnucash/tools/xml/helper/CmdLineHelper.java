@@ -12,6 +12,7 @@ import org.gnucash.base.basetypes.complex.GCshSecID_Exchange;
 import org.gnucash.base.basetypes.complex.GCshSecID_MIC;
 import org.gnucash.base.basetypes.complex.GCshSecID_SecIdType;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
+import org.gnucash.base.basetypes.simple.GCshIDNotSetException;
 import org.gnucash.base.tuples.AcctIDAmountFPPair;
 
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
@@ -207,9 +208,77 @@ public class CmdLineHelper
     return newPair;
   }
   
+  // ------------------------------
+  
+  public static void setAcctID(GCshAcctID acctID,
+		  						CommandLine cmdLine,
+		  						Helper.Mode acctSelMode,
+		  						boolean scriptMode) throws InvalidCommandLineArgsException, GCshIDNotSetException
+  {
+	  GCshAcctID locAcctID = getAcctID(cmdLine,
+			  							acctSelMode,
+			  							scriptMode );
+	  
+	  acctID.reset();
+	  acctID.set(locAcctID);
+  }
+  
   // -----------------------------------------------------------------
 
-  // For SecSelectMode = ID only!
+  public static GCshAcctID getAcctID(
+		  CommandLine cmdLine,
+		  Helper.Mode acctSelMode,
+		  boolean scriptMode) throws InvalidCommandLineArgsException {
+	  return getAcctID(cmdLine,
+			  acctSelMode,
+			  "acct-sel-mode",
+			  "account-id",
+			  scriptMode );
+  }
+  
+  public static GCshAcctID getAcctID(
+		  CommandLine cmdLine,
+		  Helper.Mode acctSelMode,
+		  String acctSelModeArgName, String acctIDArgName,
+		  boolean scriptMode) throws InvalidCommandLineArgsException {
+	  GCshAcctID acctID = null;
+	    
+	  // < acctSelModeArgName >
+	  if ( cmdLine.hasOption( acctIDArgName ) )
+	  {
+		  if ( acctSelMode != Helper.Mode.ID )
+		  {
+			  System.err.println("<" + acctIDArgName + "> may only be set with <" + acctSelModeArgName + "> = " + Helper.Mode.ID);
+			  throw new InvalidCommandLineArgsException();
+		  }
+
+		  try
+		  {
+			  acctID = new GCshAcctID( cmdLine.getOptionValue(acctIDArgName) ); 
+		  }	
+		  catch ( Exception exc )
+		  {
+			  System.err.println("Could not parse <" + acctIDArgName+ ">");
+	          throw new InvalidCommandLineArgsException();
+		  }
+	  }
+	  else
+	  {
+		  if ( acctSelMode == Helper.Mode.ID )
+		  {
+			  System.err.println("<" + acctIDArgName+ "> must be set with <" + acctSelModeArgName + "> = " + Helper.Mode.ID);
+			  throw new InvalidCommandLineArgsException();
+		  }
+	  }
+	  
+	  if ( ! scriptMode )
+		  System.err.println("Account ID (direct): " + acctID);
+	  
+	  return acctID;
+  }
+  
+  // -----------------------------------------------------------------
+
   public static GCshSecID getSecID_direct(
 		  CommandLine cmdLine,
 		  CmdtySecSingleSelMode secSelmode, PrcSelectMode prcSelmode,
@@ -221,7 +290,6 @@ public class CmdLineHelper
 			  scriptMode );
   }
   
-  // For SecSelectMode = ID only!
   public static GCshSecID getSecID_direct(
 		  CommandLine cmdLine,
 		  CmdtySecSingleSelMode secSelmode, PrcSelectMode prcSelmode,
@@ -282,7 +350,6 @@ public class CmdLineHelper
 	  return secID;
   }
   
-  // For SecSelectMode = ID only!
   public static GCshSecID getSecID_indirect(CommandLine cmdLine,
 		  						CmdtySecSingleSelMode mode, SecSelectSubMode subMode,
 		  						boolean scriptMode) throws InvalidCommandLineArgsException
@@ -295,7 +362,6 @@ public class CmdLineHelper
 			  			scriptMode);
   }
   
-  // For CmdtySelectMode = ID only!
   public static GCshSecID getSecID_indirect(CommandLine cmdLine,
 		  						CmdtySecSingleSelMode mode, SecSelectSubMode subMode,
 		  						String exchArgName, String tickerArgName,
@@ -627,7 +693,6 @@ public class CmdLineHelper
   
   // ------------------------------
   
-  // For CmdtySecSelectMode = ID only!
   public static void setSecID_direct(GCshSecID secID,
 		  						CommandLine cmdLine,
 		  						CmdtySecSingleSelMode secSelmode, PrcSelectMode prcSelMode,
@@ -643,7 +708,6 @@ public class CmdLineHelper
 	  secID.setCode(locSecID.getCode());
   }
   
-  // For CmdtySecSelectMode = ID only!
   public static void setSecID_indirect(GCshSecID secID,
 		  						CommandLine cmdLine,
 		  						CmdtySecSingleSelMode secSelMode, SecSelectSubMode secSelSubMode,
@@ -657,6 +721,82 @@ public class CmdLineHelper
 	  secID.setType(locSecID.getType());
 	  secID.setNameSpace(locSecID.getNameSpace());
 	  secID.setCode(locSecID.getCode());
+  }
+  
+  // ------------------------------
+  
+  public static void parseAcctStuffWrap(
+		  CommandLine cmdLine,
+		  Helper.Mode acctSelMode, 
+		  GCshAcctID acctID, StringBuffer acctName,
+		  boolean scriptMode) throws InvalidCommandLineArgsException {
+	    // <account-id>
+	    if ( cmdLine.hasOption("account-id") )
+	    {
+	      if ( acctSelMode != Helper.Mode.ID )
+	      {
+	        System.err.println("<account-id> must only be set with <acct-sel-mode> = '" + Helper.Mode.ID + "'");
+	        throw new InvalidCommandLineArgsException();
+	      }
+	      
+	      try
+	      {
+	    	  // NO:
+	    	  // acctID = new GCshAcctID( cmdLine.getOptionValue("account-id") );
+			  // Instead:
+			  setAcctID(acctID, 
+					  cmdLine,
+					  acctSelMode,
+					  scriptMode);
+	      }
+	      catch ( Exception exc )
+	      {
+	        System.err.println("Could not parse <account-id>");
+	        throw new InvalidCommandLineArgsException();
+	      }
+	    }
+	    else
+	    {
+	      if ( acctSelMode == Helper.Mode.ID )
+	      {
+	        System.err.println("<account-id> must be set with <acct-sel-mode> = '" + Helper.Mode.ID + "'");
+	        throw new InvalidCommandLineArgsException();
+	      }      
+	    }
+	    
+	    if ( ! scriptMode )
+	      System.err.println("Account ID:    '" + acctID + "'");
+
+	    // <account-name>
+	    if ( cmdLine.hasOption("account-name") )
+	    {
+	      if ( acctSelMode != Helper.Mode.NAME )
+	      {
+	        System.err.println("<account-name> must only be set with <acct-sel-mode> = '" + Helper.Mode.NAME + "'");
+	        throw new InvalidCommandLineArgsException();
+	      }
+	      
+	      try
+	      {
+	        acctName.append( cmdLine.getOptionValue("account-name") );
+	      }
+	      catch ( Exception exc )
+	      {
+	        System.err.println("Could not parse <account-name>");
+	        throw new InvalidCommandLineArgsException();
+	      }
+	    }
+	    else
+	    {
+	      if ( acctSelMode == Helper.Mode.NAME )
+	      {
+	        System.err.println("<account-name> must be set with <acct-sel-mode> = '" + Helper.Mode.NAME + "'");
+	        throw new InvalidCommandLineArgsException();
+	      }      
+	    }
+	    
+	    if ( ! scriptMode )
+	      System.err.println("Account name:  '" + acctName + "'");
   }
   
   // ------------------------------
@@ -898,41 +1038,41 @@ public class CmdLineHelper
 	    // <name>
 	    if ( secName != null )
 	    {
-		    if ( cmdLine.hasOption("name") )
+		    if ( cmdLine.hasOption("security-name") )
 		    {
 		      if ( cmdLine.hasOption("exchange") ) 
 		      {
-		        System.err.println("Error: <name> and <exchange> are mutually exclusive");
+		        System.err.println("Error: <security-name> and <exchange> are mutually exclusive");
 		        throw new InvalidCommandLineArgsException();
 		      }
 
 		      if ( cmdLine.hasOption("mic") ) 
 		      {
-		        System.err.println("Error: <name> and <mic> are mutually exclusive");
+		        System.err.println("Error: <security-name> and <mic> are mutually exclusive");
 		        throw new InvalidCommandLineArgsException();
 		      }
 
 		      if ( cmdLine.hasOption("secid-type") ) 
 		      {
-		        System.err.println("Error: <name> and <secid-type> are mutually exclusive");
+		        System.err.println("Error: <security-name> and <secid-type> are mutually exclusive");
 		        throw new InvalidCommandLineArgsException();
 		      }
 
 		      if ( cmdLine.hasOption("isin") ) 
 		      {
-		        System.err.println("Error: <name> and <isin> are mutually exclusive");
+		        System.err.println("Error: <security-name> and <isin> are mutually exclusive");
 		        throw new InvalidCommandLineArgsException();
 		      }
 
 		      if ( secSelMode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME )
 		      {
-		        System.err.println("<name> must only be set with <sec-sel-mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME + "'");
+		        System.err.println("<security-name> must only be set with <sec-sel-mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME + "'");
 		        throw new InvalidCommandLineArgsException();
 		      }
 		      
 		      try
 		      {
-		        secName.append( cmdLine.getOptionValue("name") );
+		        secName.append( cmdLine.getOptionValue("security-name") );
 		      }
 		      catch (Exception exc)
 		      {
@@ -944,7 +1084,7 @@ public class CmdLineHelper
 		    {
 		      if ( secSelMode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME )
 		      {
-		        System.err.println("<name> must be set with <sec-sel-mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME + "'");
+		        System.err.println("<security-name> must be set with <sec-sel-mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME + "'");
 		        throw new InvalidCommandLineArgsException();
 		      }
 		    }
@@ -955,4 +1095,3 @@ public class CmdLineHelper
   }
 
 }
-

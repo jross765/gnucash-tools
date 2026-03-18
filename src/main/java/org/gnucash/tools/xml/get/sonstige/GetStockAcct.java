@@ -44,7 +44,8 @@ public class GetStockAcct extends CommandLineTool
   // ---
   
   private static Helper.Mode           acctSelMode  = null;
-  private static GCshAcctID            acctID       = null;
+
+  private static GCshAcctID            acctID       = new GCshAcctID();
   // This one and the following: sic, StringBuffer, not String,
   // for it has to be mutable because of the way the args are parsed.
   private static StringBuffer          acctName     = new StringBuffer();
@@ -102,6 +103,8 @@ public class GetStockAcct extends CommandLineTool
       .desc("GnuCash file")
       .longOpt("gnucash-file")
       .get();
+    
+    // ---
       
     Option optAcctMode = Option.builder("asm")
       .required()
@@ -125,6 +128,8 @@ public class GetStockAcct extends CommandLineTool
       .longOpt("account-name")
       .get();
 
+    // ---
+    
     Option optSecMode = Option.builder("ssm")
       .required()
       .hasArg()
@@ -210,12 +215,12 @@ public class GetStockAcct extends CommandLineTool
       .longOpt("isin")
       .get();
 
-    Option optSecName = Option.builder("n")
+    Option optSecName = Option.builder("sn")
       .hasArg()
       .argName("name")
       .desc("Security name (full) " + 
   		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.NAME + " only)")
-      .longOpt("name")
+      .longOpt("security-name")
       .get();
 
     // The convenient ones
@@ -392,74 +397,18 @@ public class GetStockAcct extends CommandLineTool
     
   	// ---------
 
-    // <account-id>
-    if ( cmdLine.hasOption("account-id") )
-    {
-      if ( acctSelMode != Helper.Mode.ID )
-      {
-        System.err.println("<account-id> must only be set with <account-mode> = '" + Helper.Mode.ID.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-      
-      try
-      {
-        acctID = new GCshAcctID( cmdLine.getOptionValue("account-id") );
-      }
-      catch ( Exception exc )
-      {
-        System.err.println("Could not parse <account-id>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    else
-    {
-      if ( acctSelMode == Helper.Mode.ID )
-      {
-        System.err.println("<account-id> must be set with <account-mode> = '" + Helper.Mode.ID.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }      
-    }
-    
-    if ( ! scriptMode )
-      System.err.println("Account ID:    '" + acctID + "'");
-
-    // <account-name>
-    if ( cmdLine.hasOption("account-name") )
-    {
-      if ( acctSelMode != Helper.Mode.NAME )
-      {
-        System.err.println("<account-name> must only be set with <account-mode> = '" + Helper.Mode.NAME.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-      
-      try
-      {
-        acctName.append( cmdLine.getOptionValue("account-name") );
-      }
-      catch ( Exception exc )
-      {
-        System.err.println("Could not parse <name>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    else
-    {
-      if ( acctSelMode == Helper.Mode.NAME )
-      {
-        System.err.println("<account-name> must be set with <account-mode> = '" + Helper.Mode.NAME.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }      
-    }
-    
-    if ( ! scriptMode )
-      System.err.println("Account name:  '" + acctName + "'");
+    // <acct-sel-mode>
+    // <account-id>, <acct-name>
+    CmdLineHelper.parseAcctStuffWrap( cmdLine, 
+    								 acctSelMode, 
+    								 acctID, acctName, 
+    								 scriptMode );
 
   	// ---------
 
     // <sec-sel-mode>, <sec-sel-sub-mode>,
-    // <exchange>, <ticker>,
-    // <mid>, <mic-id>,
-    // <secid-type>, <isin>
+    // <sec-id>,
+    // <ticker>, <mic-id>, <isin>,
     // <sec-name>
     CmdLineHelper.parseSecStuffWrap( cmdLine, 
     								 secSelMode, secSelSubMode, null,

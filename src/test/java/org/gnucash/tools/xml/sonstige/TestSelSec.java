@@ -181,7 +181,7 @@ public class TestSelSec extends CommandLineTool
       .argName("name")
       .desc("Security name (full) " + 
   		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.NAME + " only)")
-      .longOpt("name")
+      .longOpt("security-name")
       .get();
           
     // The convenient ones
