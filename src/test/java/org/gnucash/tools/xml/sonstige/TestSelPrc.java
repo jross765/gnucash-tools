@@ -1,4 +1,4 @@
-package org.gnucash.tools.xml.get.info;
+package org.gnucash.tools.xml.sonstige;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,6 @@ import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashPrice;
 import org.gnucash.api.read.impl.GnuCashFileImpl;
-import org.gnucash.api.read.impl.GnuCashPriceImpl;
 import org.gnucash.base.basetypes.complex.GCshSecID;
 import org.gnucash.base.basetypes.simple.GCshPrcID;
 import org.gnucash.tools.CommandLineTool;
@@ -27,11 +26,11 @@ import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class GetPrcInfo extends CommandLineTool
+public class TestSelPrc extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(GetPrcInfo.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestSelPrc.class);
   
   // -----------------------------------------------------------------
 
@@ -64,7 +63,7 @@ public class GetPrcInfo extends CommandLineTool
   {
     try
     {
-      GetPrcInfo tool = new GetPrcInfo ();
+      TestSelPrc tool = new TestSelPrc ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -161,107 +160,17 @@ public class GetPrcInfo extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
-    
+	GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), ! scriptMode);
+
     GnuCashPrice prc = PriceHelper.getPrc(prcSelMode, 
     									prcID, 
-    									secID,
+    									secID, 
     									dateFormat, date.dat,
     									isin.toString(),
     									gcshFile,
     									scriptMode);
 
-    // ----------------------------
-
-    try
-    {
-      System.out.println("toString:          " + prc.toString());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("toString:          " + "ERROR");
-    }
-    
-    try
-    {
-      System.out.println("From sec/curr:     " + prc.getFromCmdtyID());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("From sec/curr:     " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("To curr:           " + prc.getToCurrID());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("To curr:           " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Date:              " + prc.getDate());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Date:              " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Value:             " + prc.getValue());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Value:             " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Value (exact):     " + prc.getValueRat());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Value (exact):     " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Value (fmt):       " + prc.getValueFormatted());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Value (fmt):       " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Type (code):       " + prc.getType());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Type (code):       " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Type (str):        '" + ((GnuCashPriceImpl) prc).getTypeStr() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Type (str):        " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Source:            " + prc.getSource());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Source:            " + "ERROR");
-    }
+    System.out.println("Selected price: " + prc.toString());
   }
 
   // -----------------------------------------------------------------
@@ -344,7 +253,7 @@ public class GetPrcInfo extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "GetPrcInfo", "", options, "", true );
+		formatter.printHelp( "TestSelPrc", "", options, "", true );
 	}
 	catch ( IOException e )
 	{
