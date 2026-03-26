@@ -241,7 +241,7 @@ public class GetJobList extends CommandLineTool
     }
     
     if ( ! scriptMode )
-      System.err.println("Name:              " + name);
+      System.err.println("Name:              '" + name + "'");
   }
   
   @Override

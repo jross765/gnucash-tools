@@ -12,7 +12,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.gnucash.api.read.GnuCashCommodity;
 import org.gnucash.apispec.read.GnuCashSecurity;
 import org.gnucash.apispec.read.impl.GnuCashFileExtImpl;
 import org.gnucash.tools.CommandLineTool;
@@ -202,7 +201,7 @@ public class GetSecList extends CommandLineTool
     }
     
     if ( ! scriptMode )
-      System.err.println("Name:              " + name);
+      System.err.println("Name:              '" + name + "'");
   }
   
   @Override
