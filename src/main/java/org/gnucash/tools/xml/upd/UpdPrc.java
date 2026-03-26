@@ -40,9 +40,9 @@ public class UpdPrc extends CommandLineTool
   
   private static GCshPrcID prcID = null;
 
-  private static GnuCashPrice.Type    type   = null;
-  private static GnuCashPrice.Source  source = null;
-  private static FixedPointNumber     value  = null;
+  private static GnuCashPrice.Type    newType   = null;
+  private static GnuCashPrice.Source  newSource = null;
+  private static FixedPointNumber     newValue  = null;
 
   private static GnuCashWritablePrice prc = null;
 
@@ -66,8 +66,6 @@ public class UpdPrc extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // prcID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -100,29 +98,22 @@ public class UpdPrc extends CommandLineTool
     Option optType = Option.builder("t")
       .hasArg()
       .argName("type")
-      .desc("Price type")
-      .longOpt("type")
+      .desc("Price type (new)")
+      .longOpt("new-type")
       .get();
 
     Option optSource = Option.builder("s")
       .hasArg()
       .argName("source")
-      .desc("Price source")
-      .longOpt("source")
+      .desc("Price source (new)")
+      .longOpt("new-source")
       .get();
 
     Option optValue = Option.builder("v")
       .hasArg()
       .argName("value")
-      .desc("Price value")
-      .longOpt("val")
-      .get();
-
-    Option optDescr = Option.builder("desc")
-      .hasArg()
-      .argName("descr")
-      .desc("Price description")
-      .longOpt("description")
+      .desc("Price value (new)")
+      .longOpt("new-value")
       .get();
 
     // The convenient ones
@@ -171,22 +162,22 @@ public class UpdPrc extends CommandLineTool
 
   private void doChanges() throws Exception
   {
-    if ( type != null )
+    if ( newType != null )
     {
       System.err.println("Setting type");
-      prc.setType(type);
+      prc.setType(newType);
     }
 
-    if ( source != null )
+    if ( newSource != null )
     {
       System.err.println("Setting source");
-      prc.setSource(source);
+      prc.setSource(newSource);
     }
 
-    if ( value != null )
+    if ( newValue != null )
     {
       System.err.println("Setting value");
-      prc.setValue(value);
+      prc.setValue(newValue);
     }
   }
 
@@ -245,50 +236,50 @@ public class UpdPrc extends CommandLineTool
     }
     System.err.println("Price ID: " + prcID);
 
-    // <type>
-    if ( cmdLine.hasOption("type") ) 
+    // <new-type>
+    if ( cmdLine.hasOption("new-type") ) 
     {
       try
       {
-        type = GnuCashPrice.Type.valueOf( cmdLine.getOptionValue("type") );
+        newType = GnuCashPrice.Type.valueOf( cmdLine.getOptionValue("new-type") );
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <type>");
+        System.err.println("Could not parse <new-type>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Type: " + type);
+    System.err.println("New type: " + newType);
 
-    // <source>
-    if ( cmdLine.hasOption("source") ) 
+    // <new-source>
+    if ( cmdLine.hasOption("new-source") ) 
     {
       try
       {
-    	source = GnuCashPrice.Source.valueOf( cmdLine.getOptionValue("source") );
+    	newSource = GnuCashPrice.Source.valueOf( cmdLine.getOptionValue("new-source") );
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <source>");
+        System.err.println("Could not parse <new-source>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Source: " + source);
+    System.err.println("New source: " + newSource);
 
-    // <value>
-    if ( cmdLine.hasOption("value") ) 
+    // <new-value>
+    if ( cmdLine.hasOption("new-value") ) 
     {
       try
       {
-        value = new FixedPointNumber( cmdLine.getOptionValue("value") );
+        newValue = new FixedPointNumber( cmdLine.getOptionValue("new-value") );
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <value>");
+        System.err.println("Could not parse <new-value>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Value: " + value);
+    System.err.println("New value: " + newValue);
   }
   
   @Override

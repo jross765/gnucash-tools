@@ -37,9 +37,9 @@ public class UpdCust extends CommandLineTool
   
   private static GCshCustID custID = null;
 
-  private static String number = null;
-  private static String name = null;
-  private static String descr = null;
+  private static String newNumber = null;
+  private static String newName = null;
+  private static String newDescr = null;
 
   private static GnuCashWritableCustomer cust = null;
 
@@ -63,8 +63,6 @@ public class UpdCust extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // custID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -97,22 +95,22 @@ public class UpdCust extends CommandLineTool
     Option optNumber = Option.builder("num")
       .hasArg()
       .argName("number")
-      .desc("Customer number")
-      .longOpt("number")
+      .desc("Customer number (new)")
+      .longOpt("new-number")
       .get();
     	    
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
-      .desc("Customer name")
-      .longOpt("name")
+      .desc("Customer name (new)")
+      .longOpt("new-name")
       .get();
     
     Option optDescr = Option.builder("desc")
       .hasArg()
       .argName("descr")
-      .desc("Customer description")
-      .longOpt("description")
+      .desc("Customer description (new)")
+      .longOpt("new-description")
       .get();
       
     // The convenient ones
@@ -161,22 +159,22 @@ public class UpdCust extends CommandLineTool
 
   private void doChanges() throws Exception
   {
-    if ( number != null )
+    if ( newNumber != null )
     {
       System.err.println("Setting number");
-      cust.setNumber(number);
+      cust.setNumber(newNumber);
     }
 
-    if ( name != null )
+    if ( newName != null )
     {
       System.err.println("Setting name");
-      cust.setName(name);
+      cust.setName(newName);
     }
 
-    if ( descr != null )
+    if ( newDescr != null )
     {
       System.err.println("Setting description");
-      cust.setNotes(descr);
+      cust.setNotes(newDescr);
     }
   }
 
@@ -235,50 +233,50 @@ public class UpdCust extends CommandLineTool
     }
     System.err.println("Customer ID: " + custID);
 
-    // <number>
-    if ( cmdLine.hasOption("number") ) 
+    // <new-number>
+    if ( cmdLine.hasOption("new-number") ) 
     {
       try
       {
-        number = cmdLine.getOptionValue("number");
+        newNumber = cmdLine.getOptionValue("new-number").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <number>");
+        System.err.println("Could not parse <new-number>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Number: '" + number + "'");
+    System.err.println("New number: '" + newNumber + "'");
 
-    // <name>
-    if ( cmdLine.hasOption("name") ) 
+    // <new-name>
+    if ( cmdLine.hasOption("new-name") ) 
     {
       try
       {
-        name = cmdLine.getOptionValue("name");
+        newName = cmdLine.getOptionValue("new-name").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <name>");
+        System.err.println("Could not parse <new-name>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Name: '" + name + "'");
+    System.err.println("New name: '" + newName + "'");
 
-    // <description>
-    if ( cmdLine.hasOption("description") ) 
+    // <new-description>
+    if ( cmdLine.hasOption("new-description") ) 
     {
       try
       {
-        descr = cmdLine.getOptionValue("description");
+        newDescr = cmdLine.getOptionValue("new-description").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <description>");
+        System.err.println("Could not parse <new-description>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Description: '" + descr + "'");
+    System.err.println("New description: '" + newDescr + "'");
   }
   
   @Override

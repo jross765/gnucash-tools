@@ -37,8 +37,8 @@ public class UpdEmpl extends CommandLineTool
   
   private static GCshEmplID emplID = null;
 
-  private static String number = null;
-  private static String name = null;
+  private static String newNumber = null;
+  private static String newName = null;
 
   private static GnuCashWritableEmployee empl = null;
 
@@ -62,8 +62,6 @@ public class UpdEmpl extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // emplID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -96,15 +94,15 @@ public class UpdEmpl extends CommandLineTool
     Option optNumber = Option.builder("num")
       .hasArg()
       .argName("number")
-      .desc("Employee number")
-      .longOpt("number")
+      .desc("Employee number (new)")
+      .longOpt("new-number")
       .get();
     	    
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
-      .desc("Employee user name")
-      .longOpt("name")
+      .desc("Employee user name (new)")
+      .longOpt("new-name")
       .get();
     
     // The convenient ones
@@ -152,16 +150,16 @@ public class UpdEmpl extends CommandLineTool
 
   private void doChanges() throws Exception
   {
-    if ( number != null )
+    if ( newNumber != null )
     {
       System.err.println("Setting number");
-      empl.setNumber(number);
+      empl.setNumber(newNumber);
     }
 
-    if ( name != null )
+    if ( newName != null )
     {
       System.err.println("Setting user name");
-      empl.setUserName(name);
+      empl.setUserName(newName);
     }
   }
 
@@ -220,27 +218,27 @@ public class UpdEmpl extends CommandLineTool
     }
     System.err.println("Employee ID: " + emplID);
 
-    // <number>
-    if ( cmdLine.hasOption("number") ) 
+    // <new-number>
+    if ( cmdLine.hasOption("new-number") ) 
     {
       try
       {
-        number = cmdLine.getOptionValue("number");
+        newNumber = cmdLine.getOptionValue("new-number").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <number>");
+        System.err.println("Could not parse <new-number>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Number: '" + number + "'");
+    System.err.println("New number: '" + newNumber + "'");
 
-    // <name>
-    if ( cmdLine.hasOption("name") ) 
+    // <new-name>
+    if ( cmdLine.hasOption("new-name") ) 
     {
       try
       {
-        name = cmdLine.getOptionValue("name");
+        newName = cmdLine.getOptionValue("new-name").trim();
       }
       catch ( Exception exc )
       {
@@ -248,7 +246,7 @@ public class UpdEmpl extends CommandLineTool
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Name: '" + name + "'");
+    System.err.println("New name: '" + newName + "'");
   }
   
   @Override

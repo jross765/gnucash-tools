@@ -47,10 +47,11 @@ public class UpdInvc extends CommandLineTool
   private static GCshGenerInvcID  invcID = null;
   private static GCshAcctID       incExpAcctID = null;
   private static GCshAcctID       recvblPayblAcctID = null;
-  private static String           number = null;
-  private static String           descr = null;
-  private static GCshID           ownerID = null;
-  private static LocalDate        dateOpen = null;
+
+  private static String           newNumber = null;
+  private static String           newDescr = null;
+  private static GCshID           newOwnerID = null;
+  private static LocalDate        newDateOpen = null;
 
   private static GnuCashWritableGenerInvoice  invcGener = null;
   private static GnuCashAccount               incExpAcct = null;
@@ -76,8 +77,6 @@ public class UpdInvc extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // invcID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -124,29 +123,29 @@ public class UpdInvc extends CommandLineTool
     Option optNumber = Option.builder("no")
       .hasArg()
       .argName("number")
-      .desc("Invoice number")
-      .longOpt("number")
+      .desc("Invoice number (new)")
+      .longOpt("new-number")
       .get();
     
     Option optDescr = Option.builder("desc")
       .hasArg()
       .argName("descr")
-      .desc("Invoice description")
-      .longOpt("description")
+      .desc("Invoice description (new)")
+      .longOpt("new-description")
       .get();
     
     Option optOwnerID = Option.builder("own")
       .hasArg()
       .argName("UUID")
-      .desc("Ownwer-ID")
-      .longOpt("owner-id")
+      .desc("Ownwer-ID (new)")
+      .longOpt("new-owner-id")
       .get();
     	    
     Option optOpenDate = Option.builder("odat")
       .hasArg()
       .argName("date")
-      .desc("Date opened")
-      .longOpt("opened-date")
+      .desc("Date opened (new)")
+      .longOpt("new-opened-date")
       .get();
 
     // The convenient ones
@@ -237,35 +236,37 @@ public class UpdInvc extends CommandLineTool
         throw new AccountNotFoundException();
       }
     }
+    
+    // ---
 
-    if ( number != null )
+    if ( newNumber != null )
     {
       System.err.println("Setting number");
-      invcGener.setNumber(number);
+      invcGener.setNumber(newNumber);
     }
 
-    if ( descr != null )
+    if ( newDescr != null )
     {
       System.err.println("Setting description");
-      invcGener.setDescription(descr);
+      invcGener.setDescription(newDescr);
     }
 
-    if ( ownerID != null )
+    if ( newOwnerID != null )
     {
       System.err.println("Setting owner");
-      invcGener.setOwnerID(ownerID);
+      invcGener.setOwnerID(newOwnerID);
     }
 
-    if ( dateOpen != null )
+    if ( newDateOpen != null )
     {
       System.err.println("Setting opened date: invoice itself");
-      invcGener.setDateOpened(dateOpen);
+      invcGener.setDateOpened(newDateOpen);
 
       System.err.println("Setting opened date: entries");
       for ( GnuCashGenerInvoiceEntry entr : invcGener.getGenerEntries() )
       {
         GnuCashWritableGenerInvoiceEntry writEntr = invcGener.getWritableGenerEntryByID(entr.getID());
-        writEntr.setDate(dateOpen);
+        writEntr.setDate(newDateOpen);
       }
     }
   }
@@ -355,65 +356,65 @@ public class UpdInvc extends CommandLineTool
     }
     System.err.println("Receivable/payable account ID: '" + recvblPayblAcctID + "'");
 
-    // <number>
-    if ( cmdLine.hasOption("number") ) 
+    // <new-number>
+    if ( cmdLine.hasOption("new-number") ) 
     {
       try
       {
-        number = cmdLine.getOptionValue("number");
+        newNumber = cmdLine.getOptionValue("new-number").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <number>");
+        System.err.println("Could not parse <new-number>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Number: '" + number + "'");
+    System.err.println("New number: '" + newNumber + "'");
 
-    // <description>
-    if ( cmdLine.hasOption("description") ) 
+    // <new-description>
+    if ( cmdLine.hasOption("new-description") ) 
     {
       try
       {
-        descr = cmdLine.getOptionValue("description");
+        newDescr = cmdLine.getOptionValue("new-description").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <description>");
+        System.err.println("Could not parse <new-description>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Description: '" + descr + "'");
+    System.err.println("New description: '" + newDescr + "'");
 
-    // <owner-id>
-    if ( cmdLine.hasOption("owner-id") ) 
+    // <new-owner-id>
+    if ( cmdLine.hasOption("new-owner-id") ) 
     {
       try
       {
-        ownerID = new GCshID( cmdLine.getOptionValue("owner-id") );
+        newOwnerID = new GCshID( cmdLine.getOptionValue("new-owner-id") );
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <owner-id>");
+        System.err.println("Could not parse <new-owner-id>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Owner ID: '" + ownerID + "'");
+    System.err.println("New owner ID: '" + newOwnerID + "'");
 
-    // <opened-date>
-    if ( cmdLine.hasOption("opened-date") ) 
+    // <new-opened-date>
+    if ( cmdLine.hasOption("new-opened-date") ) 
     {
       try
       {
-        dateOpen = LocalDateHelpers.parseLocalDate(cmdLine.getOptionValue("opened-date"));
+        newDateOpen = LocalDateHelpers.parseLocalDate(cmdLine.getOptionValue("new-opened-date"));
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <opened-date>");
+        System.err.println("Could not parse <new-opened-date>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Opened date: " + dateOpen);
+    System.err.println("New opened date: " + newDateOpen);
   }
   
   @Override
