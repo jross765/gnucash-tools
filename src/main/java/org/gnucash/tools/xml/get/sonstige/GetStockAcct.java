@@ -20,7 +20,8 @@ import org.gnucash.base.basetypes.complex.GCshSecID;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.tools.CommandLineTool;
 import org.gnucash.tools.xml.helper.AccountHelper;
-import org.gnucash.tools.xml.helper.CmdLineHelper;
+import org.gnucash.tools.xml.helper.CmdLineHelper_Acct;
+import org.gnucash.tools.xml.helper.CmdLineHelper_Sec;
 import org.gnucash.tools.xml.helper.SecurityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,7 @@ public class GetStockAcct extends CommandLineTool
   // ---
   
   private static Helper.CmdtySecSingleSelMode secSelMode = null;
-  private static CmdLineHelper.SecSelectSubMode secSelSubMode = null;
+  private static CmdLineHelper_Sec.SecSelectSubMode secSelSubMode = null;
 
   private static GCshSecID     secID    = new GCshSecID();
   // This one and the following: sic, StringBuffer, not String,
@@ -160,7 +161,7 @@ public class GetStockAcct extends CommandLineTool
       .desc("Exchange code " +
     		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
       .longOpt("exchange")
       .get();
       
@@ -170,7 +171,7 @@ public class GetStockAcct extends CommandLineTool
       .desc("Ticker " + 
       		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
       .longOpt("ticker")
       .get();
     
@@ -180,7 +181,7 @@ public class GetStockAcct extends CommandLineTool
       .desc("MIC " +
       		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_MIC + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_MIC + " only)")
       .longOpt("mic")
       .get();
     	      
@@ -190,7 +191,7 @@ public class GetStockAcct extends CommandLineTool
       .desc("MIC-ID " +
       		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_MIC + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_MIC + " only)")
       .longOpt("mic-id")
       .get();
 
@@ -200,7 +201,7 @@ public class GetStockAcct extends CommandLineTool
       .desc("Security ID type " + 
       		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " only)")
       .longOpt("secid-type")
       .get();
 
@@ -209,9 +210,9 @@ public class GetStockAcct extends CommandLineTool
       .argName("isin")
       .desc("ISIN " + 
       		"(Security ID indirect). " +
-  		   	"(for <mode> = " + Helper.CmdtySecSingleSelMode.ISIN + " xor " +
+  		   	"(for ( <mode> = " + Helper.CmdtySecSingleSelMode.ISIN + " xor " +
   		   	"( <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " ) only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " ) only)")
       .longOpt("isin")
       .get();
 
@@ -283,7 +284,7 @@ public class GetStockAcct extends CommandLineTool
     SecuritiesAccountManager secAcctMgr = new SecuritiesAccountManager(acct);
     
     for ( GnuCashAccount chld : secAcctMgr.getShareAccts(true) ) { // ::TODO: optionally non-active accounts 
-      if ( chld.getCmdtyID().toString().equals(sec.getQualifID().toString()) ) { // important: toString()
+      if ( chld.getCmdtyID().toString().equals( sec.getQualifID().toString() ) ) { // important: toString()
           System.out.println(chld.getID());
       }
     }
@@ -375,7 +376,7 @@ public class GetStockAcct extends CommandLineTool
         
         try
         {
-          secSelSubMode = CmdLineHelper.SecSelectSubMode.valueOf(cmdLine.getOptionValue("sec-sel-sub-mode"));
+          secSelSubMode = CmdLineHelper_Sec.SecSelectSubMode.valueOf(cmdLine.getOptionValue("sec-sel-sub-mode"));
         }
         catch ( Exception exc )
         {
@@ -399,7 +400,7 @@ public class GetStockAcct extends CommandLineTool
 
     // <acct-sel-mode>
     // <account-id>, <acct-name>
-    CmdLineHelper.parseAcctStuffWrap( cmdLine, 
+    CmdLineHelper_Acct.parseAcctStuffWrap( cmdLine, 
     								 acctSelMode, 
     								 acctID, acctName, 
     								 scriptMode );
@@ -410,7 +411,7 @@ public class GetStockAcct extends CommandLineTool
     // <sec-id>,
     // <ticker>, <mic-id>, <isin>,
     // <sec-name>
-    CmdLineHelper.parseSecStuffWrap( cmdLine, 
+    CmdLineHelper_Sec.parseSecStuffWrap( cmdLine, 
     								 secSelMode, secSelSubMode, null,
     								 secID, 
     								 ticker, micID, isin, 
@@ -444,7 +445,7 @@ public class GetStockAcct extends CommandLineTool
     
     System.out.println("");
     System.out.println("Valid values for <sec-sel-sub-mode>:");
-    for ( CmdLineHelper.SecSelectSubMode elt : CmdLineHelper.SecSelectSubMode.values() )
+    for ( CmdLineHelper_Sec.SecSelectSubMode elt : CmdLineHelper_Sec.SecSelectSubMode.values() )
       System.out.println(" - " + elt);
 
     System.out.println("");
