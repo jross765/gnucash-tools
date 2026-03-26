@@ -17,7 +17,7 @@ import org.gnucash.base.basetypes.complex.GCshCmdtyNameSpace;
 import org.gnucash.base.basetypes.complex.GCshSecID;
 import org.gnucash.tools.CommandLineTool;
 import org.gnucash.tools.xml.get.list.Helper;
-import org.gnucash.tools.xml.helper.CmdLineHelper;
+import org.gnucash.tools.xml.helper.CmdLineHelper_Sec;
 import org.gnucash.tools.xml.helper.SecurityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class TestSelSec extends CommandLineTool
   private static String  gcshFileName = null;
   
   private static Helper.CmdtySecSingleSelMode secSelMode = null;
-  private static CmdLineHelper.SecSelectSubMode secSelSubMode = null;
+  private static CmdLineHelper_Sec.SecSelectSubMode secSelSubMode = null;
 
   // CAUTION: As opposed to most other tools, the following variables
   // have to be instantiated here.
@@ -121,7 +121,7 @@ public class TestSelSec extends CommandLineTool
       .desc("Exchange code " +
     		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
       .longOpt("exchange")
       .get();
       
@@ -131,7 +131,7 @@ public class TestSelSec extends CommandLineTool
       .desc("Ticker " + 
       		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
       .longOpt("ticker")
       .get();
     
@@ -141,7 +141,7 @@ public class TestSelSec extends CommandLineTool
       .desc("MIC " +
       		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_MIC + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_MIC + " only)")
       .longOpt("mic")
       .get();
     	      
@@ -151,7 +151,7 @@ public class TestSelSec extends CommandLineTool
       .desc("MIC-ID " +
       		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_MIC + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_MIC + " only)")
       .longOpt("mic-id")
       .get();
     	    
@@ -161,7 +161,7 @@ public class TestSelSec extends CommandLineTool
       .desc("Security ID type " + 
       		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " only)")
       .longOpt("secid-type")
       .get();
     	    	      
@@ -172,11 +172,11 @@ public class TestSelSec extends CommandLineTool
       		"(Security ID indirect). " +
   		   	"(for <mode> = " + Helper.CmdtySecSingleSelMode.ISIN + " xor " +
   		   	"( <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " ) only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " ) only)")
       .longOpt("isin")
       .get();
         
-    Option optSecName = Option.builder("n")
+    Option optSecName = Option.builder("sn")
       .hasArg()
       .argName("name")
       .desc("Security name (full) " + 
@@ -210,7 +210,7 @@ public class TestSelSec extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-	GnuCashFileExtImpl gcshFile = new GnuCashFileExtImpl(new File(gcshFileName), true);
+	GnuCashFileExtImpl gcshFile = new GnuCashFileExtImpl(new File(gcshFileName), ! scriptMode);
 
     GnuCashSecurity sec = SecurityHelper.getSec(secSelMode, 
     											secID, isin.toString(), secName.toString(), 
@@ -281,7 +281,7 @@ public class TestSelSec extends CommandLineTool
         
         try
         {
-          secSelSubMode = CmdLineHelper.SecSelectSubMode.valueOf(cmdLine.getOptionValue("sec-sel-sub-mode"));
+          secSelSubMode = CmdLineHelper_Sec.SecSelectSubMode.valueOf(cmdLine.getOptionValue("sec-sel-sub-mode"));
         }
         catch ( Exception exc )
         {
@@ -308,7 +308,7 @@ public class TestSelSec extends CommandLineTool
     // <mid>, <mic-id>,
     // <secid-type>, <isin>
     // <name>
-    CmdLineHelper.parseSecStuffWrap( cmdLine, 
+    CmdLineHelper_Sec.parseSecStuffWrap( cmdLine, 
     								 secSelMode, secSelSubMode, null,
     								 secID, 
     								 ticker, micID, isin, 
@@ -337,7 +337,7 @@ public class TestSelSec extends CommandLineTool
     
     System.out.println("");
     System.out.println("Valid values for <sec-sel-sub-mode>:");
-    for ( CmdLineHelper.SecSelectSubMode elt : CmdLineHelper.SecSelectSubMode.values() )
+    for ( CmdLineHelper_Sec.SecSelectSubMode elt : CmdLineHelper_Sec.SecSelectSubMode.values() )
       System.out.println(" - " + elt);
 
     System.out.println("");

@@ -17,7 +17,7 @@ import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.tools.CommandLineTool;
 import org.gnucash.tools.xml.get.list.Helper;
 import org.gnucash.tools.xml.helper.AccountHelper;
-import org.gnucash.tools.xml.helper.CmdLineHelper;
+import org.gnucash.tools.xml.helper.CmdLineHelper_Acct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +97,7 @@ public class TestSelAcct extends CommandLineTool
       .longOpt("account-id")
       .get();
 
-    Option optAcctName = Option.builder("n")
+    Option optAcctName = Option.builder("an")
       .hasArg()
       .argName("name")
       .desc("Account name (or part of)")
@@ -187,7 +187,7 @@ public class TestSelAcct extends CommandLineTool
 
     // <acct-sel-mode>
     // <account-id>, <acct-name>
-    CmdLineHelper.parseAcctStuffWrap( cmdLine, 
+    CmdLineHelper_Acct.parseAcctStuffWrap( cmdLine, 
     								 acctSelMode, 
     								 acctID, acctName, 
     								 scriptMode );
