@@ -18,7 +18,7 @@ import org.gnucash.base.basetypes.complex.GCshCmdtyNameSpace;
 import org.gnucash.base.basetypes.complex.GCshSecID;
 import org.gnucash.tools.CommandLineTool;
 import org.gnucash.tools.xml.get.list.Helper;
-import org.gnucash.tools.xml.helper.CmdLineHelper;
+import org.gnucash.tools.xml.helper.CmdLineHelper_Sec;
 import org.gnucash.tools.xml.helper.SecurityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class GetSecInfo extends CommandLineTool
   private static String  gcshFileName = null;
   
   private static Helper.CmdtySecSingleSelMode secSelMode = null;
-  private static CmdLineHelper.SecSelectSubMode secSelSubMode = null;
+  private static CmdLineHelper_Sec.SecSelectSubMode secSelSubMode = null;
 
   // CAUTION: As opposed to most other tools, the following variables
   // have to be instantiated here.
@@ -124,7 +124,7 @@ public class GetSecInfo extends CommandLineTool
       .desc("Exchange code " +
     		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
       .longOpt("exchange")
       .get();
 
@@ -134,7 +134,7 @@ public class GetSecInfo extends CommandLineTool
       .desc("Ticker " + 
       		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_EXCHANGE_TICKER + " only)")
       .longOpt("ticker")
       .get();
     
@@ -144,7 +144,7 @@ public class GetSecInfo extends CommandLineTool
       .desc("MIC " +
       		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_MIC + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_MIC + " only)")
       .longOpt("mic")
       .get();
     	      
@@ -154,7 +154,7 @@ public class GetSecInfo extends CommandLineTool
       .desc("MIC-ID " +
       		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_MIC + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_MIC + " only)")
       .longOpt("mic-id")
       .get();
     	    
@@ -164,7 +164,7 @@ public class GetSecInfo extends CommandLineTool
       .desc("Security ID type " + 
       		"(Security ID indirect). " +
    		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " only)")
       .longOpt("secid-type")
       .get();
 
@@ -175,16 +175,16 @@ public class GetSecInfo extends CommandLineTool
       		"(Security ID indirect). " +
   		   	"(for <mode> = " + Helper.CmdtySecSingleSelMode.ISIN + " xor " +
   		   	"( <mode> = " + Helper.CmdtySecSingleSelMode.ID + " and " +
-            "<sub-mode> = " + CmdLineHelper.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " ) only)")
+            "<sub-mode> = " + CmdLineHelper_Sec.SecSelectSubMode.INDIRECT_SEC_ID_TYPE + " ) only)")
       .longOpt("isin")
       .get();
 
-    Option optSecName = Option.builder("n")
+    Option optSecName = Option.builder("sn")
       .hasArg()
       .argName("name")
       .desc("Security name (full) " + 
   		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.NAME + " only)")
-      .longOpt("name")
+      .longOpt("security-name")
       .get();
 
     // The convenient ones
@@ -368,7 +368,7 @@ public class GetSecInfo extends CommandLineTool
         
         try
         {
-          secSelSubMode = CmdLineHelper.SecSelectSubMode.valueOf(cmdLine.getOptionValue("sec-sel-sub-mode"));
+          secSelSubMode = CmdLineHelper_Sec.SecSelectSubMode.valueOf(cmdLine.getOptionValue("sec-sel-sub-mode"));
         }
         catch ( Exception exc )
         {
@@ -395,7 +395,7 @@ public class GetSecInfo extends CommandLineTool
     // <mid>, <mic-id>,
     // <secid-type>, <isin>
     // <name>
-    CmdLineHelper.parseSecStuffWrap( cmdLine, 
+    CmdLineHelper_Sec.parseSecStuffWrap( cmdLine, 
     								 secSelMode, secSelSubMode, null,
     								 secID, 
     								 ticker, micID, isin, 
@@ -431,13 +431,13 @@ public class GetSecInfo extends CommandLineTool
 	}
     
     System.out.println("");
-    System.out.println("Valid values for <mode>:");
+    System.out.println("Valid values for <sec-sel-mode>:");
     for ( Helper.CmdtySecSingleSelMode elt : Helper.CmdtySecSingleSelMode.values() )
       System.out.println(" - " + elt);
     
     System.out.println("");
     System.out.println("Valid values for <sub-mode>:");
-    for ( CmdLineHelper.SecSelectSubMode elt : CmdLineHelper.SecSelectSubMode.values() )
+    for ( CmdLineHelper_Sec.SecSelectSubMode elt : CmdLineHelper_Sec.SecSelectSubMode.values() )
       System.out.println(" - " + elt);
     
     System.out.println("");

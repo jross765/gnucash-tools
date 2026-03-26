@@ -19,6 +19,7 @@ import org.gnucash.tools.CommandLineTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
@@ -74,14 +75,14 @@ public class GetCurrInfo extends CommandLineTool
       .longOpt("gnucash-file")
       .get();
       
-    Option optISO= Option.builder("c")
+    Option optISO= Option.builder("iso")
       .required()
       .hasArg()
       .argName("code")
       .desc("ISO 4217 currency code")
       .longOpt("iso-code")
       .get();
-        
+
     // The convenient ones
     Option optShowQuote = Option.builder("squt")
       .desc("Show quotes")
@@ -106,6 +107,11 @@ public class GetCurrInfo extends CommandLineTool
 	GnuCashFileExtImpl gcshFile = new GnuCashFileExtImpl(new File(gcshFileName), true);
 
     GnuCashCurrency curr = gcshFile.getCurrencyByID(currID);
+    if ( curr == null )
+    {
+      System.err.println("Could not find currency with qualif. ID " + currID.toString());
+      throw new NoEntryFoundException();
+    }
     
     // ----------------------------
 
@@ -234,6 +240,9 @@ public class GetCurrInfo extends CommandLineTool
         System.err.println("Could not parse <iso-code>");
         throw new InvalidCommandLineArgsException();
     }
+
+    if (!scriptMode)
+    	System.err.println("Curr. ID:   '" + currID + "'");
 
   	// <show-quotes>
     if (cmdLine.hasOption("show-quotes"))

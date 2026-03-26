@@ -18,7 +18,7 @@ import org.gnucash.api.read.impl.GnuCashFileImpl;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.tools.CommandLineTool;
 import org.gnucash.tools.xml.helper.AccountHelper;
-import org.gnucash.tools.xml.helper.CmdLineHelper;
+import org.gnucash.tools.xml.helper.CmdLineHelper_Acct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,21 +38,21 @@ public class GetAcctInfo extends CommandLineTool
   private static Options options;
   
   private static String  gcshFileName = null;
-  
+
   private static Helper.Mode acctSelMode = null;
 
   // CAUTION: As opposed to most other tools, the following variables
   // have to be instantiated here.
   
   private static GCshAcctID    acctID   = new GCshAcctID();
-  // This following: sic, StringBuffer, not String,
+  // The following: sic, StringBuffer, not String,
   // for it has to be mutable because of the way the args are parsed.
   private static StringBuffer  acctName = new StringBuffer();
   
   private static boolean showParents  = false;
   private static boolean showChildren = false;
   private static boolean showTrx      = false;
-  private static boolean showRcn   = false;
+  private static boolean showRcn      = false;
   
   private static boolean scriptMode = false; // ::TODO
 
@@ -104,7 +104,7 @@ public class GetAcctInfo extends CommandLineTool
       .longOpt("account-id")
       .get();
 
-    Option optAcctName = Option.builder("n")
+    Option optAcctName = Option.builder("an")
       .hasArg()
       .argName("name")
       .desc("Account name (or part of)")
@@ -427,7 +427,7 @@ public class GetAcctInfo extends CommandLineTool
 
     // <acct-sel-mode>
     // <account-id>, <acct-name>
-    CmdLineHelper.parseAcctStuffWrap( cmdLine, 
+    CmdLineHelper_Acct.parseAcctStuffWrap( cmdLine, 
     								 acctSelMode, 
     								 acctID, acctName, 
     								 scriptMode );
