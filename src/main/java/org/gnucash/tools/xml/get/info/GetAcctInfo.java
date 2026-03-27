@@ -155,7 +155,7 @@ public class GetAcctInfo extends CommandLineTool
     GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), ! scriptMode);
 
     GnuCashAccount acct = AccountHelper.getAcct(acctSelMode, 
-    											acctID, acctName.toString(), 
+    											acctID, acctName.toString(), true,
     											gcshFile,
     											scriptMode);
 

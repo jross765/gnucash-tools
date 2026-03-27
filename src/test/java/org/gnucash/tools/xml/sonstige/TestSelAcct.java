@@ -126,7 +126,7 @@ public class TestSelAcct extends CommandLineTool
 	GnuCashFileExtImpl gcshFile = new GnuCashFileExtImpl(new File(gcshFileName), ! scriptMode);
 
     GnuCashAccount acct = AccountHelper.getAcct(acctSelMode, 
-    											acctID, acctName.toString(), 
+    											acctID, acctName.toString(), true,
     											gcshFile,
     											scriptMode);
 

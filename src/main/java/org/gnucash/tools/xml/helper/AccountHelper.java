@@ -14,7 +14,7 @@ public class AccountHelper
 
 	public static GnuCashAccount getAcct(
 			Helper.Mode acctSelMode, 
-			GCshAcctID acctID, String acctName, 
+			GCshAcctID acctID, String acctName, boolean acctNameQualif,
 			GnuCashFile gcshFile,
 			boolean scriptMode) throws Exception {
 		GnuCashAccount acct = null;
@@ -33,7 +33,7 @@ public class AccountHelper
 			}
 	    } else if ( acctSelMode == Helper.Mode.NAME ) {
 			if ( acctName != null ) {
-				acct = gcshFile.getAccountByNameUniq(acctName, true);
+				acct = gcshFile.getAccountByNameUniq(acctName, acctNameQualif);
 				if ( acct == null ) {
 					if ( ! scriptMode )
 						System.err.println("Could not find an account (uniquely) matching this name.");

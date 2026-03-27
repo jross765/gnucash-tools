@@ -63,9 +63,9 @@ public class GetStockAcct extends CommandLineTool
   private static StringBuffer  micID    = new StringBuffer();
   private static StringBuffer  isin     = new StringBuffer();
   // Possibly later:
-  // private static String  wkn      = new StringBuffer();
-  // private static String  cusip    = new StringBuffer();
-  // private static String  sedol    = new StringBuffer();
+  // private static StringBuffer  wkn      = new StringBuffer();
+  // private static StringBuffer  cusip    = new StringBuffer();
+  // private static StringBuffer  sedol    = new StringBuffer();
   private static StringBuffer  secName  = new StringBuffer();
   
   // ---
@@ -262,7 +262,7 @@ public class GetStockAcct extends CommandLineTool
     // ---
 
     GnuCashAccount acct = AccountHelper.getAcct(acctSelMode,
-												acctID, acctName.toString(), 
+												acctID, acctName.toString(), false,
 												gcshFile,
 												scriptMode);
 
