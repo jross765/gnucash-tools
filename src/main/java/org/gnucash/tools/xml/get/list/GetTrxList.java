@@ -20,7 +20,7 @@ import org.gnucash.apiext.Const;
 import org.gnucash.apiext.trxmgr.TransactionFilter;
 import org.gnucash.apiext.trxmgr.TransactionFilter.SplitLogic;
 import org.gnucash.apiext.trxmgr.TransactionFinder;
-import org.gnucash.apiext.trxmgr.TransactionSplitFilter;
+import org.gnucash.apiext.trxmgr.TransactionSplitFilter_FP;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.base.basetypes.simple.GCshIDNotSetException;
 import org.gnucash.tools.CommandLineTool;
@@ -298,7 +298,7 @@ public class GetTrxList extends CommandLineTool
 
   private TransactionFilter setFilter() throws GCshIDNotSetException
   {
-	TransactionSplitFilter spltFlt = new TransactionSplitFilter();
+	TransactionSplitFilter_FP spltFlt = new TransactionSplitFilter_FP();
     
     if ( action != null )
     	spltFlt.action = action;

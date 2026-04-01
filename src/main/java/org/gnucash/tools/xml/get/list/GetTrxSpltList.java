@@ -15,7 +15,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashTransactionSplit;
 import org.gnucash.api.read.impl.GnuCashFileImpl;
 import org.gnucash.apiext.Const;
-import org.gnucash.apiext.trxmgr.TransactionSplitFilter;
+import org.gnucash.apiext.trxmgr.TransactionSplitFilter_FP;
 import org.gnucash.apiext.trxmgr.TransactionSplitFinder;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.base.basetypes.simple.GCshIDNotSetException;
@@ -199,7 +199,7 @@ public class GetTrxSpltList extends CommandLineTool
     GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
     
     // 1) Set filter
-    TransactionSplitFilter spltFlt = setFilter();
+    TransactionSplitFilter_FP spltFlt = setFilter();
     
     if ( showFlt )
     {
@@ -218,9 +218,9 @@ public class GetTrxSpltList extends CommandLineTool
 
   // -----------------------------------------------------------------
 
-  private TransactionSplitFilter setFilter() throws GCshIDNotSetException
+  private TransactionSplitFilter_FP setFilter() throws GCshIDNotSetException
   {
-	TransactionSplitFilter spltFlt = new TransactionSplitFilter();
+	TransactionSplitFilter_FP spltFlt = new TransactionSplitFilter_FP();
     
     if ( action != null )
     	spltFlt.action = action;
