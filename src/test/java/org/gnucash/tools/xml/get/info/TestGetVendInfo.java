@@ -38,8 +38,10 @@ import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 public class TestGetVendInfo extends CommandLineTool
 {
   // Logger
-  private static Logger logger = LoggerFactory.getLogger(TestGetVendInfo.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(TestGetVendInfo.class);
   
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
@@ -71,8 +73,6 @@ public class TestGetVendInfo extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // acctID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -83,8 +83,8 @@ public class TestGetVendInfo extends CommandLineTool
       .hasArg()
       .argName("file")
       .desc("GnuCash file")
-      .longOpt("GnuCash file")
-      .build();
+      .longOpt("gnucash-file")
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -92,32 +92,32 @@ public class TestGetVendInfo extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
         
     Option optVendID = Option.builder("vend")
       .hasArg()
       .argName("UUID")
       .desc("Vendor-ID")
       .longOpt("vendor-id")
-      .build();
+      .get();
     
     Option optVendName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Vendor name")
       .longOpt("name")
-      .build();
+      .get();
       
     // The convenient ones
     Option optShowJob = Option.builder("sjob")
       .desc("Show jobs")
       .longOpt("show-jobs")
-      .build();
+      .get();
             
     Option optShowInvc = Option.builder("sinvc")
       .desc("Show invoices")
       .longOpt("show-invoices")
-      .build();
+      .get();
           
     options = new Options();
     options.addOption(optFile);
@@ -385,14 +385,14 @@ public class TestGetVendInfo extends CommandLineTool
 
     // ---
 
-    // <GnuCash file>
+    // <gnucash-file>
     try
     {
-      gcshFileName = cmdLine.getOptionValue("GnuCash file");
+      gcshFileName = cmdLine.getOptionValue("gnucash-file");
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <GnuCash file>");
+      System.err.println("Could not parse <gnucash-file>");
       throw new InvalidCommandLineArgsException();
     }
     

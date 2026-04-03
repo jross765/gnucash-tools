@@ -64,8 +64,6 @@ public class TestGetEmplInfo extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // acctID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -76,8 +74,8 @@ public class TestGetEmplInfo extends CommandLineTool
       .hasArg()
       .argName("file")
       .desc("GnuCash file")
-      .longOpt("GnuCash file")
-      .build();
+      .longOpt("gnucash-file")
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -85,27 +83,27 @@ public class TestGetEmplInfo extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
         
     Option optEmplID = Option.builder("empl")
       .hasArg()
       .argName("UUID")
       .desc("Employee-ID")
       .longOpt("employee-id")
-      .build();
+      .get();
     
     Option optEmplName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Employee name")
       .longOpt("name")
-      .build();
+      .get();
       
     // The convenient ones
     Option optShowVch = Option.builder("svch")
       .desc("Show vouchers")
       .longOpt("show-vouchers")
-      .build();
+      .get();
           
     options = new Options();
     options.addOption(optFile);
@@ -272,14 +270,14 @@ public class TestGetEmplInfo extends CommandLineTool
 
     // ---
 
-    // <GnuCash file>
+    // <gnucash-file>
     try
     {
-      gcshFileName = cmdLine.getOptionValue("GnuCash file");
+      gcshFileName = cmdLine.getOptionValue("gnucash-file");
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <GnuCash file>");
+      System.err.println("Could not parse <gnucash-file>");
       throw new InvalidCommandLineArgsException();
     }
     

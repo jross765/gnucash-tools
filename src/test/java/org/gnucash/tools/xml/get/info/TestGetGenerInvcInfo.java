@@ -72,8 +72,6 @@ public class TestGetGenerInvcInfo extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // invcID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -84,8 +82,8 @@ public class TestGetGenerInvcInfo extends CommandLineTool
       .hasArg()
       .argName("file")
       .desc("GnuCash file")
-      .longOpt("GnuCash file")
-      .build();
+      .longOpt("gnucash-file")
+      .get();
       
     Option optInvcID = Option.builder("invc")
       .required()
@@ -93,18 +91,18 @@ public class TestGetGenerInvcInfo extends CommandLineTool
       .argName("UUID")
       .desc("Invoice-ID")
       .longOpt("invoice-id")
-      .build();
+      .get();
     
     // The convenient ones
     Option optShowEntr = Option.builder("sentr")
       .desc("Show entries")
       .longOpt("show-entries")
-      .build();
+      .get();
             
     Option optShowTrx = Option.builder("strx")
       .desc("Show transactions")
       .longOpt("show-transactions")
-      .build();        
+      .get();        
             
     options = new Options();
     options.addOption(optFile);
@@ -462,14 +460,14 @@ public class TestGetGenerInvcInfo extends CommandLineTool
 
     // ---
 
-    // <GnuCash file>
+    // <gnucash-file>
     try
     {
-      gcshFileName = cmdLine.getOptionValue("GnuCash file");
+      gcshFileName = cmdLine.getOptionValue("gnucash-file");
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <GnuCash file>");
+      System.err.println("Could not parse <gnucash-file>");
       throw new InvalidCommandLineArgsException();
     }
     

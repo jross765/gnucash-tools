@@ -71,8 +71,6 @@ public class TestGetCustInfo extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // acctID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -83,8 +81,8 @@ public class TestGetCustInfo extends CommandLineTool
       .hasArg()
       .argName("file")
       .desc("GnuCash file")
-      .longOpt("GnuCash file")
-      .build();
+      .longOpt("gnucash-file")
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -92,32 +90,32 @@ public class TestGetCustInfo extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
         
     Option optCustID = Option.builder("cust")
       .hasArg()
       .argName("UUID")
       .desc("Customer-ID")
       .longOpt("customer-id")
-      .build();
+      .get();
     
     Option optCustName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Customer name")
       .longOpt("name")
-      .build();
+      .get();
       
     // The convenient ones
     Option optShowJob = Option.builder("sjob")
       .desc("Show jobs")
       .longOpt("show-jobs")
-      .build();
+      .get();
             
     Option optShowInvc = Option.builder("sinvc")
       .desc("Show invoices")
       .longOpt("show-invoices")
-      .build();
+      .get();
           
     options = new Options();
     options.addOption(optFile);
@@ -394,14 +392,14 @@ public class TestGetCustInfo extends CommandLineTool
 
     // ---
 
-    // <GnuCash file>
+    // <gnucash-file>
     try
     {
-      gcshFileName = cmdLine.getOptionValue("GnuCash file");
+      gcshFileName = cmdLine.getOptionValue("gnucash-file");
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <GnuCash file>");
+      System.err.println("Could not parse <gnucash-file>");
       throw new InvalidCommandLineArgsException();
     }
     
