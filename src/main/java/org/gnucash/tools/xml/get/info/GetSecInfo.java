@@ -56,11 +56,11 @@ public class GetSecInfo extends CommandLineTool
   // private static StringBuffer  cusip    = new StringBuffer();
   // private static StringBuffer  sedol    = new StringBuffer();
   private static StringBuffer  secName  = new StringBuffer();
-  
+
   private static boolean showQuotes = false;
   
   private static boolean scriptMode = false; // ::TODO
-  
+
   // -----------------------------------------------------------------
 
   public static void main( String[] args )
@@ -93,7 +93,7 @@ public class GetSecInfo extends CommandLineTool
       .desc("GnuCash file")
       .longOpt("gnucash-file")
       .get();
-      
+
     Option optMode = Option.builder("ssm")
       .required()
       .hasArg()
@@ -436,7 +436,7 @@ public class GetSecInfo extends CommandLineTool
       System.out.println(" - " + elt);
     
     System.out.println("");
-    System.out.println("Valid values for <sub-mode>:");
+    System.out.println("Valid values for <sec-sel-sub-mode>:");
     for ( CmdLineHelper_Sec.SecSelectSubMode elt : CmdLineHelper_Sec.SecSelectSubMode.values() )
       System.out.println(" - " + elt);
     

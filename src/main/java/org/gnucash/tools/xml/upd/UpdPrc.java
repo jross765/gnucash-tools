@@ -14,13 +14,17 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.gnucash.api.read.GnuCashPrice;
 import org.gnucash.api.write.GnuCashWritablePrice;
 import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
+import org.gnucash.base.basetypes.complex.GCshSecID;
 import org.gnucash.base.basetypes.simple.GCshPrcID;
 import org.gnucash.tools.CommandLineTool;
+import org.gnucash.tools.xml.helper.CmdLineHelper_Prc;
+import org.gnucash.tools.xml.helper.LocalDateWrp;
+import org.gnucash.tools.xml.helper.PriceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
+import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
@@ -38,13 +42,31 @@ public class UpdPrc extends CommandLineTool
   private static String gcshInFileName = null;
   private static String gcshOutFileName = null;
   
-  private static GCshPrcID prcID = null;
+  private static CmdLineHelper_Prc.PrcSelectMode    prcSelMode = null;
 
+  // CAUTION: As opposed to most other tools, the following variables
+  // have to be instantiated here.
+  
+  private static GCshPrcID          prcID         = new GCshPrcID();
+  // Provide for selecting a currency as well ==> GCshCurrID and/or GCshCmdtyID
+  private static GCshSecID          secID         = new GCshSecID(); // sic, security-ID, not commodity-ID
+  private static Helper.DateFormat  dateFormat    = null;
+  private static LocalDateWrp       date          = new LocalDateWrp();
+  private static StringBuffer       isin          = new StringBuffer();
+  // Possibly later:
+  // private static StringBuffer  wkn             = new StringBuffer();
+  // private static StringBuffer  cusip           = new StringBuffer();
+  // private static StringBuffer  sedol           = new StringBuffer();
+  
+  // ---
+  
+  private static GnuCashWritablePrice prc = null;
+  
   private static GnuCashPrice.Type    newType   = null;
   private static GnuCashPrice.Source  newSource = null;
   private static FixedPointNumber     newValue  = null;
 
-  private static GnuCashWritablePrice prc = null;
+  private static boolean scriptMode = false;
 
   // -----------------------------------------------------------------
 
@@ -78,7 +100,7 @@ public class UpdPrc extends CommandLineTool
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
       .get();
-          
+
     Option optFileOut = Option.builder("of")
       .required()
       .hasArg()
@@ -87,29 +109,69 @@ public class UpdPrc extends CommandLineTool
       .longOpt("gnucash-out-file")
       .get();
 
-    Option optID = Option.builder("id")
+    Option optPrcMode = Option.builder("psm")
       .required()
       .hasArg()
+      .argName("mode")
+      .desc("Selection mode for price")
+      .longOpt("prc-sel-mode")
+      .get();
+
+    Option optPrcID = Option.builder("prc")
+      .hasArg()
       .argName("UUID")
-      .desc("Price ID")
+      .desc("Price-ID" +
+    		  "(for <mode> = " + CmdLineHelper_Prc.PrcSelectMode.ID + " only)")
       .longOpt("price-id")
       .get();
 
-    Option optType = Option.builder("t")
+    // ::TODO: Provide for selecting a currency as well
+    Option optPrcSecID = Option.builder("sec")
+      .hasArg()
+      .argName("secID")
+      .desc("Security ID (qualified) " +
+    		  "(for <mode> = " + CmdLineHelper_Prc.PrcSelectMode.ID + " or " +
+		       "<mode> = " + CmdLineHelper_Prc.PrcSelectMode.SEC_DATE + " only)")
+      .longOpt("security-id")
+      .get();
+
+    Option optPrcDateFormat = Option.builder("df")
+      .hasArg()
+      .argName("date-format")
+      .desc("Price date format")
+      .longOpt("price-date-format")
+      .get();
+
+    Option optPrcDate = Option.builder("dat")
+      .hasArg()
+      .argName("date")
+      .desc("Price date")
+      .longOpt("price-date")
+      .get();
+
+    Option optPrcISIN = Option.builder("is")
+      .hasArg()
+      .argName("isin")
+      .desc("ISIN " + 
+    		  "(for <mode> = " + CmdLineHelper_Prc.PrcSelectMode.ISIN_DATE + " only)")
+      .longOpt("isin")
+      .get();
+
+    Option optNewType = Option.builder("t")
       .hasArg()
       .argName("type")
       .desc("Price type (new)")
       .longOpt("new-type")
       .get();
 
-    Option optSource = Option.builder("s")
+    Option optNewSource = Option.builder("s")
       .hasArg()
       .argName("source")
       .desc("Price source (new)")
       .longOpt("new-source")
       .get();
 
-    Option optValue = Option.builder("v")
+    Option optNewValue = Option.builder("v")
       .hasArg()
       .argName("value")
       .desc("Price value (new)")
@@ -117,15 +179,24 @@ public class UpdPrc extends CommandLineTool
       .get();
 
     // The convenient ones
-    // ::EMPTY
-          
+    Option optScript = Option.builder("sl")
+      .desc("Script Mode")
+      .longOpt("script")
+      .get();            
+
     options = new Options();
     options.addOption(optFileIn);
     options.addOption(optFileOut);
-    options.addOption(optID);
-    options.addOption(optType);
-    options.addOption(optSource);
-    options.addOption(optValue);
+    options.addOption(optPrcMode);
+    options.addOption(optPrcID);
+    options.addOption(optPrcSecID);
+    options.addOption(optPrcDateFormat);
+    options.addOption(optPrcDate);
+    options.addOption(optPrcISIN);
+    options.addOption(optNewType);
+    options.addOption(optNewSource);
+    options.addOption(optNewValue);
+    options.addOption(optScript);
   }
 
   @Override
@@ -139,18 +210,15 @@ public class UpdPrc extends CommandLineTool
   {
     GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
 
-    try 
-    {
-      prc = gcshFile.getWritablePriceByID(prcID);
-      System.err.println("Price before update: " + prc.toString());
-    }
-    catch ( Exception exc )
-    {
-      System.err.println("Error: Could not find/instantiate price with ID '" + prcID + "'");
-      // ::TODO
-//      throw new PriceNotFoundException();
-      throw new NoEntryFoundException();
-    }
+    prc = PriceHelper.getWrtPrc(prcSelMode, 
+    									prcID, 
+    									secID,
+    									dateFormat, date.dat,
+    									isin.toString(),
+    									gcshFile,
+    									scriptMode);
+
+    // ----------------------------
     
     doChanges();
     System.err.println("Price after update: " + prc.toString());
@@ -200,6 +268,15 @@ public class UpdPrc extends CommandLineTool
 
     // ---
 
+    // <script>
+    if ( cmdLine.hasOption("script") )
+    {
+      scriptMode = true; 
+    }
+    // System.err.println("Script mode: " + scriptMode);
+    
+    // ---
+
     // <gnucash-in-file>
     try
     {
@@ -210,7 +287,9 @@ public class UpdPrc extends CommandLineTool
       System.err.println("Could not parse <gnucash-in-file>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("GnuCash file (in): '" + gcshInFileName + "'");
+
+    if ( ! scriptMode )
+    	System.err.println("GnuCash file (in): '" + gcshInFileName + "'");
     
     // <gnucash-out-file>
     try
@@ -222,19 +301,48 @@ public class UpdPrc extends CommandLineTool
       System.err.println("Could not parse <gnucash-out-file>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("GnuCash file (out): '" + gcshOutFileName + "'");
     
-    // <price-id>
+    if ( ! scriptMode )
+    	System.err.println("GnuCash file (out): '" + gcshOutFileName + "'");
+    
+  	// ---------
+  	
+    // <prc-sel-mode>
     try
     {
-      prcID = new GCshPrcID( cmdLine.getOptionValue("price-id") );
+      prcSelMode = CmdLineHelper_Prc.PrcSelectMode.valueOf(cmdLine.getOptionValue("prc-sel-mode"));
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <price-id>");
+      System.err.println("Could not parse <prc-sel-mode>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("Price ID: " + prcID);
+    
+    if ( ! scriptMode )
+      System.err.println("Price mode:     " + prcSelMode);
+    
+  	// ---------
+
+    // <prc-sel-mode>
+    // <price-id>, 
+    // <security-id>, <date>,
+    // <isin>
+    try
+	{
+		CmdLineHelper_Prc.parsePrcStuffWrap( cmdLine, 
+										 prcSelMode,
+										 prcID,
+										 secID,
+										 dateFormat, date, 
+										 isin,
+										 scriptMode );
+	}
+	catch ( Exception exc )
+	{
+		// TODO Auto-generated catch block
+		exc.printStackTrace();
+		throw new InvalidCommandLineArgsException();
+	}
 
     // <new-type>
     if ( cmdLine.hasOption("new-type") ) 
@@ -249,7 +357,9 @@ public class UpdPrc extends CommandLineTool
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("New type: " + newType);
+    
+    if ( ! scriptMode )
+    	System.err.println("New type: " + newType);
 
     // <new-source>
     if ( cmdLine.hasOption("new-source") ) 
@@ -264,7 +374,9 @@ public class UpdPrc extends CommandLineTool
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("New source: " + newSource);
+    
+    if ( ! scriptMode )
+    	System.err.println("New source: " + newSource);
 
     // <new-value>
     if ( cmdLine.hasOption("new-value") ) 
@@ -279,7 +391,9 @@ public class UpdPrc extends CommandLineTool
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("New value: " + newValue);
+    
+    if ( ! scriptMode )
+    	System.err.println("New value: " + newValue);
   }
   
   @Override
@@ -295,5 +409,15 @@ public class UpdPrc extends CommandLineTool
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
+    
+    System.out.println("");
+    System.out.println("Valid values for <prc-sel-mode>:");
+    for ( CmdLineHelper_Prc.PrcSelectMode elt : CmdLineHelper_Prc.PrcSelectMode.values() )
+      System.out.println(" - " + elt);
+    
+    System.out.println("");
+    System.out.println("Valid values for <price-date-format>:");
+    for ( Helper.DateFormat elt : Helper.DateFormat.values() )
+      System.out.println(" - " + elt);
   }
 }

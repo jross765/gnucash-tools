@@ -40,12 +40,16 @@ public class UpdAcct extends CommandLineTool
   
   private static GCshAcctID acctID = null;
 
+  // ---
+
+  private static GnuCashWritableAccount acct = null;
+
   private static String              newName      = null;
   private static String              newDescr     = null;
   private static GnuCashAccount.Type newType      = null;
   private static GCshCmdtyID         newSecCurrID = null;
-
-  private static GnuCashWritableAccount acct = null;
+  
+  private static boolean scriptMode = false;
 
   // -----------------------------------------------------------------
 
@@ -125,7 +129,10 @@ public class UpdAcct extends CommandLineTool
       .get();
       
     // The convenient ones
-    // ::EMPTY
+    Option optScript = Option.builder("sl")
+      .desc("Script Mode")
+      .longOpt("script")
+      .get();            
           
     options = new Options();
     options.addOption(optFileIn);
@@ -135,6 +142,7 @@ public class UpdAcct extends CommandLineTool
     options.addOption(optDescr);
     options.addOption(optType);
     options.addOption(optSecCurr);
+    options.addOption(optScript);
   }
 
   @Override
@@ -215,6 +223,15 @@ public class UpdAcct extends CommandLineTool
       throw new InvalidCommandLineArgsException();
     }
 
+    // ---
+
+    // <script>
+    if ( cmdLine.hasOption("script") )
+    {
+      scriptMode = true; 
+    }
+    // System.err.println("Script mode: " + scriptMode);
+    
     // ---
 
     // <gnucash-in-file>

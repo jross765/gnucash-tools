@@ -56,11 +56,13 @@ public class UpdSec extends CommandLineTool
   // private static StringBuffer  sedol    = new StringBuffer();
   // private static StringBuffer  secName  = new StringBuffer(); // <-- NOT for selection
 
-  private static String          newName  = null;
+  // ---
 
   private static GnuCashWritableSecurity sec = null;
 
-  private static boolean scriptMode = false; // ::TODO
+  private static String          newName  = null;
+
+  private static boolean scriptMode = false;
 
   // -----------------------------------------------------------------
 
@@ -198,7 +200,10 @@ public class UpdSec extends CommandLineTool
       .get();
    
     // The convenient ones
-    // ::EMPTY
+    Option optScript = Option.builder("sl")
+      .desc("Script Mode")
+      .longOpt("script")
+      .get();            
           
     options = new Options();
     options.addOption(optFileIn);
@@ -213,6 +218,7 @@ public class UpdSec extends CommandLineTool
     options.addOption(optSecIDType);
     options.addOption(optISIN);
     options.addOption(optNewName);
+    options.addOption(optScript);
   }
 
   @Override
@@ -268,6 +274,15 @@ public class UpdSec extends CommandLineTool
       throw new InvalidCommandLineArgsException();
     }
 
+    // ---
+
+    // <script>
+    if ( cmdLine.hasOption("script") )
+    {
+      scriptMode = true; 
+    }
+    // System.err.println("Script mode: " + scriptMode);
+    
     // ---
 
     // <gnucash-in-file>
