@@ -69,8 +69,8 @@ public class TestValidate extends CommandLineTool
       .hasArg()
       .argName("file")
       .desc("GnuCash file")
-      .longOpt("GnuCash file")
-      .build();
+      .longOpt("gnucash-file")
+      .get();
       
     Option optSchema = Option.builder("s")
       .required()
@@ -78,7 +78,7 @@ public class TestValidate extends CommandLineTool
       .argName("file")
       .desc("GnuCash schema file (XSD)")
       .longOpt("schema-file")
-      .build();
+      .get();
         
     // The convenient ones
     // ::EMPTY
@@ -168,14 +168,14 @@ public class TestValidate extends CommandLineTool
 
     // ---
 
-    // <GnuCash file>
+    // <gnucash-file>
     try
     {
-      gcshFileName = cmdLine.getOptionValue("GnuCash file");
+      gcshFileName = cmdLine.getOptionValue("gnucash-file");
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <GnuCash file>");
+      System.err.println("Could not parse <gnucash-file>");
       throw new InvalidCommandLineArgsException();
     }
     

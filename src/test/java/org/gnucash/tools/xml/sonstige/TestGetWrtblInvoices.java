@@ -80,36 +80,36 @@ public class TestGetWrtblInvoices extends CommandLineTool
       .hasArg()
       .argName("file")
       .desc("GnuCash file")
-      .longOpt("GnuCash file")
-      .build();
+      .longOpt("gnucash-file")
+      .get();
       
     Option optCustID = Option.builder("cust")
       .hasArg()
       .argName("UUID")
       .desc("Customer-ID")
       .longOpt("customer-id")
-      .build();
+      .get();
     
     Option optVendID = Option.builder("vend")
       .hasArg()
       .argName("UUID")
       .desc("Vendor-ID")
       .longOpt("vendor-id")
-      .build();
+      .get();
     	    
     Option optEmplID = Option.builder("empl")
       .hasArg()
       .argName("UUID")
       .desc("Employee-ID")
       .longOpt("employee-id")
-      .build();
+      .get();
     	    	    
     Option optJobID = Option.builder("job")
       .hasArg()
       .argName("UUID")
       .desc("Job-ID")
       .longOpt("job-id")
-      .build();
+      .get();
     	    	    
     // The convenient ones
     // ::EMPTY
@@ -205,14 +205,14 @@ public class TestGetWrtblInvoices extends CommandLineTool
 
     // ---
 
-    // <GnuCash file>
+    // <gnucash-file>
     try
     {
-      gcshFileName = cmdLine.getOptionValue("GnuCash file");
+      gcshFileName = cmdLine.getOptionValue("gnucash-file");
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <GnuCash file>");
+      System.err.println("Could not parse <gnucash-file>");
       throw new InvalidCommandLineArgsException();
     }
     

@@ -63,7 +63,7 @@ public class TestLoadSave extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -71,7 +71,7 @@ public class TestLoadSave extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
                 
     // The convenient ones
     // ::EMPTY

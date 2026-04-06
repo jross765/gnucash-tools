@@ -108,7 +108,7 @@ public class TestGenInvc extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (in)")
       .longOpt("gnucash-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -116,7 +116,7 @@ public class TestGenInvc extends CommandLineTool
       .argName("file")
       .desc("GnuCash file (out)")
       .longOpt("gnucash-out-file")
-      .build();
+      .get();
       
     Option optType = Option.builder("t")
       .required()
@@ -124,7 +124,7 @@ public class TestGenInvc extends CommandLineTool
       .argName("type")
       .desc("Invoice type")
       .longOpt("type")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -132,7 +132,7 @@ public class TestGenInvc extends CommandLineTool
       .argName("mode")
       .desc("Mode to specify accounts by")
       .longOpt("mode")
-      .build();
+      .get();
         
     Option optOwnerID = Option.builder("own")
       .required()
@@ -140,7 +140,7 @@ public class TestGenInvc extends CommandLineTool
       .argName("UUID")
       .desc("Owner ID")
       .longOpt("owner-id")
-      .build();
+      .get();
         
     Option optIncExpAcctIDOrName = Option.builder("ieacct")
       .required()
@@ -148,7 +148,7 @@ public class TestGenInvc extends CommandLineTool
       .argName("UUID")
       .desc("Income/expense account ID or name")
       .longOpt("income-expense-account")
-      .build();
+      .get();
             
     Option optRecvblPayblAcctIDOrName = Option.builder("rpacct")
       .required()
@@ -156,7 +156,7 @@ public class TestGenInvc extends CommandLineTool
       .argName("UUID")
       .desc("Receivable/payable account ID or name")
       .longOpt("receivable-payable-account")
-      .build();
+      .get();
             
     Option optNumber = Option.builder("no")
       .required()
@@ -164,7 +164,7 @@ public class TestGenInvc extends CommandLineTool
       .argName("number")
       .desc("Invoice number")
       .longOpt("number")
-      .build();
+      .get();
     
     Option optOpenDate = Option.builder("odat")
       .required()
@@ -172,7 +172,7 @@ public class TestGenInvc extends CommandLineTool
       .argName("date")
       .desc("Date opened")
       .longOpt("opened-date")
-      .build();
+      .get();
 
     Option optPostDate = Option.builder("pdat")
       .required()
@@ -180,7 +180,7 @@ public class TestGenInvc extends CommandLineTool
       .argName("date")
       .desc("Post date")
       .longOpt("post-date")
-      .build();
+      .get();
 
     Option optDueDate = Option.builder("ddat")
       .required()
@@ -188,7 +188,7 @@ public class TestGenInvc extends CommandLineTool
       .argName("date")
       .desc("Due date")
       .longOpt("due-date")
-      .build();
+      .get();
 
     Option optAmount = Option.builder("amt")
       .required()
@@ -196,7 +196,7 @@ public class TestGenInvc extends CommandLineTool
       .argName("amount")
       .desc("Amount")
       .longOpt("amount")
-      .build();
+      .get();
                 
     // The convenient ones
     // ::EMPTY

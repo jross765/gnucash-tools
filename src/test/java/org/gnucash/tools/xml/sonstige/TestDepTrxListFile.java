@@ -70,7 +70,7 @@ public class TestDepTrxListFile extends CommandLineTool
       .argName("file")
       .desc("List file for bookings")
       .longOpt("booking-list-file")
-      .build();
+      .get();
     	    	        
     // ---
     	    
