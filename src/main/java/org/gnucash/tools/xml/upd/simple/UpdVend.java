@@ -1,4 +1,4 @@
-package org.gnucash.tools.xml.upd;
+package org.gnucash.tools.xml.upd.simple;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,9 +11,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.gnucash.api.write.GnuCashWritableCustomer;
+import org.gnucash.api.write.GnuCashWritableVendor;
 import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
-import org.gnucash.base.basetypes.simple.GCshCustID;
+import org.gnucash.base.basetypes.simple.GCshVendID;
 import org.gnucash.tools.CommandLineTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +22,10 @@ import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class UpdCust extends CommandLineTool
+public class UpdVend extends CommandLineTool
 {
   // Logger
-  private static final Logger LOGGER = LoggerFactory.getLogger(UpdCust.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UpdVend.class);
   
   // -----------------------------------------------------------------
 
@@ -35,13 +35,13 @@ public class UpdCust extends CommandLineTool
   private static String gcshInFileName = null;
   private static String gcshOutFileName = null;
   
-  private static GCshCustID custID = null;
+  private static GCshVendID vendID = null;
 
   private static String newNumber = null;
   private static String newName = null;
   private static String newDescr = null;
 
-  private static GnuCashWritableCustomer cust = null;
+  private static GnuCashWritableVendor vend = null;
 
   // -----------------------------------------------------------------
 
@@ -49,7 +49,7 @@ public class UpdCust extends CommandLineTool
   {
     try
     {
-      UpdCust tool = new UpdCust ();
+      UpdVend tool = new UpdVend ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -88,28 +88,28 @@ public class UpdCust extends CommandLineTool
       .required()
       .hasArg()
       .argName("UUID")
-      .desc("Customer ID")
-      .longOpt("customer-id")
+      .desc("Vendor ID")
+      .longOpt("vendor-id")
       .get();
             
     Option optNumber = Option.builder("num")
       .hasArg()
       .argName("number")
-      .desc("Customer number (new)")
+      .desc("Vendor number (new)")
       .longOpt("new-number")
       .get();
     	    
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
-      .desc("Customer name (new)")
+      .desc("Vendor name (new)")
       .longOpt("new-name")
       .get();
     
     Option optDescr = Option.builder("desc")
       .hasArg()
       .argName("descr")
-      .desc("Customer description (new)")
+      .desc("Vendor description (new)")
       .longOpt("new-description")
       .get();
       
@@ -138,19 +138,19 @@ public class UpdCust extends CommandLineTool
 
     try 
     {
-      cust = gcshFile.getWritableCustomerByID(custID);
-      System.err.println("Customer before update: " + cust.toString());
+      vend = gcshFile.getWritableVendorByID(vendID);
+      System.err.println("Vendor before update: " + vend.toString());
     }
     catch ( Exception exc )
     {
-      System.err.println("Error: Could not find/instantiate customer with ID '" + custID + "'");
+      System.err.println("Error: Could not find/instantiate vendor with ID '" + vendID + "'");
       // ::TODO
-//      throw new CustomerNotFoundException();
+//      throw new VendorNotFoundException();
       throw new NoEntryFoundException();
     }
     
     doChanges();
-    System.err.println("Customer after update: " + cust.toString());
+    System.err.println("Vendor after update: " + vend.toString());
     
     gcshFile.writeFile(new File(gcshOutFileName));
     
@@ -162,19 +162,19 @@ public class UpdCust extends CommandLineTool
     if ( newNumber != null )
     {
       System.err.println("Setting number");
-      cust.setNumber(newNumber);
+      vend.setNumber(newNumber);
     }
 
     if ( newName != null )
     {
       System.err.println("Setting name");
-      cust.setName(newName);
+      vend.setName(newName);
     }
 
     if ( newDescr != null )
     {
       System.err.println("Setting description");
-      cust.setNotes(newDescr);
+      vend.setNotes(newDescr);
     }
   }
 
@@ -221,17 +221,17 @@ public class UpdCust extends CommandLineTool
     }
     System.err.println("GnuCash file (out): '" + gcshOutFileName + "'");
     
-    // <customer-id>
+    // <vendor-id>
     try
     {
-      custID = new GCshCustID( cmdLine.getOptionValue("customer-id") );
+      vendID = new GCshVendID( cmdLine.getOptionValue("vendor-id") );
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <customer-id>");
+      System.err.println("Could not parse <vendor-id>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("Customer ID: " + custID);
+    System.err.println("Vendor ID: " + vendID);
 
     // <new-number>
     if ( cmdLine.hasOption("new-number") ) 
@@ -285,7 +285,7 @@ public class UpdCust extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "UpdCust", "", options, "", true );
+		formatter.printHelp( "UpdVend", "", options, "", true );
 	}
 	catch ( IOException e )
 	{

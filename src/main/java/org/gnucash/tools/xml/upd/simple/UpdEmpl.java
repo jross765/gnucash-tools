@@ -1,4 +1,4 @@
-package org.gnucash.tools.xml.upd;
+package org.gnucash.tools.xml.upd.simple;
 
 import java.io.File;
 import java.io.IOException;

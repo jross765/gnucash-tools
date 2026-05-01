@@ -1,4 +1,4 @@
-package org.gnucash.tools.xml.upd;
+package org.gnucash.tools.xml.upd.simple;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,24 +11,21 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.gnucash.api.read.GnuCashAccount;
-import org.gnucash.api.write.GnuCashWritableAccount;
+import org.gnucash.api.write.GnuCashWritableCustomer;
 import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
-import org.gnucash.base.basetypes.complex.GCshCmdtyID;
-import org.gnucash.base.basetypes.simple.GCshAcctID;
+import org.gnucash.base.basetypes.simple.GCshCustID;
 import org.gnucash.tools.CommandLineTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import xyz.schnorxoborx.base.beanbase.AccountNotFoundException;
+import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class UpdAcct extends CommandLineTool
+public class UpdCust extends CommandLineTool
 {
   // Logger
-  @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(UpdAcct.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UpdCust.class);
   
   // -----------------------------------------------------------------
 
@@ -38,18 +35,13 @@ public class UpdAcct extends CommandLineTool
   private static String gcshInFileName = null;
   private static String gcshOutFileName = null;
   
-  private static GCshAcctID acctID = null;
+  private static GCshCustID custID = null;
 
-  // ---
+  private static String newNumber = null;
+  private static String newName = null;
+  private static String newDescr = null;
 
-  private static GnuCashWritableAccount acct = null;
-
-  private static String              newName      = null;
-  private static String              newDescr     = null;
-  private static GnuCashAccount.Type newType      = null;
-  private static GCshCmdtyID         newSecCurrID = null;
-  
-  private static boolean scriptMode = false;
+  private static GnuCashWritableCustomer cust = null;
 
   // -----------------------------------------------------------------
 
@@ -57,7 +49,7 @@ public class UpdAcct extends CommandLineTool
   {
     try
     {
-      UpdAcct tool = new UpdAcct ();
+      UpdCust tool = new UpdCust ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -92,57 +84,45 @@ public class UpdAcct extends CommandLineTool
       .longOpt("gnucash-out-file")
       .get();
       
-    Option optID = Option.builder("acct")
+    Option optID = Option.builder("id")
       .required()
       .hasArg()
       .argName("UUID")
-      .desc("Account ID")
-      .longOpt("account-id")
+      .desc("Customer ID")
+      .longOpt("customer-id")
       .get();
-
+            
+    Option optNumber = Option.builder("num")
+      .hasArg()
+      .argName("number")
+      .desc("Customer number (new)")
+      .longOpt("new-number")
+      .get();
+    	    
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
-      .desc("Account name (new)")
+      .desc("Customer name (new)")
       .longOpt("new-name")
       .get();
     
     Option optDescr = Option.builder("desc")
       .hasArg()
       .argName("descr")
-      .desc("Account description (new)")
+      .desc("Customer description (new)")
       .longOpt("new-description")
       .get();
       
-    Option optType = Option.builder("t")
-      .hasArg()
-      .argName("type")
-      .desc("Account type (new)")
-      .longOpt("new-type")
-      .get();
-        
-    Option optSecCurr = Option.builder("sc")
-      .hasArg()
-      .argName("sec/curr-id")
-      .desc("Security/currency ID (new)")
-      .longOpt("new-security-currency-id")
-      .get();
-      
     // The convenient ones
-    Option optScript = Option.builder("sl")
-      .desc("Script Mode")
-      .longOpt("script")
-      .get();            
+    // ::EMPTY
           
     options = new Options();
     options.addOption(optFileIn);
     options.addOption(optFileOut);
     options.addOption(optID);
+    options.addOption(optNumber);
     options.addOption(optName);
     options.addOption(optDescr);
-    options.addOption(optType);
-    options.addOption(optSecCurr);
-    options.addOption(optScript);
   }
 
   @Override
@@ -156,23 +136,21 @@ public class UpdAcct extends CommandLineTool
   {
     GnuCashWritableFileImpl gcshFile = new GnuCashWritableFileImpl(new File(gcshInFileName), true);
 
-    // CAUTION: Here, we intentionally do not use AccountHelper.getWrtAcct(),
-    // because that would necessitate the use of CmdLineHelper_Acct.parseAcctStuffWrap(),
-    // and that makes no sense here because there is only one way to select an
-    // account: by its ID (the name arg. is for tne *new* name)
     try 
     {
-      acct = gcshFile.getWritableAccountByID(acctID);
-      System.err.println("Account before update: " + acct.toString());
+      cust = gcshFile.getWritableCustomerByID(custID);
+      System.err.println("Customer before update: " + cust.toString());
     }
     catch ( Exception exc )
     {
-      System.err.println("Error: Could not find/instantiate account with ID '" + acctID + "'");
-      throw new AccountNotFoundException();
+      System.err.println("Error: Could not find/instantiate customer with ID '" + custID + "'");
+      // ::TODO
+//      throw new CustomerNotFoundException();
+      throw new NoEntryFoundException();
     }
     
     doChanges();
-    System.err.println("Account after update: " + acct.toString());
+    System.err.println("Customer after update: " + cust.toString());
     
     gcshFile.writeFile(new File(gcshOutFileName));
     
@@ -181,28 +159,22 @@ public class UpdAcct extends CommandLineTool
 
   private void doChanges() throws Exception
   {
+    if ( newNumber != null )
+    {
+      System.err.println("Setting number");
+      cust.setNumber(newNumber);
+    }
+
     if ( newName != null )
     {
       System.err.println("Setting name");
-      acct.setName(newName);
+      cust.setName(newName);
     }
 
     if ( newDescr != null )
     {
       System.err.println("Setting description");
-      acct.setDescription(newDescr);
-    }
-
-    if ( newType != null )
-    {
-      System.err.println("Setting type");
-      acct.setType(newType);
-    }
-
-    if ( newSecCurrID != null )
-    {
-      System.err.println("Setting security/currency");
-      acct.setCmdtyID(newSecCurrID);
+      cust.setNotes(newDescr);
     }
   }
 
@@ -223,15 +195,6 @@ public class UpdAcct extends CommandLineTool
       throw new InvalidCommandLineArgsException();
     }
 
-    // ---
-
-    // <script>
-    if ( cmdLine.hasOption("script") )
-    {
-      scriptMode = true; 
-    }
-    // System.err.println("Script mode: " + scriptMode);
-    
     // ---
 
     // <gnucash-in-file>
@@ -258,27 +221,39 @@ public class UpdAcct extends CommandLineTool
     }
     System.err.println("GnuCash file (out): '" + gcshOutFileName + "'");
     
-    // CAUTION: Here, we CmdLineHelper_Acct.parseAcctStuffWrap(),
-    // because there is only one way to select an account: by its ID 
-    // (the name arg. is for tne *new* name).
-    // <account-id>
+    // <customer-id>
     try
     {
-      acctID = new GCshAcctID( cmdLine.getOptionValue("account-id") );
+      custID = new GCshCustID( cmdLine.getOptionValue("customer-id") );
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <account-id>");
+      System.err.println("Could not parse <customer-id>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("Account ID: " + acctID);
+    System.err.println("Customer ID: " + custID);
+
+    // <new-number>
+    if ( cmdLine.hasOption("new-number") ) 
+    {
+      try
+      {
+        newNumber = cmdLine.getOptionValue("new-number").trim();
+      }
+      catch ( Exception exc )
+      {
+        System.err.println("Could not parse <new-number>");
+        throw new InvalidCommandLineArgsException();
+      }
+    }
+    System.err.println("New number: '" + newNumber + "'");
 
     // <new-name>
     if ( cmdLine.hasOption("new-name") ) 
     {
       try
       {
-        newName = cmdLine.getOptionValue("new-name");
+        newName = cmdLine.getOptionValue("new-name").trim();
       }
       catch ( Exception exc )
       {
@@ -293,7 +268,7 @@ public class UpdAcct extends CommandLineTool
     {
       try
       {
-        newDescr = cmdLine.getOptionValue("new-description");
+        newDescr = cmdLine.getOptionValue("new-description").trim();
       }
       catch ( Exception exc )
       {
@@ -302,36 +277,6 @@ public class UpdAcct extends CommandLineTool
       }
     }
     System.err.println("New description: '" + newDescr + "'");
-    
-    // <new-type>
-    if ( cmdLine.hasOption("new-type") ) 
-    {
-      try
-      {
-        newType = GnuCashAccount.Type.valueOf( cmdLine.getOptionValue("new-type") );
-      }
-      catch ( Exception exc )
-      {
-        System.err.println("Could not parse <new-type>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    System.err.println("New type: '" + newType + "'");
-
-    // <new-security-currency-id>
-    if ( cmdLine.hasOption("new-security-currency-id") ) 
-    {
-      try
-      {
-        newSecCurrID = GCshCmdtyID.parse( cmdLine.getOptionValue("new-security-currency-id") );
-      }
-      catch ( Exception exc )
-      {
-        System.err.println("Could not parse <new-security-currency-id>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    System.err.println("New sec/Curr: '" + newSecCurrID + "'");
   }
   
   @Override
@@ -340,17 +285,12 @@ public class UpdAcct extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "UpdAcct", "", options, "", true );
+		formatter.printHelp( "UpdCust", "", options, "", true );
 	}
 	catch ( IOException e )
 	{
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-    
-    System.out.println("");
-    System.out.println("Valid values for <new-type>:");
-    for ( GnuCashAccount.Type elt : GnuCashAccount.Type.values() )
-      System.out.println(" - " + elt);
   }
 }
