@@ -1,4 +1,4 @@
-package org.gnucash.tools.xml.sonstige;
+package org.gnucash.tools.xml.other;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

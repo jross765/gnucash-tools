@@ -11,12 +11,14 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.numbers.fraction.BigFraction;
 import org.gnucash.api.read.GnuCashPrice;
 import org.gnucash.api.write.GnuCashWritablePrice;
 import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
 import org.gnucash.base.basetypes.complex.GCshSecID;
 import org.gnucash.base.basetypes.simple.GCshPrcID;
 import org.gnucash.tools.CommandLineTool;
+import org.gnucash.tools.Const;
 import org.gnucash.tools.xml.helper.CmdLineHelper_Prc;
 import org.gnucash.tools.xml.helper.LocalDateWrp;
 import org.gnucash.tools.xml.helper.PriceHelper;
@@ -26,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
-import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
 public class UpdPrc extends CommandLineTool
 {
@@ -64,7 +65,7 @@ public class UpdPrc extends CommandLineTool
   
   private static GnuCashPrice.Type    newType   = null;
   private static GnuCashPrice.Source  newSource = null;
-  private static FixedPointNumber     newValue  = null;
+  private static BigFraction     newValue  = null;
 
   private static boolean scriptMode = false;
 
@@ -383,7 +384,8 @@ public class UpdPrc extends CommandLineTool
     {
       try
       {
-        newValue = new FixedPointNumber( cmdLine.getOptionValue("new-value") );
+    	double temp = Double.parseDouble( cmdLine.getOptionValue("new-value") );
+        newValue = BigFraction.from(temp, Const.EPS, Const.ITER_MAX);
       }
       catch ( Exception exc )
       {

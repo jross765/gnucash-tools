@@ -12,12 +12,14 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.numbers.fraction.BigFraction;
 import org.gnucash.api.read.GnuCashPrice;
 import org.gnucash.api.write.GnuCashWritablePrice;
 import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
 import org.gnucash.base.basetypes.complex.GCshCmdtyID;
 import org.gnucash.base.basetypes.complex.GCshCurrID;
 import org.gnucash.tools.CommandLineTool;
+import org.gnucash.tools.Const;
 import org.gnucash.tools.xml.helper.CmdLineHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
-import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
 public class GenPrc extends CommandLineTool
 {
@@ -45,7 +46,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
   private static GCshCurrID          toCurrID = null;
   private static Helper.DateFormat   dateFmt = null;
   private static LocalDate           date = null;
-  private static FixedPointNumber    value = null;
+  private static BigFraction         value = null;
   private static GnuCashPrice.Source source = null;
 
   // -----------------------------------------------------------------
@@ -259,7 +260,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenPrc.class);
     // <value>
     try
     {
-      value = new FixedPointNumber( Double.parseDouble( cmdLine.getOptionValue("value") ) ) ; 
+      double temp = Double.parseDouble( cmdLine.getOptionValue("value") );
+      value = BigFraction.from(temp, Const.EPS, Const.ITER_MAX); 
       System.err.println("value: " + value);
     }
     catch ( Exception exc )

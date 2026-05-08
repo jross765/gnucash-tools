@@ -12,10 +12,11 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.numbers.fraction.BigFraction;
 import org.gnucash.api.read.GnuCashTransactionSplit;
 import org.gnucash.api.read.impl.GnuCashFileImpl;
 import org.gnucash.apiext.Const;
-import org.gnucash.apiext.trxmgr.TransactionSplitFilter_FP;
+import org.gnucash.apiext.trxmgr.TransactionSplitFilter_BF;
 import org.gnucash.apiext.trxmgr.TransactionSplitFinder;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.base.basetypes.simple.GCshIDNotSetException;
@@ -26,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
-import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
 public class GetTrxSpltList extends CommandLineTool
 {
@@ -41,22 +41,22 @@ public class GetTrxSpltList extends CommandLineTool
   
   // ------------------------------
   
-  private static String     gcshFileName    = null;
+  private static String      gcshFileName    = null;
   
   private static GnuCashTransactionSplit.Action     action     = null;
   private static GnuCashTransactionSplit.ReconState reconState = null;
   
-  private static GCshAcctID acctID          = null;
+  private static GCshAcctID  acctID          = null;
   
-  private static double     valueFrom       = Const.UNSET_VALUE; 
-  private static double     valueTo         = Const.UNSET_VALUE; 
+  private static BigFraction valueFrom       = Const.UNSET_VALUE_BF;
+  private static BigFraction valueTo         = Const.UNSET_VALUE_BF;
   
-  private static double     quantityFrom    = Const.UNSET_VALUE; 
-  private static double     quantityTo      = Const.UNSET_VALUE; 
+  private static BigFraction quantityFrom    = Const.UNSET_VALUE_BF;
+  private static BigFraction quantityTo      = Const.UNSET_VALUE_BF;
   
-  private static String     descrSplt       = null; 
+  private static String      descrSplt       = null; 
   
-  private static boolean    showFlt         = false; 
+  private static boolean     showFlt         = false; 
   
   // ------------------------------
   
@@ -199,7 +199,7 @@ public class GetTrxSpltList extends CommandLineTool
     GnuCashFileImpl gcshFile = new GnuCashFileImpl(new File(gcshFileName), true);
     
     // 1) Set filter
-    TransactionSplitFilter_FP spltFlt = setFilter();
+    TransactionSplitFilter_BF spltFlt = setFilter();
     
     if ( showFlt )
     {
@@ -218,9 +218,9 @@ public class GetTrxSpltList extends CommandLineTool
 
   // -----------------------------------------------------------------
 
-  private TransactionSplitFilter_FP setFilter() throws GCshIDNotSetException
+  private TransactionSplitFilter_BF setFilter() throws GCshIDNotSetException
   {
-	TransactionSplitFilter_FP spltFlt = new TransactionSplitFilter_FP();
+	TransactionSplitFilter_BF spltFlt = new TransactionSplitFilter_BF();
     
     if ( action != null )
     	spltFlt.action = action;
@@ -230,16 +230,16 @@ public class GetTrxSpltList extends CommandLineTool
     if ( acctID != null )
     	spltFlt.acctID.set( acctID );
     
-    if ( valueFrom != Const.UNSET_VALUE )
-    	spltFlt.valueFrom = new FixedPointNumber(valueFrom);
-    if ( valueTo   != Const.UNSET_VALUE )
-    	spltFlt.valueTo   = new FixedPointNumber(valueTo);
+    if ( valueFrom.compareTo(Const.UNSET_VALUE_BF) != 0 )
+    	spltFlt.valueFrom = valueFrom;
+    if ( valueTo.compareTo(Const.UNSET_VALUE_BF) != 0 )
+    	spltFlt.valueTo   = valueTo;
     spltFlt.valueAbs = true;
 
-    if ( quantityFrom != Const.UNSET_VALUE )
-    	spltFlt.quantityFrom = new FixedPointNumber(quantityFrom);
-    if ( quantityTo   != Const.UNSET_VALUE )
-    	spltFlt.quantityTo   = new FixedPointNumber(quantityTo);
+    if ( quantityFrom.compareTo(Const.UNSET_VALUE_BF) != 0 )
+    	spltFlt.quantityFrom = quantityFrom;
+    if ( quantityTo.compareTo(Const.UNSET_VALUE_BF) != 0 )
+    	spltFlt.quantityTo   = quantityTo;
     spltFlt.quantityAbs = true;
     
     if ( descrSplt != null )
@@ -356,7 +356,8 @@ public class GetTrxSpltList extends CommandLineTool
     {
         try
         {
-        	valueFrom = Double.parseDouble( cmdLine.getOptionValue("from-value") );
+        	double temp = Double.parseDouble( cmdLine.getOptionValue("from-value") );
+        	valueFrom = BigFraction.from(temp, org.gnucash.tools.Const.EPS, org.gnucash.tools.Const.ITER_MAX);
         }
         catch ( Exception exc )
         {
@@ -367,7 +368,7 @@ public class GetTrxSpltList extends CommandLineTool
     
     if ( ! scriptMode )
     {
-    	if ( valueFrom == Const.UNSET_VALUE )
+    	if ( valueFrom.compareTo(Const.UNSET_VALUE_BF) == 0 )
     		System.err.println("From value:         " + "(unset)");
     	else
     		System.err.println("From value:         " + valueFrom);
@@ -378,7 +379,8 @@ public class GetTrxSpltList extends CommandLineTool
     {
         try
         {
-        	valueTo = Double.parseDouble( cmdLine.getOptionValue("to-value") );
+        	double temp = Double.parseDouble( cmdLine.getOptionValue("to-value") );
+        	valueTo = BigFraction.from(temp, org.gnucash.tools.Const.EPS, org.gnucash.tools.Const.ITER_MAX);
         }
         catch ( Exception exc )
         {
@@ -389,7 +391,7 @@ public class GetTrxSpltList extends CommandLineTool
     
     if ( ! scriptMode )
     {
-    	if ( valueTo == Const.UNSET_VALUE )
+    	if ( valueTo.compareTo(Const.UNSET_VALUE_BF) == 0 )
     		System.err.println("To value:           " + "(unset)");
     	else
     		System.err.println("To value:           " + valueTo);
@@ -402,7 +404,8 @@ public class GetTrxSpltList extends CommandLineTool
     {
         try
         {
-        	quantityFrom = Double.parseDouble( cmdLine.getOptionValue("from-quantity") );
+        	double temp = Double.parseDouble( cmdLine.getOptionValue("from-quantity") );
+        	quantityFrom = BigFraction.from(temp, org.gnucash.tools.Const.EPS, org.gnucash.tools.Const.ITER_MAX);
         }
         catch ( Exception exc )
         {
@@ -413,7 +416,7 @@ public class GetTrxSpltList extends CommandLineTool
     
     if ( ! scriptMode )
     {
-    	if ( quantityFrom == Const.UNSET_VALUE )
+    	if ( quantityFrom.compareTo(Const.UNSET_VALUE_BF) == 0 )
     		System.err.println("From quantity:      " + "(unset)");
     	else
     		System.err.println("From quantity:      " + quantityFrom);
@@ -424,7 +427,8 @@ public class GetTrxSpltList extends CommandLineTool
     {
         try
         {
-        	quantityTo = Double.parseDouble( cmdLine.getOptionValue("to-quantity") );
+        	double temp = Double.parseDouble( cmdLine.getOptionValue("to-quantity") );
+        	quantityTo = BigFraction.from(temp, org.gnucash.tools.Const.EPS, org.gnucash.tools.Const.ITER_MAX);
         }
         catch ( Exception exc )
         {
@@ -435,7 +439,7 @@ public class GetTrxSpltList extends CommandLineTool
     
     if ( ! scriptMode )
     {
-    	if ( quantityTo == Const.UNSET_VALUE )
+    	if ( quantityTo.compareTo(Const.UNSET_VALUE_BF) == 0 )
     		System.err.println("To quantity:        " + "(unset)");
     	else
     		System.err.println("To quantity:        " + quantityTo);

@@ -13,11 +13,13 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.numbers.fraction.BigFraction;
 import org.gnucash.api.write.GnuCashWritableTransaction;
 import org.gnucash.api.write.GnuCashWritableTransactionSplit;
 import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.tools.CommandLineTool;
+import org.gnucash.tools.Const;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.slf4j.Logger;
@@ -26,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 import xyz.schnorxoborx.base.dateutils.LocalDateHelpers;
-import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
 public class GenTrx extends CommandLineTool
 {
@@ -43,8 +44,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
   private static String           gcshOutFileName = null;
   private static GCshAcctID       fromAcctID = null;
   private static GCshAcctID       toAcctID = null;
-  private static FixedPointNumber amount = null;
-  private static FixedPointNumber quantity = null;
+  private static BigFraction      amount = null;
+  private static BigFraction      quantity = null;
   private static LocalDate        datePosted = null;
   private static String           description = null;
 
@@ -169,12 +170,12 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
     trx.setDescription(description);
 
     GnuCashWritableTransactionSplit split1 = trx.createWritableSplit(gcshFile.getAccountByID(fromAcctID));
-    split1.setValue(new FixedPointNumber(amount.copy().negate()));
-    split1.setQuantity(new FixedPointNumber(quantity.copy().negate()));
+    split1.setValue(amount.negate());
+    split1.setQuantity(quantity.negate());
     
     GnuCashWritableTransactionSplit split2 = trx.createWritableSplit(gcshFile.getAccountByID(toAcctID));
-    split2.setValue(new FixedPointNumber(amount));
-    split2.setQuantity(new FixedPointNumber(quantity));
+    split2.setValue(amount);
+    split2.setQuantity(quantity);
     
     trx.setDatePosted(datePosted);
     trx.setDateEntered(LocalDateTime.now());
@@ -255,7 +256,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
     try
     {
       BigMoney betrag = BigMoney.of(CurrencyUnit.EUR, Double.parseDouble(cmdLine.getOptionValue("amount")));
-      amount = new FixedPointNumber(betrag.getAmount());
+      amount = BigFraction.from(betrag.getAmount().doubleValue(), Const.EPS, Const.ITER_MAX);
     }
     catch ( Exception exc )
     {
@@ -267,7 +268,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(GenTrx.class);
     // <quantity>
     try
     {
-      quantity = new FixedPointNumber(Double.parseDouble(cmdLine.getOptionValue("quantity")));
+      double temp = Double.parseDouble( cmdLine.getOptionValue("quantity") );
+      quantity = BigFraction.from(temp, Const.EPS, Const.ITER_MAX);
     }
     catch ( Exception exc )
     {
