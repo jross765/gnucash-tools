@@ -12,8 +12,8 @@ import org.gnucash.tools.Const;
 
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class CmdLineHelper_AcctAmtPr_BF
-{
+public class CmdLineHelper_AcctAmtPr {
+
   // ::MAGIC
   public  static final String ACCT_AMT_DUMMY_ARG = "DUMMY";
   private static final String ACCT_AMT_SEP_OUTER = "\\|";
@@ -97,3 +97,4 @@ public class CmdLineHelper_AcctAmtPr_BF
   }
   
 }
+

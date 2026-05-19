@@ -31,7 +31,7 @@ import org.gnucash.base.tuples.AcctIDAmountBFPair;
 import org.gnucash.tools.CommandLineTool;
 import org.gnucash.tools.Const;
 import org.gnucash.tools.xml.helper.CmdLineHelper;
-import org.gnucash.tools.xml.helper.CmdLineHelper_AcctAmtPr_BF;
+import org.gnucash.tools.xml.helper.CmdLineHelper_AcctAmtPr;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.slf4j.Logger;
@@ -904,7 +904,7 @@ public class GenDepotTrx extends CommandLineTool
            						   SecuritiesAccountTransactionManager_BF.Type.BUY_STOCK + "' or '" +
            						   SecuritiesAccountTransactionManager_BF.Type.DIVIDEND + "' or '" +
            						   SecuritiesAccountTransactionManager_BF.Type.DISTRIBUTION + "'");
-           		System.err.println("If logically unset, set to '" + CmdLineHelper_AcctAmtPr_BF.ACCT_AMT_DUMMY_ARG + "'");
+           		System.err.println("If logically unset, set to '" + CmdLineHelper_AcctAmtPr.ACCT_AMT_DUMMY_ARG + "'");
            		throw new InvalidCommandLineArgsException();
            	}
 
@@ -923,7 +923,7 @@ public class GenDepotTrx extends CommandLineTool
            		throw new InvalidCommandLineArgsException();
            	}
 
-           	expensesAcctAmtList = CmdLineHelper_AcctAmtPr_BF.getExpAcctAmtMulti(tuple.expensesAcctAmtList, "expense-account-amounts");
+           	expensesAcctAmtList = CmdLineHelper_AcctAmtPr.getExpAcctAmtMulti(tuple.expensesAcctAmtList, "expense-account-amounts");
     	}    	
     }
     else
@@ -936,7 +936,7 @@ public class GenDepotTrx extends CommandLineTool
     						   SecuritiesAccountTransactionManager_BF.Type.BUY_STOCK + "' or '" +
     						   SecuritiesAccountTransactionManager_BF.Type.DIVIDEND + "' or '" +
     						   SecuritiesAccountTransactionManager_BF.Type.DISTRIBUTION + "'");
-    		System.err.println("If logically unset, set to '" + CmdLineHelper_AcctAmtPr_BF.ACCT_AMT_DUMMY_ARG + "'");
+    		System.err.println("If logically unset, set to '" + CmdLineHelper_AcctAmtPr.ACCT_AMT_DUMMY_ARG + "'");
     		throw new InvalidCommandLineArgsException();
     	}
 

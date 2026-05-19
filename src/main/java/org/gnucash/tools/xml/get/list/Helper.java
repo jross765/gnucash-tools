@@ -15,4 +15,10 @@ public class Helper extends xyz.schnorxoborx.base.cmdlinetools.Helper
 		ALL
 	}
 
+	public enum BdgtListMode
+	{
+		NAME,
+		ALL
+	}
+
 }
