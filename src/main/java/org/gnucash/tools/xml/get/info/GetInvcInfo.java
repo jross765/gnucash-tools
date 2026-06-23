@@ -36,11 +36,11 @@ import org.slf4j.LoggerFactory;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class GetGenerInvcInfo extends CommandLineTool
+public class GetInvcInfo extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(GetGenerInvcInfo.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GetInvcInfo.class);
   
   // -----------------------------------------------------------------
 
@@ -61,7 +61,7 @@ public class GetGenerInvcInfo extends CommandLineTool
   {
     try
     {
-      GetGenerInvcInfo tool = new GetGenerInvcInfo ();
+      GetInvcInfo tool = new GetInvcInfo ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -523,7 +523,7 @@ public class GetGenerInvcInfo extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "GetGenerInvcInfo", "", options, "", true );
+		formatter.printHelp( "GetInvcInfo", "", options, "", true );
 	}
 	catch ( IOException e )
 	{

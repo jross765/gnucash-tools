@@ -29,11 +29,11 @@ import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class GetGenerJobInfo extends CommandLineTool
+public class GetJobInfo extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(GetGenerJobInfo.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GetJobInfo.class);
   
   // -----------------------------------------------------------------
 
@@ -55,7 +55,7 @@ public class GetGenerJobInfo extends CommandLineTool
   {
     try
     {
-      GetGenerJobInfo tool = new GetGenerJobInfo ();
+      GetJobInfo tool = new GetJobInfo ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -414,7 +414,7 @@ public class GetGenerJobInfo extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "GetGenerJobInfo", "", options, "", true );
+		formatter.printHelp( "GetJobInfo", "", options, "", true );
 	}
 	catch ( IOException e )
 	{
