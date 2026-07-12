@@ -31,7 +31,7 @@ to come).
 
 ## Major Changes
 
-Cf. document "[Major Changes](https://github.com/jross765/JGnuCashLibNTools/gnucash-api-tools/major_changes.md)".
+Cf. document "[Major Changes](https://github.com/jross765/JGnuCashLibNTools/gnucash-tools/major_changes.md)".
 
 ## Planned
 ./.

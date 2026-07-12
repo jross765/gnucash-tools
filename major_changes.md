@@ -1,12 +1,32 @@
 # Major Changes
 
 ## V. 1.8 &rarr; 1.9
-Followed the deprecation of `FixedPointNumber` in the modules
-"(Core) API", V. 1.9,
-"Specialized Entitites", V. 0.4 and
-"API Extended", V. 1.9:
+* New Tools:
+  * `CloseBooks`
+  
+  * `GetBdgtInfo`, `GetBdgtList`: Analogous to other entities' tools.
+  
+  * `GenBudget`, `UpdBdgt`: Dto.
 
-Changed various implementations so that it's (almost) not used any more.
+* Existing tools:
+
+  * Renamed packages
+  
+  * Followed the deprecation of `FixedPointNumber` in the modules
+    "(Core) API", V. 1.9,
+    "Specialized Entitites", V. 0.4 and
+    "API Extended", V. 1.9:
+    Changed various implementations so that it is (almost) not used any more.
+
+  * `GetGenerInvcEntryInfo`, `GetGenerInvcInfo`, `GetGenerJobInfo`: Renamed,
+      leaving out "Gener".
+      
+  * `GenSec`: Fixed bug.
+
+  * `GenDepotTrx`: Added newly-introduced stock-sell variant
+     (cf. "API Extended", V. 1.9).
+  
+  * `GetTrxSpltList`: Fixed bug.
 
 ## V. 1.7 &rarr; 1.8
 * New tools: 
