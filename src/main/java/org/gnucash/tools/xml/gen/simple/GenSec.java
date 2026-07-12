@@ -141,24 +141,38 @@ public class GenSec extends CommandLineTool
     // 1) Check whether there already is a security with that ISIN
     // 1.1) Variant 1: Qualif. ID (non-technical, as opposed to all other IDs in GnuCash)
     GCshSecID_SecIdType qualifID = new GCshSecID_SecIdType(GCshCmdtyNameSpace.SecIdType.ISIN, isin);
-    GnuCashSecurity checkSec = gcshFile.getSecurityByID( qualifID );
-    if ( checkSec != null )
+    try
     {
-    	LOGGER.error("kernel: Encountered a security with ID '" + qualifID + "' in GnuCash file");
-    	LOGGER.error("kernel: Aborting");
-    	System.err.println("Error: There already is a security with ID '" + qualifID + "' in GnuCash file");
-    	System.err.println("Aborting");
-    	System.exit( 1 );
+        GnuCashSecurity checkSec = gcshFile.getSecurityByID( qualifID );
+        if ( checkSec != null )
+        {
+        	LOGGER.error("kernel: Encountered a security with ID '" + qualifID + "' in GnuCash file");
+        	LOGGER.error("kernel: Aborting");
+        	System.err.println("Error: There already is a security with ID '" + qualifID + "' in GnuCash file");
+        	System.err.println("Aborting");
+        	System.exit( 1 );
+        }
+    } 
+    catch ( Exception exc ) 
+    {
+    	// ::EMPTY
     }
     // 1.2) Variant 2: X-Code
-    checkSec = gcshFile.getSecurityByXCode( isin );
-    if ( checkSec != null )
+    try
     {
-    	LOGGER.error("kernel: Encountered a security with X-code '" + isin + "' in GnuCash file");
-    	LOGGER.error("kernel: Aborting");
-    	System.err.println("Error: There already is a security with X-code '" + isin + "' in GnuCash file");
-    	System.err.println("Aborting");
-    	System.exit( 1 );
+    	GnuCashSecurity checkSec = gcshFile.getSecurityByXCode( isin );
+        if ( checkSec != null )
+        {
+        	LOGGER.error("kernel: Encountered a security with X-code '" + isin + "' in GnuCash file");
+        	LOGGER.error("kernel: Aborting");
+        	System.err.println("Error: There already is a security with X-code '" + isin + "' in GnuCash file");
+        	System.err.println("Aborting");
+        	System.exit( 1 );
+        }
+    } 
+    catch ( Exception exc )
+    {
+    	// ::EMPTY
     }
     
     // 2) Generate security

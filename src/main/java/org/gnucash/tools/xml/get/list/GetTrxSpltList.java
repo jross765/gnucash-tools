@@ -259,6 +259,10 @@ public class GetTrxSpltList extends CommandLineTool
     }
 
 	System.err.println("Found " + spltList.size() + " transaction split(s).");
+	for ( GnuCashTransactionSplit splt : spltList )
+	{
+		System.out.println(" - " + splt.toString());
+	}
   }
 
   // -----------------------------------------------------------------
