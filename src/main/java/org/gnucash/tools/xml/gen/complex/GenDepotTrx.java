@@ -170,14 +170,14 @@ public class GenDepotTrx extends CommandLineTool
     	      
     Option optStockAcct = Option.builder("stacct")
       .hasArg()
-      .argName("acctid")
+      .argName("UUID")
       .desc("Account-ID of stock account")
       .longOpt("stock-account-id")
       .get();
       
     Option optIncomeAcct = Option.builder("inacct")
       .hasArg()
-      .argName("acctid")
+      .argName("UUID")
       .desc("Account-ID for (divid./distrib.) income")
       .longOpt("income-account-id")
       .get();
@@ -192,7 +192,7 @@ public class GenDepotTrx extends CommandLineTool
       
     Option optOffsetAcct = Option.builder("osacct")
       .hasArg()
-      .argName("acctid")
+      .argName("UUID")
       .desc("Account-ID of offsetting account")
       .longOpt("offset-account-id")
       .get();
@@ -517,14 +517,16 @@ public class GenDepotTrx extends CommandLineTool
     if ( ! silent )
     	System.out.println("Transaction to write: " + trx.toString());
 
-    GCshTrxID newID = trx.getID();
-    LOGGER.info( "Generated new Transaction: " + newID);
+    GCshTrxID newTrxID = trx.getID();
+    LOGGER.info( "Generated new Transaction: " + newTrxID);
 
     if ( batch )
     {
     	try 
     	{
-    		outFile.write("" + newID + "\n");
+    		outFile.write(newTrxID.toString() + ";");
+    		outFile.write(offsetAcctID.toString() + ";");
+    		outFile.write(datPst.toString() + "\n");
     	} 
     	catch ( Exception exc )
     	{
@@ -535,7 +537,7 @@ public class GenDepotTrx extends CommandLineTool
 	  
 	// ---
 	
-    return newID;
+    return newTrxID;
   }
   
   private void readListFile(ArrayList<ParamTuple> paramTuples) throws IOException
@@ -1084,7 +1086,7 @@ public class GenDepotTrx extends CommandLineTool
     	}
     }
     if (! silent)
-    	System.err.println("No. of stocks: " + nofStocks);
+    	System.err.println("No. of stocks: " + nofStocks); // ::TODO: Format (and all others...)
 
     // <stock-price>
     if ( tuple.stockPrc != null ) 
