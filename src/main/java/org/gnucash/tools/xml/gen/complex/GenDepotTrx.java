@@ -6,10 +6,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Currency;
+import java.util.Locale;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -22,9 +25,11 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.numbers.fraction.BigFraction;
 import org.gnucash.api.read.GnuCashAccount;
 import org.gnucash.api.read.GnuCashTransactionSplit;
+import org.gnucash.api.read.impl.hlp.AmountFormatter_BF;
 import org.gnucash.api.write.GnuCashWritableTransaction;
 import org.gnucash.api.write.impl.GnuCashWritableFileImpl;
 import org.gnucash.apiext.secacct.SecuritiesAccountTransactionManager_BF;
+import org.gnucash.base.basetypes.complex.GCshCurrID;
 import org.gnucash.base.basetypes.simple.GCshAcctID;
 import org.gnucash.base.basetypes.simple.GCshTrxID;
 import org.gnucash.base.tuples.AcctIDAmountBFPair;
@@ -628,7 +633,7 @@ public class GenDepotTrx extends CommandLineTool
       silent = false;
     }
     if (! silent)
-      System.err.println("silent:              " + silent);
+      System.err.println("silent:                " + silent);
     
     // ---
 
@@ -643,7 +648,7 @@ public class GenDepotTrx extends CommandLineTool
       throw new InvalidCommandLineArgsException();
     }
     if (! silent)
-    	System.err.println("Book mode:           " + mode);
+    	System.err.println("Book mode:             " + mode);
     
     // <gnucash-in-file>
     try
@@ -656,7 +661,7 @@ public class GenDepotTrx extends CommandLineTool
       throw new InvalidCommandLineArgsException();
     }
     if (! silent)
-    	System.err.println("GnuCash file (in):  '" + gcshInFileName + "'");
+    	System.err.println("GnuCash file (in):     '" + gcshInFileName + "'");
     
     // <gnucash-out-file>
     try
@@ -669,7 +674,7 @@ public class GenDepotTrx extends CommandLineTool
       throw new InvalidCommandLineArgsException();
     }
     if (! silent)
-    	System.err.println("GnuCash file (out): '" + gcshOutFileName + "'");
+    	System.err.println("GnuCash file (out):    '" + gcshOutFileName + "'");
     
     // <booking-list-file>
     if ( cmdLine.hasOption( "booking-list-file" ) )
@@ -699,7 +704,7 @@ public class GenDepotTrx extends CommandLineTool
     	}
     }
     if (! silent)
-    	System.err.println("Booking list file:   '" + bookingListFileName + "'");
+    	System.err.println("Booking list file:     '" + bookingListFileName + "'");
     
     // ----------------------------
     // BEGIN Core parameters
@@ -760,7 +765,7 @@ public class GenDepotTrx extends CommandLineTool
     	batch = false;
     }
     if (! silent)
-    	System.err.println("Batch-mode:          " + batch);
+    	System.err.println("Batch-mode:            " + batch);
 
     // <batch-out-file>
     if ( cmdLine.hasOption("batch-out-file") )
@@ -782,7 +787,7 @@ public class GenDepotTrx extends CommandLineTool
     	}
     }
     if (! silent)
-    	System.err.println("Batch-out-file:      '" + batchOutFileName + "'");
+    	System.err.println("Batch-out-file:        '" + batchOutFileName + "'");
   }
 
   private void parseCoreParams(ParamTuple tuple) throws InvalidCommandLineArgsException
@@ -849,7 +854,7 @@ public class GenDepotTrx extends CommandLineTool
     	throw new InvalidCommandLineArgsException();
     }
     if (! silent)
-    	System.err.println("Stock account ID: " + stockAcctID);
+    	System.err.println("Stock account ID:      " + stockAcctID);
     
     // <income-account-id>
     if ( tuple.incomeAcctID != null ) 
@@ -895,7 +900,7 @@ public class GenDepotTrx extends CommandLineTool
     	}
     }
     if (! silent)
-    	System.err.println("Income account ID: " + incomeAcctID);
+    	System.err.println("Income account ID:     " + incomeAcctID);
 
     // <expense-account-amounts>
     // CAUTION: Logically, <expense-account-amounts> must *not necessarily* be set for buy-stock 
@@ -1086,7 +1091,17 @@ public class GenDepotTrx extends CommandLineTool
     	}
     }
     if (! silent)
-    	System.err.println("No. of stocks: " + nofStocks); // ::TODO: Format (and all others...)
+    {
+    	if ( nofStocks != null )
+    	{
+        	NumberFormat nf = NumberFormat.getNumberInstance();
+        	System.err.println("No. of stocks:         " + nf.format( nofStocks.bigDecimalValue() ) );
+    	}
+    	else
+    	{
+        	System.err.println("No. of stocks:         (unset)");
+    	}
+    }
 
     // <stock-price>
     if ( tuple.stockPrc != null ) 
@@ -1113,7 +1128,8 @@ public class GenDepotTrx extends CommandLineTool
                	
     		try
     		{
-    			BigMoney betrag = BigMoney.of(CurrencyUnit.EUR, Double.parseDouble(tuple.stockPrc));
+                Currency curr = Currency.getInstance(Locale.getDefault());
+    			BigMoney betrag = BigMoney.of(CurrencyUnit.of(curr), Double.parseDouble(tuple.stockPrc));
     			stockPrc = BigFraction.from(betrag.getAmount().doubleValue(), Const.EPS, Const.ITER_MAX);
     		}
     		catch ( Exception exc )
@@ -1133,7 +1149,18 @@ public class GenDepotTrx extends CommandLineTool
     	}
     }
     if (! silent)
-    	System.err.println("Stock price: " + stockPrc);
+    {
+    	if ( stockPrc != null )
+    	{
+            Currency curr = Currency.getInstance(Locale.getDefault());
+        	System.err.println("Stock price:           " + 
+        			AmountFormatter_BF.formatAmount( gcshFile, stockPrc, new GCshCurrID(curr) ) );
+    	}
+    	else
+    	{
+        	System.err.println("Stock price:           (unset)");
+    	}
+    }
 
     // <divid-distrib-gross>
     if ( tuple.divDistrGross != null ) 
@@ -1160,7 +1187,8 @@ public class GenDepotTrx extends CommandLineTool
         	
             try
             {
-              BigMoney betrag = BigMoney.of(CurrencyUnit.EUR, Double.parseDouble(tuple.divDistrGross));
+              Currency curr = Currency.getInstance(Locale.getDefault());
+              BigMoney betrag = BigMoney.of(CurrencyUnit.of(curr), Double.parseDouble(tuple.divDistrGross));
               divDistrGross = BigFraction.from(betrag.getAmount().doubleValue(), Const.EPS, Const.ITER_MAX);
             }
             catch ( Exception exc )
@@ -1180,7 +1208,18 @@ public class GenDepotTrx extends CommandLineTool
     	}
     }
     if (! silent)
-    	System.err.println("Gross divid./distrib.: " + divDistrGross);
+    {
+    	if ( divDistrGross != null )
+    	{
+            Currency curr = Currency.getInstance(Locale.getDefault());
+        	System.err.println("Gross divid./distrib.: " +
+        			AmountFormatter_BF.formatAmount( gcshFile, divDistrGross, new GCshCurrID(curr) ) );
+    	}
+    	else
+    	{
+        	System.err.println("Gross divid./distrib.: (unset)");
+    	}
+    }
 
     // <stock-split-factor>
     if ( tuple.stockSplitFactor != null ) 
@@ -1206,7 +1245,8 @@ public class GenDepotTrx extends CommandLineTool
         	
             try
             {
-              BigMoney betrag = BigMoney.of(CurrencyUnit.EUR, Double.parseDouble(tuple.stockSplitFactor));
+              Currency curr = Currency.getInstance(Locale.getDefault());
+              BigMoney betrag = BigMoney.of(CurrencyUnit.of(curr), Double.parseDouble(tuple.stockSplitFactor));
               stockSplitFactor = BigFraction.from(betrag.getAmount().doubleValue(), Const.EPS, Const.ITER_MAX);
             }
             catch ( Exception exc )
@@ -1225,7 +1265,17 @@ public class GenDepotTrx extends CommandLineTool
     	}
     }
     if (! silent)
-    	System.err.println("Stock split factor: " + stockSplitFactor);
+    {
+    	if ( stockSplitFactor != null )
+    	{
+        	NumberFormat nf = NumberFormat.getNumberInstance();
+        	System.err.println("Stock split factor:    " + nf.format( stockSplitFactor.bigDecimalValue() ) );
+    	}
+    	else
+    	{
+        	System.err.println("Stock split factor:    (unset)");
+    	}
+    }
 
     // --
 
@@ -1254,11 +1304,10 @@ public class GenDepotTrx extends CommandLineTool
     } 
     else 
     {
-    	System.err.println("Error: <date-format> is not set");
-    	throw new InvalidCommandLineArgsException();
+    	dateFormat = Helper.DateFormat.ISO;
     }
     if (! silent)
-    	System.err.println("date-format: " + dateFormat);
+    	System.err.println("Date format:           " + dateFormat);
 
     // <date-posted>
     if ( tuple.datPst != null )
@@ -1289,7 +1338,7 @@ public class GenDepotTrx extends CommandLineTool
         throw new InvalidCommandLineArgsException();
     }
     if (! silent)
-    	System.err.println("Date posted: " + datPst.toString());
+    	System.err.println("Date posted:           " + datPst.toString());
     
     // <description>
     if ( tuple.descr != null )
@@ -1318,7 +1367,7 @@ public class GenDepotTrx extends CommandLineTool
       descr = "Generated by GenDepotTrx, " + LocalDateTime.now();
     }
     if (! silent)
-    	System.err.println("Description: '" + descr + "'");
+    	System.err.println("Description:           '" + descr + "'");
   }
   
   @Override
